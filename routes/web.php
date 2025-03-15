@@ -3,6 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+
+//Route::get('test/index', [App\Http\Controllers\Dashboard\TestController::class, 'index']);
+
+
+
 Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
