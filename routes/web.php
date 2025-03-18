@@ -5,7 +5,11 @@ use Inertia\Inertia;
 
 
 Route::get('test/', [App\Http\Controllers\Dashboard\TestController::class, 'index']);
-
+Route::group(['prefix' => 'receptionist'], function () {
+    Route::get('/', [App\Http\Controllers\Dashboard\ReceptionistController::class, 'index']);
+    Route::post('approve', [App\Http\Controllers\Dashboard\ReceptionistController::class, 'approve'])->name('receptionist.approve');
+    Route::get('show-reservation', [App\Http\Controllers\Dashboard\ReceptionistController::class, 'showReservation'])->name('receptionist.show-reservation');
+});
 
 
 Route::get('/', function () {
