@@ -11,16 +11,17 @@ class TestController extends Controller
 {
     public function index()
     {
-//        $requests = UserProfile::where('approved_by', null)->get();
-//        $user = $requests[0];
+        $requests = UserProfile::with('user')->where('approved_by', null)->get();
+        $user = $requests[0];
+        dd($user);
 //
 //        $user->update(['approved_by' => 5]);
 //        dd($user);
 //        dd($requests);
 
-        $userId = 5;
-        $user = User::with('approvedUsers.user')->where('id', $userId)->first();
-
-        dd($user);
+//        $userId = 5;
+//        $user = User::with('approvedUsers.user')->where('id', $userId)->first();
+//
+//        dd($user);
     }
 }
