@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Reservation extends Model
 {
@@ -11,7 +12,6 @@ class Reservation extends Model
     protected $fillable = [
         'reservation_code', 'client_id', 'room_id', 'check_in_date', 'check_out_date',
         'accompany_number', 'price_at_booking', 'payment_intent_id', 'payment_method_id',
-        'status'
     ];
 
     public function client()
