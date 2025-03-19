@@ -18,9 +18,12 @@ class TestController extends Controller
 //        $clients = Reservation::with('user.reservations')->where('approved_by', '=', '5')->get();
 //        dd($clients);
 
-//        $requests = UserProfile::with('user')->whereHas('user.roles', function($query) {
-//            $query->where('name', 'client');
-//        })->where('approved_by', '=', null)->get();
+        $requests = UserProfile::with('user')->whereHas('user.roles', function($query) {
+            $query->where('name', 'client');
+        })->where('approved_by', '!=', null)->get();
+        foreach ($requests as $request){
+            $request->update(['approved_by' => null]);
+        }
 //        dd($requests);
 //
 //        $user->update(['approved_by' => 5]);
@@ -60,10 +63,15 @@ class TestController extends Controller
 //        ]);
 //        dd($reservation);
 
-    $clients = Reservation::with(['client.profile' => function($query) {
-            $query->where('approved_by', '=', auth()->user()->id);
-        }, 'room'])->get();
+        $clients = Reservation::with(['client.profile', 'room'])->whereHas('client.profile' ,function ($query){
+            $query->whereNotNull('approved_by')
+                ->where('approved_by', '=', 5);
+        })->get();
         dd($clients);
+//        $clients = Reservation::with(['client.profile' => function($query) {
+//            $query->whereNotNull('approved_by')->where('approved_by', '=', auth()->user()->id);
+//        }, 'room'])->get();
+//        dd($clients);
 
     }
 }
