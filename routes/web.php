@@ -1,18 +1,22 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
+
+
+Route::get('test/', [App\Http\Controllers\Dashboard\TestController::class, 'index']);
+Route::group(['prefix' => 'receptionist'], function () {
+    Route::get('/', [App\Http\Controllers\Dashboard\ReceptionistController::class, 'index']);
+    Route::post('approve', [App\Http\Controllers\Dashboard\ReceptionistController::class, 'approve'])->name('receptionist.approve');
+    Route::get('show-reservation', [App\Http\Controllers\Dashboard\ReceptionistController::class, 'showReservation'])->name('receptionist.show-reservation');
+});
 
 Route::get('/login', [AuthenticatedSessionController::class, 'create'])
     ->name('login');
 Route::post('/login', [AuthenticatedSessionController::class, 'store']);
-Route::post('/logout', [AuthenticatedSessionController::class, 'destroy']) 
- ->middleware('auth');
-
-Route::get('test/', [App\Http\Controllers\Dashboard\TestController::class, 'index']);
-
-
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+    ->middleware('auth');
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
