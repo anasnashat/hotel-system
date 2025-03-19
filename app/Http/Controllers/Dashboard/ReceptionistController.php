@@ -23,9 +23,13 @@ class ReceptionistController extends Controller
 
     public function showReservation()
     {
-        $clients = Reservation::with(['client.profile' => function($query) {
-            $query->where('approved_by', '=', auth()->user()->id);
-        }, 'room'])->get();
+        $clients = Reservation::with(['client.profile', 'room'])
+            ->whereHas('client.profile', function ($query) {
+                $query->whereNotNull('approved_by')
+                    ->where('approved_by', auth()->id());
+            })
+            ->get();
+
 //        dd($clients);
         return inertia('Receptionist/ShowReservation', [
             'clients' => $clients
