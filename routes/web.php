@@ -11,6 +11,9 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
  ->middleware('auth');
 
 Route::get('test/', [App\Http\Controllers\Dashboard\TestController::class, 'index']);
+
+
+
 Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
