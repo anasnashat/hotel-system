@@ -6,7 +6,7 @@ import type { HTMLAttributes } from 'vue';
 import { SIDEBAR_WIDTH_MOBILE, useSidebar } from './utils';
 
 defineOptions({
-    inheritAttrs: false,
+    inheritAttrs: false
 });
 
 const props = withDefaults(
@@ -19,8 +19,8 @@ const props = withDefaults(
     {
         side: 'left',
         variant: 'sidebar',
-        collapsible: 'offcanvas',
-    },
+        collapsible: 'offcanvas'
+    }
 );
 
 const { isMobile, state, openMobile, setOpenMobile } = useSidebar();

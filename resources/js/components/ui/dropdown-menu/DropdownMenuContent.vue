@@ -2,15 +2,15 @@
 import { cn } from '@/lib/utils';
 import {
     DropdownMenuContent,
-    DropdownMenuPortal,
-    useForwardPropsEmits,
     type DropdownMenuContentEmits,
     type DropdownMenuContentProps,
+    DropdownMenuPortal,
+    useForwardPropsEmits
 } from 'radix-vue';
 import { computed, type HTMLAttributes } from 'vue';
 
 const props = withDefaults(defineProps<DropdownMenuContentProps & { class?: HTMLAttributes['class'] }>(), {
-    sideOffset: 4,
+    sideOffset: 4
 });
 const emits = defineEmits<DropdownMenuContentEmits>();
 

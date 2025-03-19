@@ -11,7 +11,7 @@ class ReceptionistController extends Controller
 {
     public function index()
     {
-        $requests = UserProfile::with('user')->whereHas('user.roles', function ($query){
+        $requests = UserProfile::with('user')->whereHas('user.roles', function ($query) {
             $query->where('name', '=', 'client');
         })->where('approved_by', '=', null)->get();
 
@@ -35,9 +35,6 @@ class ReceptionistController extends Controller
             'clients' => $clients
         ]);
     }
-
-
-
 
 
     public function approve(Request $request)

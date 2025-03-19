@@ -6,8 +6,8 @@ import type { HTMLAttributes } from 'vue';
 
 const props = defineProps<
     PrimitiveProps & {
-        class?: HTMLAttributes['class'];
-    }
+    class?: HTMLAttributes['class'];
+}
 >();
 </script>
 

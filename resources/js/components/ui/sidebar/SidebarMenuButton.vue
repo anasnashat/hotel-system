@@ -2,25 +2,25 @@
 import Tooltip from '@/components/ui/tooltip/Tooltip.vue';
 import TooltipContent from '@/components/ui/tooltip/TooltipContent.vue';
 import TooltipTrigger from '@/components/ui/tooltip/TooltipTrigger.vue';
-import { computed, type Component } from 'vue';
+import { type Component, computed } from 'vue';
 import SidebarMenuButtonChild, { type SidebarMenuButtonProps } from './SidebarMenuButtonChild.vue';
 import { useSidebar } from './utils';
 
 defineOptions({
-    inheritAttrs: false,
+    inheritAttrs: false
 });
 
 const props = withDefaults(
     defineProps<
         SidebarMenuButtonProps & {
-            tooltip?: string | Component;
-        }
+        tooltip?: string | Component;
+    }
     >(),
     {
         as: 'button',
         variant: 'default',
-        size: 'default',
-    },
+        size: 'default'
+    }
 );
 
 const { isMobile, state } = useSidebar();

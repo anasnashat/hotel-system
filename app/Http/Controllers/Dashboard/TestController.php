@@ -3,12 +3,8 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-use App\Models\Floor;
 use App\Models\Reservation;
-use App\Models\Room;
-use App\Models\User;
 use App\Models\UserProfile;
-use Illuminate\Http\Request;
 
 class TestController extends Controller
 {
@@ -18,10 +14,10 @@ class TestController extends Controller
 //        $clients = Reservation::with('user.reservations')->where('approved_by', '=', '5')->get();
 //        dd($clients);
 
-        $requests = UserProfile::with('user')->whereHas('user.roles', function($query) {
+        $requests = UserProfile::with('user')->whereHas('user.roles', function ($query) {
             $query->where('name', 'client');
         })->where('approved_by', '!=', null)->get();
-        foreach ($requests as $request){
+        foreach ($requests as $request) {
             $request->update(['approved_by' => null]);
         }
 //        dd($requests);
@@ -63,7 +59,7 @@ class TestController extends Controller
 //        ]);
 //        dd($reservation);
 
-        $clients = Reservation::with(['client.profile', 'room'])->whereHas('client.profile' ,function ($query){
+        $clients = Reservation::with(['client.profile', 'room'])->whereHas('client.profile', function ($query) {
             $query->whereNotNull('approved_by')
                 ->where('approved_by', '=', 5);
         })->get();

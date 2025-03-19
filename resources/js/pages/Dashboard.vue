@@ -13,7 +13,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const page = usePage();
 console.log(page.props);
-
 </script>
 
 <template>

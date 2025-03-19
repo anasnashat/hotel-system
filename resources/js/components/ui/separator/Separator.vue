@@ -25,7 +25,7 @@ const delegatedProps = computed(() => {
                     props.orientation === 'vertical' ? 'w-[1px] px-1 py-2' : 'h-[1px] px-2 py-1',
                 )
             "
-            >{{ props.label }}</span
+        >{{ props.label }}</span
         >
     </Separator>
 </template>

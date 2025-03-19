@@ -6,13 +6,13 @@ import type { HTMLAttributes } from 'vue';
 const props = withDefaults(
     defineProps<
         PrimitiveProps & {
-            showOnHover?: boolean;
-            class?: HTMLAttributes['class'];
-        }
+        showOnHover?: boolean;
+        class?: HTMLAttributes['class'];
+    }
     >(),
     {
-        as: 'button',
-    },
+        as: 'button'
+    }
 );
 </script>
 

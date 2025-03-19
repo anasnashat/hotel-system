@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, computed, defineProps } from "vue";
-import { router } from "@inertiajs/vue3";
-import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from '@/components/ui/button';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { router } from '@inertiajs/vue3';
+import { defineProps, ref } from 'vue';
 
 interface Request {
     id: number;
@@ -16,12 +16,16 @@ const props = defineProps<{ requests: Request[] }>();
 const requests = ref<Request[]>(props.requests);
 
 const approveRequest = (id: number) => {
-    router.post(route("receptionist.approve"), { client_id: id }, {
-        preserveScroll: true,
-        onSuccess: () => {
-            requests.value = requests.value.filter((req) => req.id !== id);
-        }
-    });
+    router.post(
+        route('receptionist.approve'),
+        { client_id: id },
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                requests.value = requests.value.filter((req) => req.id !== id);
+            },
+        },
+    );
 };
 </script>
 
@@ -43,14 +47,12 @@ const approveRequest = (id: number) => {
                     <template v-if="requests.length">
                         <TableRow v-for="request in requests" :key="request.id">
                             <TableCell>{{ request.id }}</TableCell>
-                            <TableCell>{{ request.user.name || "N/A" }}</TableCell>
-                            <TableCell>{{ request.user.email || "N/A" }}</TableCell>
-                            <TableCell>{{ request.national_id || "N/A" }}</TableCell>
-                            <TableCell>{{ request.phone_number || "N/A" }}</TableCell>
+                            <TableCell>{{ request.user.name || 'N/A' }}</TableCell>
+                            <TableCell>{{ request.user.email || 'N/A' }}</TableCell>
+                            <TableCell>{{ request.national_id || 'N/A' }}</TableCell>
+                            <TableCell>{{ request.phone_number || 'N/A' }}</TableCell>
                             <TableCell>
-                                <Button variant="outline" class="text-green-500" @click="approveRequest(request.id)">
-                                    Approve
-                                </Button>
+                                <Button variant="outline" class="text-green-500" @click="approveRequest(request.id)"> Approve </Button>
                             </TableCell>
                         </TableRow>
                     </template>
