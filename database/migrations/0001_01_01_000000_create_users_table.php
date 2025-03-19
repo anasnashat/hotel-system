@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->string('password');
             $table->string('avatar_image')->nullable();
             $table->enum('gender', ['Male', 'Female'])->nullable();
-            $table->boolean('banned_at')->nullable();
+            $table->timestamp('banned_at')->nullable();
             $table->timestamp('last_login_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
