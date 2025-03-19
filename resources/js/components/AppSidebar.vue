@@ -19,6 +19,12 @@ const mainNavItems: NavItem[] = [
         href: route('receptionist.index'),
         icon: Users,
     },
+
+    {
+        title: 'Manager',
+        href: route('manager.manage-clients'),
+        icon: Users,
+    },
 ];
 
 const footerNavItems: NavItem[] = [

@@ -3,6 +3,17 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { router } from '@inertiajs/vue3';
 import { defineProps, ref } from 'vue';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { type BreadcrumbItem } from '@/types';
+
+
+
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Receptionest',
+        href: '/receptionest',
+    },
+];
 
 interface Request {
     id: number;
@@ -30,6 +41,8 @@ const approveRequest = (id: number) => {
 </script>
 
 <template>
+    <Head title="Receptionest" />
+    <AppLayout :breadcrumbs="breadcrumbs">
     <div class="w-full">
         <div class="rounded-md border">
             <Table>
@@ -63,4 +76,5 @@ const approveRequest = (id: number) => {
             </Table>
         </div>
     </div>
+</AppLayout>
 </template>
