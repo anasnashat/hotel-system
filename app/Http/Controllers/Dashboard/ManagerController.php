@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 class ManagerController extends Controller
 {
-    
+
     public function manageClients()
     {
         $clients = UserProfile::with('user')->whereHas('user.roles', function ($query) {
@@ -21,20 +21,20 @@ class ManagerController extends Controller
     public function updateClient(Request $request, $id)
     {
         $client = User::findOrFail($id);
-    
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $client->id,
         ]);
-    
+
         $client->update([
             'name' => $request->name,
             'email' => $request->email,
         ]);
-    
+
         return redirect()->route('manager.manage-clients')->with('success', 'Client updated successfully.');
     }
-    
+
 
 
 
