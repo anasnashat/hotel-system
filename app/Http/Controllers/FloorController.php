@@ -15,7 +15,7 @@ class FloorController extends Controller
      */
     public function index()
     {
-        $floors = Floor::paginate(10);
+        $floors = Floor::with('createdBy')->paginate(10);
         return Inertia::render('Dashboard/Floor/Index', [
             'floors' => $floors,
         ]);
