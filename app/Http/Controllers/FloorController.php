@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreFloorRequest;
 use App\Http\Requests\UpdateFloorRequest;
 use App\Models\Floor;
+use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class FloorController extends Controller
 {
@@ -13,7 +15,10 @@ class FloorController extends Controller
      */
     public function index()
     {
-        //
+        $floors = Floor::paginate(10);
+        return Inertia::render('Dashboard/Floor/Index', [
+            'floors' => $floors,
+        ]);
     }
 
     /**
@@ -21,7 +26,7 @@ class FloorController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Dashboard/Floor/Create');
     }
 
     /**
@@ -29,38 +34,72 @@ class FloorController extends Controller
      */
     public function store(StoreFloorRequest $request)
     {
-        //
+        try {
+            DB::beginTransaction();
+            Floor::create($request->validated());
+            DB::commit();
+            return redirect()->route('floors.index')->with('success', 'Floor created successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+
+
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Floor $floor)
+    public function show($id)
     {
-        //
+        $floor = Floor::findOrFail($id);
+        return Inertia::render('Dashboard/Floor/Show', [
+            'floor' => $floor,
+        ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Floor $floor)
+    public function edit($id)
     {
-        //
+        $floor = Floor::findOrFail($id);
+        return Inertia::render('Dashboard/Floor/Edit', [
+            'floor' => $floor,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateFloorRequest $request, Floor $floor)
+    public function update(UpdateFloorRequest $request, $id)
     {
-        //
+        $floor = Floor::findOrFail($id);
+        try {
+            DB::beginTransaction();
+            $floor->update($request->validated());
+            DB::commit();
+            return redirect()->route('floors.index')->with('success', 'Floor updated successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Floor $floor)
+    public function destroy($id)
     {
-        //
+        $floor = Floor::findOrFail($id);
+        try {
+            DB::beginTransaction();
+            $floor->delete();
+            DB::commit();
+            return redirect()->route('floors.index')->with('success', 'Floor deleted successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 }
