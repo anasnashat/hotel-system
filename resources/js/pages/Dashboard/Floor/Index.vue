@@ -8,7 +8,16 @@ import { router, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
-// import { Pagination, PaginationEllipsis, PaginationFirst, PaginationLast, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import {
+    Pagination,
+    PaginationEllipsis,
+    PaginationFirst,
+    PaginationLast,
+    PaginationList,
+    PaginationListItem,
+    PaginationNext,
+    PaginationPrev,
+} from '@/components/ui/pagination';
 
 // Breadcrumbs
 const breadcrumbs: BreadcrumbItem[] = [
@@ -161,12 +170,41 @@ const deleteFloor = () => {
 
             <!-- Pagination -->
             <div class="mt-6 flex justify-center">
-<!--                <Pagination>-->
-<!--                    <PaginationFirst :href="floors.first_page_url" />-->
-<!--                    <PaginationPrevious :href="floors.prev_page_url" />-->
-<!--                    <PaginationNext :href="floors.next_page_url" />-->
-<!--                    <PaginationLast :href="floors.last_page_url" />-->
-<!--                </Pagination>-->
+                <Pagination
+                    v-if="floors.next_page_url || floors.prev_page_url"
+                    v-slot="{ page }"
+                    :total="floors.total"
+                    :items-per-page="floors.per_page"
+                    :sibling-count="1"
+                    :default-page="floors.current_page"
+                    show-edges
+                >
+                    <PaginationList v-slot="{ items }" class="flex items-center gap-1">
+                        <PaginationFirst :href="floors.first_page_url" />
+                        <PaginationPrev :href="floors.prev_page_url" />
+
+                        <template v-for="(item, index) in items">
+                            <PaginationListItem
+                                v-if="item.type === 'page'"
+                                :key="index"
+                                :value="item.value"
+                                as-child
+                            >
+                                <Button
+                                    class="w-10 h-10 p-0"
+                                    :variant="item.value === page ? 'default' : 'outline'"
+                                    :href="floors.path + '?page=' + item.value"
+                                >
+                                    {{ item.value }}
+                                </Button>
+                            </PaginationListItem>
+                            <PaginationEllipsis v-else :key="item.type" :index="index" />
+                        </template>
+
+                        <PaginationNext :href="floors.next_page_url" />
+                        <PaginationLast :href="floors.last_page_url" />
+                    </PaginationList>
+                </Pagination>
             </div>
         </div>
 
