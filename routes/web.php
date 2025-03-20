@@ -13,7 +13,12 @@ Route::group(['prefix' => 'receptionist'], function () {
     Route::get('show-reservation', [App\Http\Controllers\Dashboard\ReceptionistController::class, 'showReservation'])->name('receptionist.show-reservation');
 });
 
-Route::middleware(['auth', 'role:manager'])->prefix('manager')->group(function () {
+// =============================================== This is the routes for the floor CRUD ==============================================================
+Route::resource('floors', App\Http\Controllers\FloorController::class)->middleware(['auth', 'role:admin|manager']);
+// =============================================== End ==================================================================================================
+
+
+Route::middleware(['auth', 'role:admin|manager'])->prefix('manager')->group(function () {
     Route::get('/dashboard', [ManagerController::class, 'index'])->name('manager.dashboard');
     Route::get('/manage-clients', [ManagerController::class, 'manageClients'])->name('manager.manage-clients');
     Route::get('/clients/{id}/edit', [ManagerController::class, 'editClient'])->name('manager.edit-client');
