@@ -91,7 +91,7 @@ Route::get('/register', function () {
     return Inertia::render('Auth/Register');
 })->name('register');
 
->>>>>>> 9cfbeb3 (Front Work)
+
 
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
