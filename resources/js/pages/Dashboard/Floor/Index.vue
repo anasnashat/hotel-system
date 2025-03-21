@@ -32,7 +32,6 @@ const page = usePage();
 interface Floor {
     id: number;
     name: string;
-    number: number;
     created_by: { name: string };
 }
 
@@ -43,7 +42,7 @@ const { floors } = defineProps<{ floors: any }>();
 const isModalOpen = ref(false);
 const isEditMode = ref(false);
 const currentFloor = ref<Floor | null>(null);
-const form = ref({ name: '', number: '' });
+const form = ref({ name: '' });
 
 // Delete confirmation state
 const isDeleteDialogOpen = ref(false);
@@ -55,7 +54,7 @@ const isLoading = ref(false);
 // Open modal for adding a new floor
 const openAddModal = () => {
     isEditMode.value = false;
-    form.value = { name: '', number: '' };
+    form.value = { name: '' }; // Reset form
     isModalOpen.value = true;
 };
 
@@ -63,7 +62,7 @@ const openAddModal = () => {
 const openEditModal = (floor: Floor) => {
     isEditMode.value = true;
     currentFloor.value = floor;
-    form.value = { name: floor.name, number: floor.number };
+    form.value = { name: floor.name }; // Populate form with floor data
     isModalOpen.value = true;
 };
 
@@ -131,7 +130,6 @@ const deleteFloor = () => {
                         <TableRow>
                             <TableHead>ID</TableHead>
                             <TableHead>Name</TableHead>
-                            <TableHead>Number</TableHead>
                             <TableHead>Created By</TableHead>
                             <TableHead>Actions</TableHead>
                         </TableRow>
@@ -141,7 +139,6 @@ const deleteFloor = () => {
                             <TableRow v-for="floor in floors.data" :key="floor.id">
                                 <TableCell>{{ floor.id }}</TableCell>
                                 <TableCell>{{ floor.name }}</TableCell>
-                                <TableCell>{{ floor.number }}</TableCell>
                                 <TableCell>{{ floor.created_by.name }}</TableCell>
                                 <TableCell>
                                     <Button
@@ -162,7 +159,7 @@ const deleteFloor = () => {
                             </TableRow>
                         </template>
                         <TableRow v-else>
-                            <TableCell colspan="5" class="h-24 text-center">No floors found.</TableCell>
+                            <TableCell colspan="4" class="h-24 text-center">No floors found.</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -219,15 +216,15 @@ const deleteFloor = () => {
                         <div class="grid grid-cols-4 items-center gap-4">
                             <Label for="name" class="text-right">Name</Label>
                             <Input id="name" v-model="form.name" class="col-span-3" />
-                        </div>
-                        <div class="grid grid-cols-4 items-center gap-4">
-                            <Label for="number" class="text-right">Number</Label>
-                            <Input id="number" v-model="form.number" type="number" class="col-span-3" />
+                            <!-- Display validation error for name -->
+                            <p v-if="page.props.errors.name" class="col-span-4 text-sm text-red-500">
+                                {{ page.props.errors.name }}
+                            </p>
                         </div>
                     </div>
                     <DialogFooter>
                         <Button type="submit" :disabled="isLoading">{{ isEditMode ? 'Update' : 'Add' }}</Button>
-                        <Button variant="outline" @click="isModalOpen = false">Cancel</Button>
+                        <Button type="button" variant="outline" @click="isModalOpen = false">Cancel</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>
@@ -243,8 +240,8 @@ const deleteFloor = () => {
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-                    <Button variant="outline" @click="isDeleteDialogOpen = false">Cancel</Button>
-                    <Button variant="destructive" @click="deleteFloor">Delete</Button>
+                    <Button type="button" variant="outline" @click="isDeleteDialogOpen = false">Cancel</Button>
+                    <Button type="button" variant="destructive" @click="deleteFloor">Delete</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
