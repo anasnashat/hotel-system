@@ -93,7 +93,35 @@ Route::get('/register', function () {
 
 
 
-Route::get('dashboard', function () {
+// Route::get('/login', function () {
+//     return Inertia::render('Dashboard');
+// })->name('login');
+
+//Admin Dashboard
+Route::get('/admin/dashboard', function () {
+    return Inertia::render('Dashboard');
+})->middleware(['auth', 'verified', 'role:admin'])->name('admin.dashboard');
+
+
+//Manager Dashboard
+Route::get('/manager/dashboard', function () {
+    return Inertia::render('Dashboard');
+})->middleware(['auth', 'verified', 'role:manager'])->name('manager.dashboard');
+
+//Receptionist Dashboard
+Route::get('/receptionist/dashboard', function () {
+    return Inertia::render('Dashboard');
+})->middleware(['auth', 'verified', 'role:receptionist'])->name('receptionist.dashboard');
+
+//Client Dashboard redirect to home
+Route::get('/client/dashboard', function () {
+    return redirect()->route('home');
+})->middleware(['auth', 'verified', 'role:client'])->name('client.dashboard');
+
+
+
+
+Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified', 'role:admin|manager|receptionist'])->name('dashboard');
 
