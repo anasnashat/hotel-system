@@ -8,6 +8,7 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid, Users } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import { computed } from 'vue';
+import Alert from '@/components/Alert.vue';
 
 
 
@@ -36,11 +37,18 @@ const mainNavItems = computed<NavItem[]>(() => {
     ];
 
     // Add Floor Management if the user is an admin or manager
-    if (user.value?.roles?.some(role => ['admin', 'manager'].includes(role))) {
+    if (user.value?.roles?.some((role : string) => ['admin', 'manager'].includes(role))) {
         items.push({
             title: 'Floor Management',
             href: route('floors.index'),
             icon: LayoutGrid,
+        });
+    }
+    if (user.value?.roles?.includes('admin')) {
+        items.push({
+            title: 'Manage Manager',
+            href: route('manager.manage-clients'),
+            icon: Users,
         });
     }
 
@@ -84,5 +92,7 @@ const footerNavItems: NavItem[] = [
             <NavUser />
         </SidebarFooter>
     </Sidebar>
+    <Alert />
+
     <slot />
 </template>
