@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { useForm } from "@inertiajs/vue3";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import NavMain from '@/components/NavMain.vue';
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -91,7 +92,9 @@ const submit = () => {
 </script>
 
 <template>
-    <Card class="max-w-lg mx-auto p-6 shadow-lg">
+    <div class=" flex-col">
+    <NavMain />
+    <Card class="max-w-lg mx-auto p-6 shadow-lg mt-5">
         <CardHeader class="text-center">
             <h2 class="text-xl font-bold">Register</h2>
         </CardHeader>
@@ -115,7 +118,7 @@ const submit = () => {
                 <Input type="password" v-model="form.password_confirmation" placeholder="Confirm Password" class="mb-2 mt-1" />
                 <p v-if="form.errors.password_confirmation" class="text-red-500 text-sm mb-2">{{ form.errors.password_confirmation }}</p>
 
-                <Button @click="nextStep" class="bg-[#5b5329] hover:bg-[#443d1e]  text-white mt-4 w-full">Next</Button>
+                <Button @click="nextStep" class="bg-[#5b5329] hover:bg-[#FFFFFF] hover:text-black hover:border-2 hover:border-black text-white mt-4 w-full">Next</Button>
             </div>
 
             <!-- Step 2: Personal Details -->
@@ -149,7 +152,7 @@ const submit = () => {
                 <p v-if="form.errors.phone_number" class="text-red-500 text-sm mb-2">{{ form.errors.phone_number }}</p>
                 <div class="flex justify-between mt-4">
                     <Button variant="outline" @click="prevStep">Back</Button>
-                    <Button @click="nextStep" class="bg-[#5b5329] hover:bg-[#443d1e]  text-white ">Next</Button>
+                    <Button @click="nextStep" class="bg-[#5b5329] hover:bg-[#FFFFFF] hover:text-black hover:border-2 hover:border-black  text-white ">Next</Button>
                 </div>
             </div>
                 <!-- Step 3: Upload Avatar -->
@@ -159,9 +162,10 @@ const submit = () => {
                 
                 <div class="flex justify-between mt-4">
                     <Button variant="outline" @click="prevStep">Back</Button>
-                    <Button @click="submit" class="bg-[#5b5329] hover:bg-[#443d1e]  text-white ">Register</Button>
+                    <Button @click="submit" class="bg-[#5b5329] hover:bg-[#FFFFFF] hover:text-black hover:border-2 hover:border-black text-white ">Register</Button>
                 </div>
             </div>
         </CardContent>
     </Card>
+</div>
 </template>
