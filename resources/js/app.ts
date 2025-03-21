@@ -2,10 +2,11 @@ import '../css/app.css';
 
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
+import { createPinia } from 'pinia';
 import { initializeTheme } from './composables/useAppearance';
+
 
 // Extend ImportMeta interface for Vite...
 declare module 'vite/client' {
@@ -21,21 +22,27 @@ declare module 'vite/client' {
     }
 }
 
+import { useFavoriteStore } from './stores/favorite';
+
+
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
-    resolve: (name) => resolvePageComponent(`./pages/${name}.vue`, import.meta.glob<DefineComponent>('./pages/**/*.vue')),
+    resolve: (name) => resolvePageComponent(`./pages/${name}.vue`, import.meta.glob('./pages/**/*.vue')),
     setup({ el, App, props, plugin }) {
-        createApp({ render: () => h(App, props) })
-            .use(plugin)
-            .use(ZiggyVue)
-            .mount(el);
+        const app = createApp({ render: () => h(App, props) });
+
+        const pinia = createPinia();  // ✅ Create Pinia instance
+        app.use(plugin)
+           .use(ZiggyVue)
+           .use(pinia)  // ✅ Use Pinia in the app
+           .mount(el);
     },
     progress: {
         color: '#4B5563',
     },
 });
 
-// This will set light / dark mode on page load...
+// Set light/dark mode on page load
 initializeTheme();

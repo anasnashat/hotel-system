@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,6 +9,8 @@ body,
 html {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+
 
 @layer base {
     :root {
@@ -89,3 +94,33 @@ html {
         @apply bg-background text-foreground;
     }
 }
+.title-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #5b5329;
+    text-shadow: 2px 2px 4px rgba(45, 42, 42, 0.6);
+    transition: text-shadow 0.3s ease-in-out;
+  }
+  
+  .dark .title-text {
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.6);
+  }
+
+  .welcome-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 4rem;
+    font-weight: bold;
+    color: #5b5329; /* Gold for a luxury feel */
+    text-shadow: 2px 2px 4px rgba(231, 212, 212, 0.6); /* Soft shadow for depth */
+    /* background: rgba(40, 25, 25, 0.5); Semi-transparent dark overlay */
+    padding: 15px 30px;
+    border-radius: 10px;
+  }
+
+  .cardTitle {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #5b5329;
+    /* text-shadow: 2px 2px 4px rgba(45, 42, 42, 0.6); */
+  }

@@ -43,9 +43,14 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth');
 
+// Route::get('/', function () {
+//     return Inertia::render('Welcome');
+// })->name('home');
+
 Route::get('/', function () {
-    return Inertia::render('Welcome');
+    return Inertia::render('Home');
 })->name('home');
+
 
 //This route to check if email,phone,national_id already exits 
 Route::post('/check-existence', function (Request $request) {
@@ -64,6 +69,29 @@ Route::post('/check-existence', function (Request $request) {
 
     return response()->json(['exists' => $exists]);
 });
+
+Route::get('/cart', function () {
+    return Inertia::render('CartComponent');
+})->name('cart');
+
+Route::get('/favorites', function () {
+    return Inertia::render('Favorites');
+})->name('favorites');
+
+
+Route::post('/logout', function (Request $request) {
+    \Illuminate\Support\Facades\Auth::logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+    
+    return redirect('/');
+})->name('logout');
+
+Route::get('/register', function () {
+    return Inertia::render('Auth/Register');
+})->name('register');
+
+>>>>>>> 9cfbeb3 (Front Work)
 
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');

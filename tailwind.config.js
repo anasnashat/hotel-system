@@ -1,6 +1,9 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
 
+
 /** @type {import('tailwindcss').Config} */
+
+
 export default {
     darkMode: ['class'],
     content: [
@@ -13,6 +16,8 @@ export default {
         extend: {
             fontFamily: {
                 sans: ['Instrument Sans', ...defaultTheme.fontFamily.sans],
+                playfair: ['"Playfair Display"', 'serif'],
+                cormorant: ['"Cormorant Garamond"', 'serif'],
             },
             borderRadius: {
                 lg: 'var(--radius)',
@@ -70,6 +75,7 @@ export default {
                     border: 'hsl(var(--sidebar-border))',
                     ring: 'hsl(var(--sidebar-ring))',
                 },
+                
             },
         },
     },

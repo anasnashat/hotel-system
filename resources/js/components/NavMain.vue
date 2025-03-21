@@ -1,27 +1,46 @@
 <script setup lang="ts">
-import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem, type SharedData } from '@/types';
-import { Link, usePage } from '@inertiajs/vue3';
+import { ref, onMounted } from 'vue';
+import { LucideSun, LucideMoon } from 'lucide-vue-next';
+import { Link } from '@inertiajs/vue3';
+import AppLogoIcon from '@/components/AppLogoIcon.vue';
+import NavUser from '@/components/NavUser.vue';
+import WelcomeVideo from '@/components/WelcomeVideo.vue';
+import RoomsList from '@/components/ui/card/RoomsList.vue';   
+// Dark Mode State (Persistent)
+const isDarkMode = ref(localStorage.getItem('theme') === 'dark');
 
-defineProps<{
-    items: NavItem[];
-}>();
+const toggleDarkMode = () => {
+    isDarkMode.value = !isDarkMode.value;
+    document.documentElement.classList.toggle('dark', isDarkMode.value);
+    localStorage.setItem('theme', isDarkMode.value ? 'dark' : 'light');
+};
 
-const page = usePage<SharedData>();
+onMounted(() => {
+    if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+    }
+});
 </script>
 
 <template>
-    <SidebarGroup class="px-2 py-0">
-        <SidebarGroupLabel>Platform</SidebarGroupLabel>
-        <SidebarMenu>
-            <SidebarMenuItem v-for="item in items" :key="item.title">
-                <SidebarMenuButton as-child :is-active="item.href === page.url">
-                    <Link :href="item.href">
-                        <component :is="item.icon" />
-                        <span>{{ item.title }}</span>
-                    </Link>
-                </SidebarMenuButton>
-            </SidebarMenuItem>
-        </SidebarMenu>
-    </SidebarGroup>
+  <nav class="bg-white dark:bg-gray-900 shadow-md p-4">
+    <div class="container mx-auto flex items-center justify-between">
+      
+      <!-- Hotel Logo -->
+      <AppLogoIcon />
+
+      <!-- Navigation Actions (Cart, Favorite, User Auth, Dark Mode) -->
+      <div class="flex items-center space-x-4">
+        <NavUser />
+
+        <!-- Dark Mode Toggle -->
+        <button 
+          @click="toggleDarkMode" 
+          class="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+          <LucideSun v-if="isDarkMode" :size="20" />
+          <LucideMoon v-else :size="20" />
+        </button>
+      </div>
+    </div>
+  </nav>
 </template>
