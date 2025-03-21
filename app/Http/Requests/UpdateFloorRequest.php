@@ -23,12 +23,9 @@ class UpdateFloorRequest extends FormRequest
      */
     public function rules(): array
     {
-        // Get the floor ID from the route parameters
-        $floorId = $this->route('floor'); // Assuming the route parameter is named 'floor'
 
         return [
-            'name' => 'sometimes|string|max:255', // Name is optional, but if provided, must be a string and max 255 characters
-            'number' => 'sometimes|integer|unique:floors,number,' . $floorId, // Number is optional, but if provided, must be an integer and unique (excluding the current floor)
+            'name' => 'required|string|min:3|max:100',
         ];
     }
 
