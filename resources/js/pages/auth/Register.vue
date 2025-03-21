@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import axios from "axios";
 
+
+
 // Define a reactive reference to track the current step of the registration proces
 const step = ref(1);
 
