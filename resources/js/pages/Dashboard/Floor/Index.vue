@@ -28,6 +28,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 // Page props
 const page = usePage();
 
+console.log(page.props.auth.user.roles[0]);
+
+
 // Floor interface
 interface Floor {
     id: number;
@@ -130,7 +133,7 @@ const deleteFloor = () => {
                         <TableRow>
                             <TableHead>ID</TableHead>
                             <TableHead>Name</TableHead>
-                            <TableHead>Created By</TableHead>
+                            <TableHead  v-if="$page.props.auth.user.roles.includes('admin')">Created By</TableHead>
                             <TableHead>Actions</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -139,7 +142,7 @@ const deleteFloor = () => {
                             <TableRow v-for="floor in floors.data" :key="floor.id">
                                 <TableCell>{{ floor.id }}</TableCell>
                                 <TableCell>{{ floor.name }}</TableCell>
-                                <TableCell>{{ floor.created_by.name }}</TableCell>
+                                <TableCell v-if="$page.props.auth.user.roles.includes('admin')" >{{ floor.created_by.name }}</TableCell>
                                 <TableCell>
                                     <Button
                                         variant="outline"
