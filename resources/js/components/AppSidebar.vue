@@ -4,22 +4,48 @@ import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid, Users } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
+import { computed } from 'vue';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: '/dashboard',
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Receptionists',
-        href: route('receptionist.index'),
-        icon: Users,
-    },
-];
+
+
+const page = usePage();
+const user = computed(() => page.props.auth.user);
+
+console.log(page.props.auth.user.roles);
+
+const mainNavItems = computed<NavItem[]>(() => {
+    const items: NavItem[] = [
+        {
+            title: 'Dashboard',
+            href: '/dashboard',
+            icon: LayoutGrid,
+        },
+        {
+            title: 'Receptionists',
+            href: route('receptionist.index'),
+            icon: Users,
+        },
+        {
+            title: 'Manager',
+            href: route('manager.manage-clients'),
+            icon: Users,
+        },
+    ];
+
+    // Add Floor Management if the user is an admin or manager
+    if (user.value?.roles?.some(role => ['admin', 'manager'].includes(role))) {
+        items.push({
+            title: 'Floor Management',
+            href: route('floors.index'),
+            icon: LayoutGrid,
+        });
+    }
+
+    return items;
+})
 
 const footerNavItems: NavItem[] = [
     {
