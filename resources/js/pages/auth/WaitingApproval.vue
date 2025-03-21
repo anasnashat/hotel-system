@@ -7,7 +7,7 @@
             <p class="mt-2 text-gray-600">
                 Your registration is under review. You will receive an email once your account is approved.
             </p>
-            <Button class="mt-4" as-child>
+            <Button class="mt-4 bg-[#5b5329] hover:bg-[#443d1e]  text-white " as-child>
                 <Link href="/">Go to Home</Link>
             </Button>        
         </div>
