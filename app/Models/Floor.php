@@ -10,7 +10,7 @@ class Floor extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['name', 'number'];
+    protected $fillable = ['name'];
 
     public function createdBy()
     {
@@ -21,7 +21,11 @@ class Floor extends Model
     {
         return $this->hasMany(Room::class);
     }
-
+    protected static function generateUniqueFloorNumber(): int
+    {
+        $maxNumber = Floor::max('number'); // Get the current maximum floor number
+        return $maxNumber ? $maxNumber + 1 : 1000; // Start from 1000 if no floors exist
+    }
     protected static function boot()
     {
         parent::boot();
@@ -29,6 +33,7 @@ class Floor extends Model
         static::creating(function ($floor) {
             // Automatically set created_by to the authenticated user's ID
             $floor->created_by = auth()->id();
+            $floor->number =  self::generateUniqueFloorNumber();
         });
     }
 }
