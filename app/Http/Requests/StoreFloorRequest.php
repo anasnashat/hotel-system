@@ -23,8 +23,7 @@ class StoreFloorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255', // Name is required, must be a string, and max 255 characters
-            'number' => 'required|integer|unique:floors,number', // Number is required, must be an integer, and unique in the `floors` table
+            'name' => 'required|string|min:3|max:100',
         ];
     }
 
