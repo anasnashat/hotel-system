@@ -113,7 +113,7 @@ const submit = () => {
                 <Input type="password" v-model="form.password_confirmation" placeholder="Confirm Password" class="mb-2 mt-1" />
                 <p v-if="form.errors.password_confirmation" class="text-red-500 text-sm mb-2">{{ form.errors.password_confirmation }}</p>
 
-                <Button @click="nextStep" class="mt-4 w-full">Next</Button>
+                <Button @click="nextStep" class="bg-[#5b5329] hover:bg-[#443d1e]  text-white mt-4 w-full">Next</Button>
             </div>
 
             <!-- Step 2: Personal Details -->
@@ -147,7 +147,7 @@ const submit = () => {
                 <p v-if="form.errors.phone_number" class="text-red-500 text-sm mb-2">{{ form.errors.phone_number }}</p>
                 <div class="flex justify-between mt-4">
                     <Button variant="outline" @click="prevStep">Back</Button>
-                    <Button @click="nextStep">Next</Button>
+                    <Button @click="nextStep" class="bg-[#5b5329] hover:bg-[#443d1e]  text-white ">Next</Button>
                 </div>
             </div>
                 <!-- Step 3: Upload Avatar -->
@@ -157,7 +157,7 @@ const submit = () => {
                 
                 <div class="flex justify-between mt-4">
                     <Button variant="outline" @click="prevStep">Back</Button>
-                    <Button @click="submit">Register</Button>
+                    <Button @click="submit" class="bg-[#5b5329] hover:bg-[#443d1e]  text-white ">Register</Button>
                 </div>
             </div>
         </CardContent>
