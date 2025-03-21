@@ -1,0 +1,43 @@
+[
+    {
+      "id": 1,
+      "name": "Deluxe Room",
+      "image": "/images/rooms/deluxe.jpeg",
+      "price": 120,
+      "description": "A spacious room with a king-size bed, modern amenities, and a beautiful city view.",
+      "features": ["Free Wi-Fi", "Air Conditioning", "Mini Bar", "Flat Screen TV"]
+    },
+    {
+      "id": 2,
+      "name": "Suite Room",
+      "image": "/images/rooms/suite.jpeg",
+      "price": 200,
+      "description": "An elegant suite with a living area, luxurious decor, and a private balcony.",
+      "features": ["Private Balcony", "Jacuzzi", "24/7 Room Service", "King-Size Bed"]
+    },
+    {
+      "id": 3,
+      "name": "Standard Room",
+      "image": "/images/rooms/standard.jpeg",
+      "price": 80,
+      "description": "A comfortable and affordable room with all the essential amenities.",
+      "features": ["Free Wi-Fi", "Air Conditioning", "Queen-Size Bed", "Desk"]
+    },
+    {
+      "id": 4,
+      "name": "Family Room",
+      "image": "/images/rooms/family.jpeg",
+      "price": 150,
+      "description": "A spacious family room with two queen-size beds and a cozy atmosphere.",
+      "features": ["Two Queen-Size Beds", "Flat Screen TV", "Mini Fridge", "Coffee Maker"]
+    },
+    {
+      "id": 5,
+      "name": "Presidential Suite",
+      "image": "/images/rooms/presidential.jpeg",
+      "price": 500,
+      "description": "An extravagant suite with premium furnishings, a private lounge, and VIP services.",
+      "features": ["Private Lounge", "Butler Service", "Luxury Decor", "Panoramic View"]
+    }
+  ]
+  

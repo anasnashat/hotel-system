@@ -38,7 +38,12 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+
         $user = Auth::user();
+
+        [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
+        $user = $request->user();
+
 
         return [
             ...parent::share($request),
@@ -46,6 +51,7 @@ class HandleInertiaRequests extends Middleware
             'success' => fn () => $request->session()->get('success'),
             'error' => fn () => $request->session()->get('error'),
             'auth' => [
+
                 'user' => $user ? [
                     'id' => $user->id,
                     'name' => $user->name,
@@ -53,6 +59,9 @@ class HandleInertiaRequests extends Middleware
                     'roles' => $user->roles->pluck('name'), // Get roles
                     'permissions' => $user->getAllPermissions()->pluck('name'), // Get permissions
                 ] : null,
+
+                'user' => $user,
+
             ],
             'ziggy' => [
                 ...(new Ziggy)->toArray(),
