@@ -24,7 +24,7 @@ class ManagerController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $client->id,
+            'email' => 'nullable|email|unique:users,email,' . $client->id,
         ]);
 
         $client->update([
@@ -107,7 +107,7 @@ class ManagerController extends Controller
     public function banReceptionist($id)
     {
         $receptionist = User::find($id);
-        $receptionist->update(['is_banned' => true]);
+        $receptionist->ban();
 
         return back()->with('success', 'Receptionist banned successfully.');
     }
@@ -115,7 +115,7 @@ class ManagerController extends Controller
     public function unbanReceptionist($id)
     {
         $receptionist = User::find($id);
-        $receptionist->update(['is_banned' => false]);
+        $receptionist->unban();
 
         return back()->with('success', 'Receptionist unbanned successfully.');
     }
