@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, defineProps } from 'vue';
+import { ref, defineProps, computed } from 'vue';
 import { Heart } from 'lucide-vue-next';
 import Card from '@/components/ui/card/Card.vue';
 import CardHeader from '@/components/ui/card/CardHeader.vue';
@@ -24,12 +24,20 @@ interface Room {
 
 const cartStore = useCartStore();
 const favoriteStore = useFavoriteStore();
-const isFavorite = ref(false);
+// const isFavorite = ref(false);
 const favoriteCount = ref(0);
-const isBooked=ref(false);
+
 
 // Props for room details
 const props =defineProps<{ room: Room }>();
+
+const isBooked = computed(() => {
+  return cartStore.cart.some((item) => item.id === props.room.id);
+});
+const isFavorite = computed(() => {
+  return Array.isArray(favoriteStore.favoriteRooms) && 
+         favoriteStore.favoriteRooms.some((item) => item.id === props.room.id);
+});
 
 // Add to cart function
 const addToCart = () => {
@@ -40,8 +48,6 @@ const addToCart = () => {
       price: props.room.price,
       image: props.room.image,
     });
-
-    isBooked.value = true;
 
     Swal.fire({
       title: "Room Booked!",
@@ -59,10 +65,7 @@ const addToCart = () => {
 const isModalOpen = ref(false);
 
 const toggleFavorite = () => {
-  isFavorite.value = !isFavorite.value;
-  
-  // Show alert when adding to favorites
-  if (isFavorite.value) {
+  if (!isFavorite.value) { // If NOT in favorites, add it
     favoriteStore.addFavorite(props.room);
     Swal.fire({
       title: "❤️ Added to Favorites!",
@@ -73,7 +76,7 @@ const toggleFavorite = () => {
       toast: true,
       position: "top-end",
     });
-  }else{
+  } else { // If in favorites, remove it
     favoriteStore.removeFavorite(props.room.id);
     Swal.fire({
       title: "❤️ Removed From Favorites!",
@@ -86,6 +89,8 @@ const toggleFavorite = () => {
     });
   }
 };
+
+
 </script>
 
 <template>

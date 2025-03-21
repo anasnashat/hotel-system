@@ -1,37 +1,58 @@
 <script setup>
-import { router, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref } from "vue";
+import { router, useForm } from "@inertiajs/vue3";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import NavMain from "@/components/NavMain.vue";
 
 const form = useForm({
-    email: '',
-    password: '',
-    remember: false,
+  email: "",
+  password: "",
+  remember: false,
 });
 
 const submit = () => {
-    form.post('/login');
+  form.post("/login");
 };
 </script>
 
 <template>
-    <div class="flex h-screen items-center justify-center">
-        <form @submit.prevent="submit" class="w-96 rounded-lg bg-white p-6 shadow-lg">
-            <h2 class="mb-4 text-xl font-bold">Login</h2>
 
-            <label class="mb-2 block">Email</label>
-            <input v-model="form.email" type="email" class="mb-4 w-full rounded border p-2" />
-            <div v-if="form.errors.email" class="text-red-500">{{ form.errors.email }}</div>
+  <NavMain />
+  <div class="flex justify-center mt-5">
+    <Card class="w-full max-w-lg p-6 shadow-lg">
+      <CardHeader class="text-center">
+        <h2 class="text-xl font-bold">Login</h2>
+      </CardHeader>
 
-            <label class="mb-2 block">Password</label>
-            <input v-model="form.password" type="password" class="mb-4 w-full rounded border p-2" />
-            <div v-if="form.errors.password" class="text-red-500">{{ form.errors.password }}</div>
+      <CardContent>
+        <form @submit.prevent="submit" class="space-y-4">
+          <div>
+            <Label for="email">Email</Label>
+            <Input id="email" v-model="form.email" type="email" placeholder="Enter your email" class="mt-1" />
+            <p v-if="form.errors.email" class="text-red-500 text-sm">{{ form.errors.email }}</p>
+          </div>
 
-            <div class="flex items-center">
-                <input v-model="form.remember" type="checkbox" class="mr-2" />
-                <label>Remember Me</label>
-            </div>
+          <div>
+            <Label for="password">Password</Label>
+            <Input id="password" v-model="form.password" type="password" placeholder="Enter your password" class="mt-1" />
+            <p v-if="form.errors.password" class="text-red-500 text-sm">{{ form.errors.password }}</p>
+          </div>
 
-            <button type="submit" class="mt-4 w-full rounded bg-blue-500 px-4 py-2 text-white" :disabled="form.processing">Login</button>
+          <div class="flex items-center space-x-2">
+            <Checkbox id="remember" v-model="form.remember" />
+            <Label for="remember">Remember Me</Label>
+          </div>
+
+          <Button type="submit" class="w-full bg-[#5b5329] hover:bg-[#FFFFFF] hover:text-black hover:border-2 hover:border-black text-white" :disabled="form.processing">
+            Login
+          </Button>
         </form>
-    </div>
+      </CardContent>
+    </Card>
+  </div>
+  
 </template>
