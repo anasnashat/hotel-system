@@ -158,6 +158,9 @@ public function destroy($id)
     try {
         DB::beginTransaction();
         $room = Room::findOrFail($id);
+        if ($room->reservations()->count() > 0){
+            return redirect()->back()->with('error', 'Room has reservations, cannot deleted');
+        }
         $room->delete();
         $room->clearMediaCollection('rooms_image');
         DB::commit();
@@ -175,6 +178,7 @@ public function deleteImage($roomId, $imageId)
         DB::beginTransaction();
 
         $room = Room::findOrFail($roomId);
+
         $media = $room->getMedia('rooms_image')->find($imageId);
 
         if ($media) {
