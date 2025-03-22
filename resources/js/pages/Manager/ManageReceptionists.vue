@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { router, usePage } from '@inertiajs/vue3';
@@ -37,11 +37,10 @@ const receptionists = ref<Receptionist[]>(initialReceptionists);
 const isModalOpen = ref(false);
 const isEditMode = ref(false);
 const currentReceptionist = ref<Receptionist | null>(null);
-const form = ref({ name: '', email: '' });
+const form = ref<{ name: string; email: string; password?: string }>({ name: '', email: '' });
 
 // Delete confirmation state
 const isDeleteDialogOpen = ref(false);
-const receptionistToDelete = ref<Receptionist | null>(null);
 
 // Loading state
 const isLoading = ref(false);
@@ -49,15 +48,15 @@ const isLoading = ref(false);
 // Open modal for adding a new receptionist
 const openAddModal = () => {
     isEditMode.value = false;
-    form.value = { name: '', email: '' }; // Reset form
+    form.value = { name: '', email: '', password: '' }; // Include password field when adding
     isModalOpen.value = true;
 };
 
-// Open modal for editing a receptionist
+// Open modal for editing a receptionist (without password)
 const openEditModal = (receptionist: Receptionist) => {
     isEditMode.value = true;
     currentReceptionist.value = receptionist;
-    form.value = { name: receptionist.name, email: receptionist.email }; // Populate form
+    form.value = { name: receptionist.name, email: receptionist.email }; // No password field
     isModalOpen.value = true;
 };
 
@@ -66,11 +65,12 @@ const submitForm = () => {
     isLoading.value = true;
     if (isEditMode.value && currentReceptionist.value) {
         // Update receptionist
-        router.put(route('manager.update-receptionist', currentReceptionist.value.id), form.value, {
+        router.put(route('manager.update-receptionist', { id: currentReceptionist.value.id }), form.value, {
             preserveScroll: true,
             onSuccess: () => {
                 isModalOpen.value = false;
                 isLoading.value = false;
+                router.reload({ only: ['receptionists'] }); // Refresh list
             },
             onError: () => {
                 isLoading.value = false;
@@ -83,6 +83,7 @@ const submitForm = () => {
             onSuccess: () => {
                 isModalOpen.value = false;
                 isLoading.value = false;
+                router.reload({ only: ['receptionists'] }); // Refresh list after adding
             },
             onError: () => {
                 isLoading.value = false;
@@ -91,20 +92,13 @@ const submitForm = () => {
     }
 };
 
-// Open delete confirmation dialog
-const openDeleteDialog = (receptionist: Receptionist) => {
-    receptionistToDelete.value = receptionist;
-    isDeleteDialogOpen.value = true;
-};
-
-// Delete receptionist
-const deleteReceptionist = () => {
-    if (receptionistToDelete.value) {
-        router.delete(route('manager.delete-receptionist', receptionistToDelete.value.id), {
+// Delete receptionist (Updated to match browser confirmation dialog)
+const deleteReceptionist = (receptionist: Receptionist) => {
+    if (window.confirm("Are you sure you want to delete this client?")) {
+        router.delete(route('manager.delete-receptionist', { id: receptionist.id }), {
             preserveScroll: true,
             onSuccess: () => {
-                isDeleteDialogOpen.value = false; // Close the dialog
-                receptionistToDelete.value = null;
+                router.reload({ only: ['receptionists'] }); // Refresh the list
             },
         });
     }
@@ -113,10 +107,9 @@ const deleteReceptionist = () => {
 // Ban receptionist
 const banReceptionist = (id: number) => {
     if (confirm('Are you sure you want to ban this receptionist?')) {
-        router.post(route('manager.ban-receptionist', id), {}, {
+        router.post(route('manager.ban-receptionist', { id }), {}, {
             preserveScroll: true,
             onSuccess: () => {
-                // Update the receptionists array reactively
                 receptionists.value = receptionists.value.map((r) =>
                     r.id === id ? { ...r, is_banned: true } : r
                 );
@@ -128,10 +121,9 @@ const banReceptionist = (id: number) => {
 // Unban receptionist
 const unbanReceptionist = (id: number) => {
     if (confirm('Are you sure you want to unban this receptionist?')) {
-        router.post(route('manager.unban-receptionist', id), {}, {
+        router.post(route('manager.unban-receptionist', { id }), {}, {
             preserveScroll: true,
             onSuccess: () => {
-                // Update the receptionists array reactively
                 receptionists.value = receptionists.value.map((r) =>
                     r.id === id ? { ...r, is_banned: false } : r
                 );
@@ -161,48 +153,25 @@ const unbanReceptionist = (id: number) => {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <template v-if="receptionists.length">
-                            <TableRow v-for="receptionist in receptionists" :key="receptionist.id">
-                                <TableCell>{{ receptionist.id }}</TableCell>
-                                <TableCell>{{ receptionist.name }}</TableCell>
-                                <TableCell>{{ receptionist.email }}</TableCell>
-                                <TableCell>{{ receptionist.is_banned ? 'Banned' : 'Active' }}</TableCell>
-                                <TableCell>
-                                    <Button
-                                        variant="outline"
-                                        class="text-blue-500 mr-2"
-                                        @click="openEditModal(receptionist)"
-                                    >
-                                        Edit
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        class="text-red-500 mr-2"
-                                        @click="openDeleteDialog(receptionist)"
-                                    >
-                                        Delete
-                                    </Button>
-                                    <Button
-                                        v-if="!receptionist.is_banned"
-                                        variant="outline"
-                                        class="text-yellow-500"
-                                        @click="banReceptionist(receptionist.id)"
-                                    >
-                                        Ban
-                                    </Button>
-                                    <Button
-                                        v-else
-                                        variant="outline"
-                                        class="text-green-500"
-                                        @click="unbanReceptionist(receptionist.id)"
-                                    >
-                                        Unban
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        </template>
-                        <TableRow v-else>
-                            <TableCell colspan="5" class="h-24 text-center">No receptionists found.</TableCell>
+                        <TableRow v-for="receptionist in receptionists" :key="receptionist.id">
+                            <TableCell>{{ receptionist.id }}</TableCell>
+                            <TableCell>{{ receptionist.name }}</TableCell>
+                            <TableCell>{{ receptionist.email }}</TableCell>
+                            <TableCell>{{ receptionist.is_banned ? 'Banned' : 'Active' }}</TableCell>
+                            <TableCell>
+                                <Button variant="outline" class="text-blue-500 mr-2" @click="openEditModal(receptionist)">
+                                    Edit
+                                </Button>
+                                <Button variant="outline" class="text-red-500 mr-2" @click="deleteReceptionist(receptionist)">
+                                    Delete
+                                </Button>
+                                <Button v-if="!receptionist.is_banned" variant="outline" class="text-yellow-500" @click="banReceptionist(receptionist.id)">
+                                    Ban
+                                </Button>
+                                <Button v-else variant="outline" class="text-green-500" @click="unbanReceptionist(receptionist.id)">
+                                    Unban
+                                </Button>
+                            </TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -216,45 +185,26 @@ const unbanReceptionist = (id: number) => {
                     <DialogTitle>{{ isEditMode ? 'Edit Receptionist' : 'Add New Receptionist' }}</DialogTitle>
                 </DialogHeader>
                 <form @submit.prevent="submitForm">
-                    <div class="grid gap-4 py-4">
-                        <div class="grid grid-cols-4 items-center gap-4">
-                            <Label for="name" class="text-right">Name</Label>
-                            <Input id="name" v-model="form.name" class="col-span-3" />
-                            <!-- Display validation error for name -->
-                            <p v-if="page.props.errors.name" class="col-span-4 text-sm text-red-500">
-                                {{ page.props.errors.name }}
-                            </p>
+                    <div class="space-y-4"> 
+                        <div>
+                            <Label>Name</Label>
+                            <Input v-model="form.name" required />
                         </div>
-                        <div class="grid grid-cols-4 items-center gap-4">
-                            <Label for="email" class="text-right">Email</Label>
-                            <Input id="email" v-model="form.email" type="email" class="col-span-3" />
-                            <!-- Display validation error for email -->
-                            <p v-if="page.props.errors.email" class="col-span-4 text-sm text-red-500">
-                                {{ page.props.errors.email }}
-                            </p>
+                        <div>
+                            <Label>Email</Label>
+                            <Input v-model="form.email" type="email" required />
+                        </div>
+                        <!-- Show password field only when adding a new receptionist -->
+                        <div v-if="!isEditMode">
+                            <Label>Password</Label>
+                            <Input v-model="form.password" type="password" required />
                         </div>
                     </div>
-                    <DialogFooter>
-                        <Button type="submit" :disabled="isLoading">{{ isEditMode ? 'Update' : 'Add' }}</Button>
+                    <DialogFooter class="mt-6">
+                        <Button type="submit">{{ isEditMode ? 'Update' : 'Add' }}</Button>
                         <Button type="button" variant="outline" @click="isModalOpen = false">Cancel</Button>
                     </DialogFooter>
                 </form>
-            </DialogContent>
-        </Dialog>
-
-        <!-- Delete Confirmation Dialog -->
-        <Dialog v-model:open="isDeleteDialogOpen">
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Are you sure?</DialogTitle>
-                    <DialogDescription>
-                        This action cannot be undone. This will permanently delete the receptionist.
-                    </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                    <Button type="button" variant="outline" @click="isDeleteDialogOpen = false">Cancel</Button>
-                    <Button type="button" variant="destructive" @click="deleteReceptionist">Delete</Button>
-                </DialogFooter>
             </DialogContent>
         </Dialog>
     </AppLayout>
