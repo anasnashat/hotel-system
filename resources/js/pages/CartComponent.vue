@@ -4,9 +4,9 @@ import { useCartStore } from '@/stores/cart';
 import { Button } from '@/components/ui/button';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Card, CardContent } from '@/components/ui/card';
-import NavMain from '@/components/NavMain.vue';
 import { usePage } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
+import NavBarMain from '@/components/NavBarMain.vue';
 
 interface User {
   id: number;
@@ -53,7 +53,7 @@ const handleCheckout = () => {
 </script>
 
 <template>
-  <NavMain/>
+  <NavBarMain/>
   <div class="container mx-auto p-6">
     <h2 class="text-2xl font-semibold mb-4 text-center cardTitle">Shopping Cart</h2>
     <Card>

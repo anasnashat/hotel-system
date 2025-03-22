@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import AppLayout from '@/layouts/app/AppSidebarLayout.vue';
-import AppSidebar from '@/components/AppSidebar.vue';
+import NavMain from '@/components/NavMain.vue';
 import type { BreadcrumbItemType } from '@/types';
+
 
 interface Props {
     breadcrumbs?: BreadcrumbItemType[];
@@ -13,8 +13,9 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-    <AppLayout :breadcrumbs="breadcrumbs">
-        <!-- <AppSidebar/> -->
-            <slot />
-    </AppLayout>
+    <div>
+        <NavMain :items="[]"/>
+        <slot />
+    </div>
+  
 </template>
