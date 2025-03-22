@@ -31,7 +31,7 @@ const page = usePage();
 // console.log(page.props.auth.user.roles);
 
 
-// Floor interface
+// Floors interface
 interface Floor {
     id: number;
     name: string;

@@ -23,7 +23,7 @@ class Floor extends Model
     }
     protected static function generateUniqueFloorNumber(): int
     {
-        $maxNumber = Floor::max('number'); // Get the current maximum floor number
+        $maxNumber = Floor::withTrashed()->max('number'); // Get the current maximum floor number
         return $maxNumber ? $maxNumber + 1 : 1000; // Start from 1000 if no floors exist
     }
     protected static function boot()

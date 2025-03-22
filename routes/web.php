@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\RoomController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Dashboard\ManagerController;
@@ -21,6 +22,12 @@ Route::group(['prefix' => 'receptionist'], function () {
 Route::resource('floors', App\Http\Controllers\FloorController::class)->middleware(['auth', 'role:admin|manager']);
 // =============================================== End ==================================================================================================
 
+// =============================================== This is the routes for the floor CRUD ==============================================================
+Route::resource('rooms', RoomController::class)->middleware(['auth', 'role:admin|manager']);
+Route::delete('/rooms/{room}/images/{image}', [RoomController::class, 'deleteImage'])
+    ->name('rooms.images.destroy');
+// =============================================== End ==================================================================================================
+
 
 Route::middleware(['auth', 'role:admin|manager'])->prefix('manager')->group(function () {
     Route::get('/dashboard', [ManagerController::class, 'index'])->name('manager.dashboard');
@@ -31,7 +38,7 @@ Route::middleware(['auth', 'role:admin|manager'])->prefix('manager')->group(func
     Route::post('/clients/approve', [ManagerController::class, 'approve'])->name('manager.approve-client');
     // Routes for managing receptionists
     Route::get('/manage-receptionists', [ManagerController::class, 'manageReceptionists'])->name('manager.manage-receptionists');
-    Route::post('/receptionists/{id}/update', [ManagerController::class, 'updateReceptionist'])->name('manager.update-receptionist');
+    Route::put('/receptionists/{id}/update', [ManagerController::class, 'updateReceptionist'])->name('manager.update-receptionist');
     Route::delete('/receptionists/{id}/delete', [ManagerController::class, 'deleteReceptionist'])->name('manager.delete-receptionist');
     Route::post('/receptionists/{id}/ban', [ManagerController::class, 'banReceptionist'])->name('manager.ban-receptionist');
     Route::post('/receptionists/{id}/unban', [ManagerController::class, 'unbanReceptionist'])->name('manager.unban-receptionist');
@@ -52,7 +59,7 @@ Route::get('/', function () {
 })->name('home');
 
 
-//This route to check if email,phone,national_id already exits 
+//This route to check if email,phone,national_id already exits
 Route::post('/check-existence', function (Request $request) {
     $field = $request->input('field');
     $value = $request->input('value');
@@ -83,7 +90,7 @@ Route::post('/logout', function (Request $request) {
     \Illuminate\Support\Facades\Auth::logout();
     $request->session()->invalidate();
     $request->session()->regenerateToken();
-    
+
     return redirect('/');
 })->name('logout');
 
