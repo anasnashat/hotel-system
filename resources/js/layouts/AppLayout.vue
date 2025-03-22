@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import NavMain from '@/components/NavMain.vue';
 import type { BreadcrumbItemType } from '@/types';
-
+import SidebarProvider from '@/components/ui/sidebar/SidebarProvider.vue';
+import AppSidebar from '@/components/AppSidebar.vue'
 
 interface Props {
     breadcrumbs?: BreadcrumbItemType[];
@@ -14,8 +14,11 @@ withDefaults(defineProps<Props>(), {
 
 <template>
     <div>
-        <NavMain :items="[]"/>
-        <slot />
+        <!-- <NavMain :items="[]"/> -->
+        <SidebarProvider>
+            <AppSidebar />
+            <slot />
+        </SidebarProvider>
     </div>
   
 </template>
