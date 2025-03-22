@@ -94,7 +94,7 @@ const toggleFavorite = () => {
 </script>
 
 <template>
-  <Card class="overflow-hidden shadow-lg bg-white dark:bg-gray-800 mt-5 relative">
+  <Card class="overflow-hidden shadow-lg bg-white dark:bg-gray-800 mt-5 relative transform transition-transform duration-300 ease-in-out hover:scale-105">
     <!-- Room Image -->
     <div class="relative">
       <img :src="room.image" :alt="room.name" class="w-full h-48 object-cover" />

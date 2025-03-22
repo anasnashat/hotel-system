@@ -111,6 +111,24 @@ class ManagerController extends Controller
 
         return back()->with('success', 'Receptionist deleted successfully.');
     }
+    public function storeReceptionist(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8|',
+        ]);
+
+        $receptionist = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+        ]);
+
+        $receptionist->assignRole('receptionist');
+
+        return back()->with('success', 'Receptionist created successfully.');
+    }
 
     public function banReceptionist($id)
     {
@@ -127,4 +145,6 @@ class ManagerController extends Controller
 
         return back()->with('success', 'Receptionist unbanned successfully.');
     }
+
+
 }

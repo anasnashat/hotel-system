@@ -44,6 +44,7 @@ Route::middleware(['auth', 'role:admin|manager'])->prefix('manager')->group(func
     Route::get('/manage-receptionists', [ManagerController::class, 'manageReceptionists'])->name('manager.manage-receptionists');
     Route::put('/receptionists/{id}/update', [ManagerController::class, 'updateReceptionist'])->name('manager.update-receptionist');
     Route::delete('/receptionists/{id}/delete', [ManagerController::class, 'deleteReceptionist'])->name('manager.delete-receptionist');
+    Route::post('/manager/store-receptionist', [ManagerController::class, 'storeReceptionist'])->name('manager.store-receptionist');
     Route::post('/receptionists/{id}/ban', [ManagerController::class, 'banReceptionist'])->name('manager.ban-receptionist');
     Route::post('/receptionists/{id}/unban', [ManagerController::class, 'unbanReceptionist'])->name('manager.unban-receptionist');
 });
