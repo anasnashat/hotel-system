@@ -25,21 +25,21 @@ class ManagerController extends Controller
 
     public function updateClient(Request $request, $id)
     {
-        $client = User::findOrFail($id);
-
+        $client = UserProfile::with('user')->findOrFail($id);
+        $user = $client->user;
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'nullable|email|unique:users,email,' . $client->id,
+            'email' => 'nullable|email|unique:users,email,' . $user->id,
         ]);
 
-        $client->update([
+        $user->update([
             'name' => $request->name,
             'email' => $request->email,
         ]);
 
-        return redirect()->route('manager.manage-clients')->with('success', 'Client updated successfully.');
-    }
 
+        return redirect()->back()->with('success', 'Client updated successfully.');
+    }
 
 
 
@@ -54,7 +54,7 @@ class ManagerController extends Controller
     public function editClient($id)
     {
         $client = UserProfile::with('user')->findOrFail($id);
-
+        dd($client);
         return inertia('Manager/EditClient', [
             'client' => $client,
         ]);
@@ -81,7 +81,10 @@ class ManagerController extends Controller
     {
         $receptionists = User::whereHas('roles', function ($query) {
             $query->where('name', '=', 'receptionist');
-        })->get();
+        })->get()->map(function ($receptionist) {
+            $receptionist->is_banned = $receptionist->isbanned();
+            return $receptionist;
+        });
 
         return inertia('Manager/ManageReceptionists', [
             'receptionists' => $receptionists,

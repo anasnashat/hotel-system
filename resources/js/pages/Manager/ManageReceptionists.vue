@@ -17,6 +17,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 // Page props
 const page = usePage();
+console.log(page.props);
 
 // Receptionist interface
 interface Receptionist {

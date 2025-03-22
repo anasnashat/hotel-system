@@ -80,9 +80,6 @@ const approveClient = (id: number) => {
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="w-full p-6">
             <h1 class="text-3xl font-bold mb-6 text-center">Manage Clients</h1>
-            <div class="flex justify-end mb-4">
-                <Button @click="openAddModal">Add New Client</Button>
-            </div>
             <div class="rounded-md border">
                 <Table>
                     <TableHeader>
