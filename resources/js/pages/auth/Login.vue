@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import NavMain from "@/components/NavMain.vue";
+import NavBarMain from "@/components/NavBarMain.vue";
 
 const form = useForm({
   email: "",
@@ -20,8 +20,8 @@ const submit = () => {
 </script>
 
 <template>
+  <NavBarMain/>
 
-  <NavMain />
   <div class="flex justify-center mt-5">
     <Card class="w-full max-w-lg p-6 shadow-lg">
       <CardHeader class="text-center">

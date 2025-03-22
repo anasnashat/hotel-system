@@ -8,6 +8,7 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import axios from "axios";
+import NavBarMain from "@/components/NavBarMain.vue";
 
 
 
@@ -93,7 +94,7 @@ const submit = () => {
 
 <template>
     <div class=" flex-col">
-    <NavMain />
+    <NavBarMain/>
     <Card class="max-w-lg mx-auto p-6 shadow-lg mt-5">
         <CardHeader class="text-center">
             <h2 class="text-xl font-bold">Register</h2>

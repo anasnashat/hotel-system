@@ -1,5 +1,5 @@
 <template>
-    <NavMain />
+    <NavBarMain />
     <h2 class="text-2xl font-semibold mb-4 text-center cardTitle mt-10">Favorites</h2>
     <div class="container mx-auto p-6">
   
@@ -51,7 +51,7 @@
   import { Button } from "@/components/ui/button";
   import Alert from "@/components/ui/alert/index.vue"; //  Import Alert Components
   import { useFavoriteStore } from '@/stores/favorite';
-  import NavMain from '@/components/NavMain.vue';
+  import NavBarMain from '@/components/NavBarMain.vue';
   
   const favoriteStore = useFavoriteStore();
   
