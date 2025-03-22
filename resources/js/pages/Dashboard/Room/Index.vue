@@ -77,6 +77,8 @@ const deleteImage = (imageId: number) => {
     }
 };
 
+
+
 // Handle image upload
 const handleImageUpload = (event: Event) => {
     const files = (event.target as HTMLInputElement).files;
@@ -328,6 +330,24 @@ const handlePageChange = (page: number) => {
                             </SelectContent>
                         </Select>
                         <p v-if="page.props.errors.floor_id" class="text-sm text-red-500">{{ page.props.errors.floor_id }}</p>
+                    </div>
+                    <!-- Existing Images -->
+                    <div v-if="isEditMode && currentRoom?.images?.length">
+                        <Label>Existing Images</Label>
+                        <div class="mt-2 grid grid-cols-3 gap-4">
+                            <div v-for="image in currentRoom.images" :key="image.id" class="relative">
+                                <img :src="image.url" alt="Room image" class="w-full h-24 object-cover rounded-lg border" />
+                                <button
+                                    type="button"
+                                    class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                                    @click="deleteImage(image.id)"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <div class="space-y-2">
                         <Label>Upload New Images</Label>
