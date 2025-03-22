@@ -16,7 +16,7 @@ class FloorController extends Controller
     public function index()
     {
         $floors = Floor::with('createdBy')->paginate(10);
-        return Inertia::render('Dashboard/Floor/Index', [
+        return Inertia::render('Dashboard/Floors/Index', [
             'floors' => $floors,
         ]);
     }
@@ -26,7 +26,7 @@ class FloorController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Dashboard/Floor/Create');
+        return Inertia::render('Dashboard/Floors/Create');
     }
 
     /**
@@ -38,7 +38,7 @@ class FloorController extends Controller
             DB::beginTransaction();
             Floor::create($request->validated());
             DB::commit();
-            return redirect()->route('floors.index')->with('success', 'Floor created successfully.');
+            return redirect()->route('floors.index')->with('success', 'Floors created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', $e->getMessage());
@@ -53,7 +53,7 @@ class FloorController extends Controller
     public function show($id)
     {
         $floor = Floor::findOrFail($id);
-        return Inertia::render('Dashboard/Floor/Show', [
+        return Inertia::render('Dashboard/Floors/Show', [
             'floor' => $floor,
         ]);
     }
@@ -64,7 +64,7 @@ class FloorController extends Controller
     public function edit($id)
     {
         $floor = Floor::findOrFail($id);
-        return Inertia::render('Dashboard/Floor/Edit', [
+        return Inertia::render('Dashboard/Floors/Edit', [
             'floor' => $floor,
         ]);
     }
@@ -79,7 +79,7 @@ class FloorController extends Controller
             DB::beginTransaction();
             $floor->update($request->validated());
             DB::commit();
-            return redirect()->route('floors.index')->with('success', 'Floor updated successfully.');
+            return redirect()->route('floors.index')->with('success', 'Floors updated successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', $e->getMessage());
@@ -96,7 +96,7 @@ class FloorController extends Controller
             DB::beginTransaction();
             $floor->delete();
             DB::commit();
-            return redirect()->route('floors.index')->with('success', 'Floor deleted successfully.');
+            return redirect()->route('floors.index')->with('success', 'Floors deleted successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', $e->getMessage());
