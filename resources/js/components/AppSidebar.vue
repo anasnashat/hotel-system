@@ -8,13 +8,12 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import { computed } from 'vue';
-import Alert  from '@/components/Alert.vue';
+import Alert from '@/components/Alert.vue';
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
 
-console.log(page.props.auth.user.roles);
-
+console.log('User Roles:', user.value.roles);
 const mainNavItems = computed<NavItem[]>(() => {
     const items: NavItem[] = [
         {
@@ -33,23 +32,33 @@ const mainNavItems = computed<NavItem[]>(() => {
             icon: LayoutGrid,
         },
     ];
-    console.log(user.value.roles.some((role: string) => ['admin', 'manager'].includes(role)));
 
     // Add Floor Management if the user is an admin or manager
-    if (user.value?.roles && Array.isArray(user.value.roles) && user.value.roles.some((role: string) => ['admin', 'manager'].includes(role.name))) {
-        items.push({
-            title: 'Floor Management',
-            href: route('floors.index'),
-            icon: LayoutGrid,
-        });
+    if (user.value?.roles && Array.isArray(user.value.roles)) {
+        const isAdminOrManager = user.value.roles.some((role: { name: string }) => ['admin', 'manager'].includes(role.name));
+        console.log('Is Admin or Manager:', isAdminOrManager);
+
+        if (isAdminOrManager) {
+            items.push({
+                title: 'Floor Management',
+                href: route('floors.index'),
+                icon: LayoutGrid,
+            });
+        }
     }
 
-    if (user.value?.roles && Array.isArray(user.value.roles) && user.value.roles.some((role: string) => ['admin'].includes(role.name))) {
-        items.push({
-            title: 'Rooms Management',
-            href: route('rooms.index'),
-            icon: LayoutGrid,
-        });
+    // Add Rooms Management if the user is an admin
+    if (user.value?.roles && Array.isArray(user.value.roles)) {
+        const isAdmin = user.value.roles.some((role: { name: string }) => role.name === 'admin');
+        console.log('Is Admin:', isAdmin);
+
+        if (isAdmin) {
+            items.push({
+                title: 'Rooms Management',
+                href: route('rooms.index'),
+                icon: LayoutGrid,
+            });
+        }
     }
 
     return items;
@@ -70,28 +79,37 @@ const footerNavItems: NavItem[] = [
 </script>
 
 <template>
-    <Sidebar collapsible="icon" variant="inset">
-        <SidebarHeader>
-            <SidebarMenu>
-                <SidebarMenuItem>
-                    <SidebarMenuButton size="lg" as-child>
-                        <Link :href="route('dashboard')">
-                            <AppLogo />
-                        </Link>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-            </SidebarMenu>
-        </SidebarHeader>
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <Sidebar collapsible="icon" variant="inset">
+            <SidebarHeader>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton size="lg" as-child>
+                            <Link :href="route('dashboard')">
+                                <AppLogo />
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarHeader>
 
-        <SidebarContent>
-            <NavMain :items="mainNavItems" />
-        </SidebarContent>
+            <SidebarContent>
+                <NavMain :items="mainNavItems" />
+            </SidebarContent>
 
-        <SidebarFooter>
-            <NavFooter :items="footerNavItems" />
-            <NavUser />
-        </SidebarFooter>
-    </Sidebar>
-    <slot />
+            <SidebarFooter>
+                <NavFooter :items="footerNavItems" />
+                <NavUser />
+            </SidebarFooter>
+        </Sidebar>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6">
+            <slot />
+        </main>
+    </div>
+
+    <!-- Alert Component -->
     <Alert />
 </template>
