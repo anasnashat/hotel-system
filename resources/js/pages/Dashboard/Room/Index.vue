@@ -18,6 +18,7 @@ import {
     PaginationListItem,
     PaginationNext, PaginationPrev
 } from '@/components/ui/pagination';
+import TabsHeader from '@/components/TabsHeader.vue';
 
 // Breadcrumbs
 const breadcrumbs: BreadcrumbItem[] = [
@@ -77,6 +78,8 @@ const deleteImage = (imageId: number) => {
     }
 };
 
+
+
 // Handle image upload
 const handleImageUpload = (event: Event) => {
     const files = (event.target as HTMLInputElement).files;
@@ -112,7 +115,7 @@ const submitForm = () => {
     const formData = new FormData();
 
     formData.append('capacity', form.value.capacity);
-    formData.append('price', Math.round(parseFloat(form.value.price) * 100).toString());
+    formData.append('price', Math.round(parseFloat(form.value.price)).toString());
     formData.append('description', form.value.description);
     formData.append('floor_id', form.value.floor_id);
 
@@ -163,14 +166,21 @@ const deleteRoom = () => {
 const handlePageChange = (page: number) => {
     router.get(route('rooms.index', { page }), {}, { preserveScroll: true });
 };
+
+const tabs = [
+    { label: 'Rooms', href: route('rooms.index') },
+];
+
 </script>
 
 <template>
     <Head title="Manage Rooms" />
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="w-full p-6 max-w-7xl mx-auto">
-            <div class="flex items-center justify-between mb-8">
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Room Management</h1>
+        <div class="w-full p-6 max-w-8xl">
+
+            <TabsHeader title="Manage Rooms" :tabs="tabs" />
+
+            <div class="flex justify-end mb-4">
                 <Button @click="openAddModal" class="gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
@@ -184,7 +194,7 @@ const handlePageChange = (page: number) => {
                 <CardHeader>
                     <CardTitle>Rooms</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent  >
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -215,7 +225,8 @@ const handlePageChange = (page: number) => {
                                 <TableCell class="max-w-xs truncate">{{ room.description }}</TableCell>
                                 <TableCell>{{ room.floor_name }}</TableCell>
                                 <TableCell v-if="$page.props.auth.user.roles[0].name === 'admin'">{{ room.manager_name }}</TableCell>
-                                <TableCell>
+
+                                <TableCell v-if="room.manager_id === $page.props.auth.user.id">
                                     <div class="flex gap-2">
                                         <Button variant="outline" size="sm" @click="openEditModal(room)">
                                             Edit
@@ -231,30 +242,6 @@ const handlePageChange = (page: number) => {
                 </CardContent>
             </Card>
 
-            <!-- Pagination -->
-<!--            <div class="mt-6 flex justify-center">-->
-<!--                <div class="flex items-center gap-2">-->
-<!--                    <Button-->
-<!--                        variant="outline"-->
-<!--                        size="sm"-->
-<!--                        :disabled="rooms.current_page === 1"-->
-<!--                        @click="handlePageChange(rooms.current_page - 1)"-->
-<!--                    >-->
-<!--                        Previous-->
-<!--                    </Button>-->
-<!--                    <span class="text-sm text-gray-700 dark:text-gray-300">-->
-<!--            Page {{ rooms.current_page }} of {{ rooms.last_page }}-->
-<!--          </span>-->
-<!--                    <Button-->
-<!--                        variant="outline"-->
-<!--                        size="sm"-->
-<!--                        :disabled="rooms.current_page === rooms.last_page"-->
-<!--                        @click="handlePageChange(rooms.current_page + 1)"-->
-<!--                    >-->
-<!--                        Next-->
-<!--                    </Button>-->
-<!--                </div>-->
-<!--            </div>-->
             <div class="mt-6 flex justify-center">
                 <Pagination
                     v-if="rooms.last_page > 1"
@@ -328,6 +315,24 @@ const handlePageChange = (page: number) => {
                             </SelectContent>
                         </Select>
                         <p v-if="page.props.errors.floor_id" class="text-sm text-red-500">{{ page.props.errors.floor_id }}</p>
+                    </div>
+                    <!-- Existing Images -->
+                    <div v-if="isEditMode && currentRoom?.images?.length">
+                        <Label>Existing Images</Label>
+                        <div class="mt-2 grid grid-cols-3 gap-4">
+                            <div v-for="image in currentRoom.images" :key="image.id" class="relative">
+                                <img :src="image.url" alt="Room image" class="w-full h-24 object-cover rounded-lg border" />
+                                <button
+                                    type="button"
+                                    class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                                    @click="deleteImage(image.id)"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <div class="space-y-2">
                         <Label>Upload New Images</Label>
