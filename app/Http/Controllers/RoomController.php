@@ -17,7 +17,7 @@ class RoomController extends Controller
     {
         $floors = Floor::all();
         $rooms = Room::with(['floor', 'createdBy'])
-            ->paginate(100)
+            ->paginate(10)
             ->through(function ($room) {
                 return [
                     'id' => $room->id,
