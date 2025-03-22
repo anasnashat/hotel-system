@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\RoomController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Dashboard\ManagerController;
@@ -19,6 +20,12 @@ Route::group(['prefix' => 'receptionist'], function () {
 
 // =============================================== This is the routes for the floor CRUD ==============================================================
 Route::resource('floors', App\Http\Controllers\FloorController::class)->middleware(['auth', 'role:admin|manager']);
+// =============================================== End ==================================================================================================
+
+// =============================================== This is the routes for the floor CRUD ==============================================================
+Route::resource('rooms', RoomController::class)->middleware(['auth', 'role:admin|manager']);
+Route::delete('/rooms/{room}/images/{image}', [RoomController::class, 'deleteImage'])
+    ->name('rooms.images.destroy');
 // =============================================== End ==================================================================================================
 
 
@@ -52,7 +59,7 @@ Route::get('/', function () {
 })->name('home');
 
 
-//This route to check if email,phone,national_id already exits 
+//This route to check if email,phone,national_id already exits
 Route::post('/check-existence', function (Request $request) {
     $field = $request->input('field');
     $value = $request->input('value');
@@ -83,7 +90,7 @@ Route::post('/logout', function (Request $request) {
     \Illuminate\Support\Facades\Auth::logout();
     $request->session()->invalidate();
     $request->session()->regenerateToken();
-    
+
     return redirect('/');
 })->name('logout');
 
