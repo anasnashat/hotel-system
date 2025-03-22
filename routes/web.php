@@ -23,9 +23,13 @@ Route::resource('floors', App\Http\Controllers\FloorController::class)->middlewa
 // =============================================== End ==================================================================================================
 
 // =============================================== This is the routes for the floor CRUD ==============================================================
-Route::resource('rooms', RoomController::class)->middleware(['auth', 'role:admin|manager']);
-Route::delete('/rooms/{room}/images/{image}', [RoomController::class, 'deleteImage'])
-    ->name('rooms.images.destroy');
+Route::middleware(['auth', 'role:admin|manager'])->group(function () {
+    Route::resource('rooms', RoomController::class);
+    Route::delete('/rooms/{room}/images/{image}', [RoomController::class, 'deleteImage'])
+        ->name('rooms.images.destroy');
+});
+
+
 // =============================================== End ==================================================================================================
 
 
