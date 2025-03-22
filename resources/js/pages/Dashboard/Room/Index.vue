@@ -282,7 +282,7 @@ const tabs = [
 
         <!-- Add/Edit Modal -->
         <Dialog v-model:open="isModalOpen">
-            <DialogContent class="sm:max-w-[600px]">
+            <DialogContent class="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>{{ isEditMode ? 'Edit Room' : 'Create New Room' }}</DialogTitle>
                 </DialogHeader>
