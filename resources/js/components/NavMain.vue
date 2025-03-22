@@ -76,9 +76,8 @@ const page = usePage<SharedData>();
   
       <!-- Mobile Menu -->
       <div v-if="isMenuOpen" class="md:hidden bg-white border-t shadow-sm p-4">
-        <NavLink href="/" text="Home" />
-        <NavLink href="/rooms" text="Rooms" />
-        <NavLink href="/about" text="About Us" />
+        <NavLink href="/dashboard" text="Dashboard" />
+        <NavLink href="/manager" text="Manager" />
         <NavLink href="/contact" text="Contact" />
         <div class="mt-4 space-y-2">
           <Button variant="outline" class="w-full">Login</Button>
