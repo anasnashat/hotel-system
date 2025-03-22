@@ -1,19 +1,21 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted  } from "vue";
 import { useForm } from "@inertiajs/vue3";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import NavMain from '@/components/NavMain.vue';
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import axios from "axios";
 import NavBarMain from "@/components/NavBarMain.vue";
 
-
+const countries = ref([]); // Store country data
 
 // Define a reactive reference to track the current step of the registration proces
 const step = ref(1);
+// Checkbox States
+const termsAccepted = ref(false);
+const honestyConfirmed = ref(false);
 
 // Create a form object with initial empty values for user registration
 const form = useForm({
@@ -48,6 +50,7 @@ const checkExistence = async (field, value) => {
 const nextStep = async () => {
     form.clearErrors();
     // Validate fields before moving forward
+    if(step.value==1 && /\d/.test(form.name) ) return form.setError("name", "Name should not contain numbers.");
     if (step.value === 1 && !form.name) return form.setError("name", "Name is required");
     if (step.value === 1 && !form.email) return form.setError("email", "Email is required");
     if (step.value === 1 && !form.password) return form.setError("password", "Password is required");
@@ -61,11 +64,12 @@ const nextStep = async () => {
     const emailExists = await checkExistence("email", form.email);
     if (emailExists) return form.setError("email", "Email is already registered");
 
+    if(step.value==2 && !/^\d+$/.test(form.national_id)) return form.setError("national_id", "National ID should contain only digits.");
     if (step.value === 2 && !form.gender) return form.setError("gender", "Gender is required");
     if (step.value === 2 && !form.national_id) return form.setError("national_id", "National ID is required");
     if (step.value === 2 && !form.country) return form.setError("country", "Country is required");
     if (step.value === 2 && !form.phone_number) return form.setError("phone_number", "Phone Number is required");
-    
+    if(step.value==2 && !/^\d+$/.test(form.phone_number)) return form.setError("phone_number", "Phone number should contain only digits.");
     const nationalIdExists = await checkExistence("national_id", form.national_id);
     if (nationalIdExists) return form.setError("national_id", "National ID is already registered");
 
@@ -80,6 +84,7 @@ const prevStep = () => step.value--;
 
 //Function to submit the registration form.
 const submit = () => {
+    if (!termsAccepted.value || !honestyConfirmed.value) return;
     form.post(route("register"), {
         forceFormData: true,
         onError: (errors) => {
@@ -90,6 +95,30 @@ const submit = () => {
         },
     });
 };
+
+// Fetch countries from the API when the component is mounted
+onMounted(async () => {
+    try {
+        const response = await axios.get("/countries");
+        console.log(response.data);
+        if (response.data && typeof response.data === "object") {
+            countries.value = response.data; // Ensure it's an object
+        } else {
+            console.error("Invalid countries data format:", response.data);
+            countries.value = {};
+        }
+    } catch (error) {
+        console.error("Error fetching countries:", error);
+    }
+});
+
+//to update automatically country code field
+const updateCountryCode = () => {
+    if (!countries.value) return;
+    const selectedEntry = Object.entries(countries.value).find(([code, data]) => data.name === form.country);
+    form.country_code = selectedEntry ? selectedEntry[0] : "";
+};
+
 </script>
 
 <template>
@@ -143,11 +172,16 @@ const submit = () => {
                 <p v-if="form.errors.national_id" class="text-red-500 text-sm mb-2">{{ form.errors.national_id }}</p>
 
                 <Label>Country</Label>
-                <Input v-model="form.country" placeholder="Country" class="mb-2 mt-1" />
-                <p v-if="form.errors.country" class="text-red-500 text-sm mb-2">{{ form.errors.country }}</p>
+                <select v-model="form.country" @change="updateCountryCode" class="mb-2 mt-1 border p-2 w-full text-black">
+                <option value="" disabled>Select your country</option>
+                <option v-for="country in countries" :key="country.cca2" :value="country.name">
+                {{ country.name }}
+            </option>
+            </select>                                  
+            <p v-if="form.errors.country" class="text-red-500 text-sm mb-2">{{ form.errors.country }}</p>
 
                 <Label>Country Code</Label>
-                <Input v-model="form.country_code" placeholder="Country Code (e.g., US, EG)" class="mt-4" />
+                <Input v-model="form.country_code" placeholder="Country Code" class="mt-4" disabled/>
 
                 <Label>Phone Number</Label>
                 <Input v-model="form.phone_number" placeholder="Phone Number" class="mb-2 mt-1" />
@@ -162,10 +196,23 @@ const submit = () => {
                 <Label>Profile Picture</Label>
                 <Input type="file" @change="(e) => form.avatar = e.target.files[0]" class="mb-4 mt-1"/>
                 
-                <div class="flex justify-between mt-4">
-                    <Button variant="outline" @click="prevStep">Back</Button>
-                    <Button @click="submit" class="bg-[#5b5329] hover:bg-[#FFFFFF] hover:text-black hover:border-2 hover:border-black text-white ">Register</Button>
-                </div>
+             <!-- Checkboxes -->
+             <div class="mt-4">
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" v-model="termsAccepted" class="form-checkbox text-[#5b5329]" />
+                        <span>I accept the terms and conditions.</span>
+                    </label>
+                    <label class="flex items-center space-x-2 mt-2">
+                        <input type="checkbox" v-model="honestyConfirmed" class="form-checkbox text-[#5b5329]" />
+                        <span>I confirm that the provided information is true.</span>
+                    </label>
+            </div>
+
+                    <div class="flex justify-between mt-4">
+                        <Button variant="outline" @click="prevStep">Back</Button>
+                        <Button @click="submit" :disabled="!termsAccepted || !honestyConfirmed" class="bg-[#5b5329] text-white disabled:opacity-50">Register</Button>
+                    </div>
+                
             </div>
         </CardContent>
     </Card>

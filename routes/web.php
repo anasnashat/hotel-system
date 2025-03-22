@@ -8,7 +8,7 @@ use App\Http\Controllers\Dashboard\ManagerController;
 use App\Models\User;
 use App\Models\UserProfile;
 use Illuminate\Http\Request;
-
+use App\Http\Controllers\CountryController;
 
 
 Route::get('test/', [App\Http\Controllers\Dashboard\TestController::class, 'index']);
@@ -129,8 +129,8 @@ Route::get('/client/dashboard', function () {
     return redirect()->route('home');
 })->middleware(['auth', 'verified', 'role:client'])->name('client.dashboard');
 
-
-
+// country api list
+Route::get('/countries', [CountryController::class, 'getCountries']);
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
