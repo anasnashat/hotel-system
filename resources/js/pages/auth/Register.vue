@@ -124,17 +124,18 @@ const submit = () => {
 
             <!-- Step 2: Personal Details -->
             <div v-if="step === 2">
-                <Label>Gender</Label>
-                <RadioGroup v-model="form.gender" class="space-y-2 mb-2 mt-2 ms-2">
-                    <label class="flex items-center space-x-3 cursor-pointer">
-                        <RadioGroupItem value="Male" id="male" />
-                        <span>Male</span>
-                    </label>
-                    <label class="flex items-center space-x-3 cursor-pointer">
-                        <RadioGroupItem value="Female" id="female" />
-                        <span>Female</span>
-                    </label>
-                </RadioGroup>
+                
+                <div class="space-y-2 mb-2 mt-2 ms-2">
+                    <Label>Gender</Label>
+                    <div class="flex items-center space-x-3 cursor-pointer">
+                        <input type="radio" id="male" value="Male" v-model="form.gender" class="cursor-pointer" />
+                        <label for="male">Male</label>
+                    </div>
+                    <div class="flex items-center space-x-3 cursor-pointer">
+                        <input type="radio" id="female" value="Female" v-model="form.gender" class="cursor-pointer" />
+                        <label for="female">Female</label>
+                    </div>
+                </div>
                 <p v-if="form.errors.gender" class="text-red-500 text-sm mb-2">{{ form.errors.gender }}</p>
 
                 <Label>National ID</Label>
