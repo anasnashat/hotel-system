@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Reservation;
+use App\Models\Room;
+use App\Models\User;
 use App\Models\UserProfile;
 
 class TestController extends Controller
@@ -11,9 +13,12 @@ class TestController extends Controller
     public function index()
     {
 
-        $clients = UserProfile::with('user.reservations')->where('approved_by', '=', '5')->get();
+//        $clients = UserProfile::with('user.reservations')->where('approved_by', '=', '5')->get();
 
-        dd($clients[0]->user->isBanned());
+//        dd($clients[0]->user->isBanned());
+
+//        $user = User::findOrFail(5);
+//        dd($user->isBanned());
 
 
 //        $requests = UserProfile::with('user')->whereHas('user.roles', function ($query) {
@@ -33,21 +38,30 @@ class TestController extends Controller
 //
 //        dd($user);
 
-
-//       $floor = Floor::create([
+//
+//       $floor = Floors::create([
 //            'number' => 1555995,
 //            'name' => 'first floor',
 //            'created_by' => 2
 //       ]);
+
+
 //       $room = Room::create([
-//          'number' => 5555,
 //           'capacity' => 2,
 //           'price' => 1000,
 //           'description' => 'first room',
-//           'floor_id' => $floor->id,
-//           'created_by' => 2
+//           'floor_id' => 10,
 //       ]);
-//       dd($room);
+        $room = Room::findOrFail(24);
+
+
+       dd($room);
+
+
+// Retrieve stored images
+        $media = $room->getMedia('room_images');
+        dd($media);
+
 //        $reservation = Reservation::create([
 //            'reservation_code'=> 5555,
 //            'client_id'=>11,
