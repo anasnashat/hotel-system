@@ -142,6 +142,5 @@ public function update(UpdateRoomRequest $request, $id)
             return redirect()->back()->with('success' , 'Image deleted successfully.');
         }
 
-        return response()->json(['error' => 'Image not found.'], 404);
-    }
+return redirect()->back()->with('error', 'Image could not be deleted');    }
 }
