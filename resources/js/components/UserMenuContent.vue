@@ -21,6 +21,28 @@ defineProps<Props>();
     <DropdownMenuSeparator />
     <DropdownMenuGroup>
         <DropdownMenuItem :as-child="true">
+            <Link class="block w-full" :href="route('manager.manage-receptionists')" as="button">
+                <!-- <Settings class="mr-2 h-4 w-4" /> -->
+                Resceptionists
+            </Link>
+        </DropdownMenuItem>
+    </DropdownMenuGroup>
+    <DropdownMenuGroup>
+        <DropdownMenuItem :as-child="true">
+            <Link class="block w-full" :href="route('manager.manage-clients')" as="button">
+                <!-- <Settings class="mr-2 h-4 w-4" /> -->
+                Managers
+            </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem :as-child="true">
+            <Link class="block w-full" :href="route('receptionist.index')" as="button">
+                <!-- <Settings class="mr-2 h-4 w-4" /> -->
+                Clients
+            </Link>
+        </DropdownMenuItem>
+    </DropdownMenuGroup>
+    <DropdownMenuGroup>
+        <DropdownMenuItem :as-child="true">
             <Link class="block w-full" :href="route('profile.edit')" as="button">
                 <Settings class="mr-2 h-4 w-4" />
                 Settings

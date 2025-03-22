@@ -104,11 +104,10 @@ Route::get('/register', function () {
 //     return Inertia::render('Dashboard');
 // })->name('login');
 
-//Admin Dashboard
+// //Admin Dashboard
 Route::get('/admin/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified', 'role:admin'])->name('admin.dashboard');
-
 
 //Manager Dashboard
 Route::get('/manager/dashboard', function () {

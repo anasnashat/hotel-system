@@ -4,23 +4,31 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
+import { User, Lock, Palette } from 'lucide-vue-next';
+
+interface ZiggyProps {
+  location: string;
+}
 
 const sidebarNavItems: NavItem[] = [
     {
         title: 'Profile',
         href: '/settings/profile',
+        icon: User,
     },
     {
         title: 'Password',
         href: '/settings/password',
+        icon: Lock,
     },
     {
         title: 'Appearance',
         href: '/settings/appearance',
+        icon: Palette,
     },
 ];
 
-const page = usePage();
+const page = usePage<{ ziggy: ZiggyProps }>();
 
 const currentPath = page.props.ziggy?.location ? new URL(page.props.ziggy.location).pathname : '';
 </script>

@@ -4,6 +4,8 @@ use App\Http\Controllers\Controller;
 use App\Models\UserProfile;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+
 class ManagerController extends Controller
 {
 
@@ -16,6 +18,9 @@ class ManagerController extends Controller
         return inertia('Manager/Manageclients', [
             'clients' => $clients,
         ]);
+    }
+    public function index(){
+        return Inertia::render('manger.dashboard');
     }
 
     public function updateClient(Request $request, $id)
