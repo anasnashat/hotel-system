@@ -27,7 +27,7 @@ const handlePageChange = (page: number) => {
     router.get(route('clients.index', { page }), {}, { preserveScroll: true });
 };
 const tabs = [
-    {'label': 'Requests', 'href': route('receptionist.index')},
+    {'label': 'Requests', 'href': route('clients-management.index')},
     {'label': 'Reservation', 'href': route('receptionist.show-reservation')},
 ]
 </script>
