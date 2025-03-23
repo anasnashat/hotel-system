@@ -45,9 +45,9 @@ class AuthenticatedSessionController extends Controller
                 'email' => 'Your account has been banned.',
             ]);
         }
-        if (!$user->profile->approved_at) {
-            Auth::logout();
-            return to_route('waiting-approval');
+        if ($user->hasRole('client') && !$user->profile->approved_by) {
+                Auth::logout();
+                return redirect()->route('waiting-approval');
         }
 
         if ($user->hasRole('admin')) {
