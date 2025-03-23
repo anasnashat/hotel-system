@@ -36,18 +36,21 @@ const submit = () => {
             <p v-if="form.errors.email" class="text-red-500 text-sm">{{ form.errors.email }}</p>
           </div>
 
-          <div>
+          <div >
             <Label for="password">Password</Label>
-            <Input id="password" v-model="form.password" type="password" placeholder="Enter your password" class="mt-1" />
+            <Input id="password" v-model="form.password" type="password" placeholder="Enter your password" class="mt-1 mb-5" />
             <p v-if="form.errors.password" class="text-red-500 text-sm">{{ form.errors.password }}</p>
           </div>
 
-          <div class="flex items-center space-x-2">
-            <Checkbox id="remember" v-model="form.remember" />
-            <Label for="remember">Remember Me</Label>
+          <div class="flex items-center justify-between ">
+            <div class="flex items-center space-x-2">
+              <Checkbox id="remember" v-model="form.remember" />
+              <Label for="remember">Remember Me</Label>
+            </div>
+            <a href="/forgot-password" class="text-black-50 text-sm hover:underline">Forgot Password?</a>
           </div>
 
-          <Button type="submit" class="w-full bg-[#5b5329] hover:bg-[#FFFFFF] hover:text-black hover:border-2 hover:border-black text-white" :disabled="form.processing">
+          <Button type="submit" class="w-full bg-[#5b5329] hover:bg-[#FFFFFF] hover:text-black hover:border-2 hover:border-black text-white " :disabled="form.processing">
             Login
           </Button>
         </form>
