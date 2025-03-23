@@ -1,80 +1,268 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { router } from '@inertiajs/vue3';
-import { defineProps, ref } from 'vue';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { router, usePage } from '@inertiajs/vue3';
+import { ref } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
+import { Head } from '@inertiajs/vue3';
+import TabsHeader from '@/components/TabsHeader.vue';
 
-
-
+// Breadcrumbs
 const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Receptionest',
-        href: '/receptionest',
-    },
+    { title: 'Dashboard', href: '/dashboard' },
+    { title: 'Receptionist Requests', href: '/receptionist/requests' },
 ];
 
+// Page props
+const page = usePage();
+
+// Request interface
 interface Request {
     id: number;
     user: { name: string; email: string };
     national_id: string;
     phone_number: string;
+    status: string; // Added status field
 }
 
-const props = defineProps<{ requests: Request[] }>();
+// Props
+const { requests: initialRequests } = defineProps<{ requests: Request[] }>();
 
-const requests = ref<Request[]>(props.requests);
+// Reactive requests array
+const requests = ref<Request[]>(initialRequests);
 
-const approveRequest = (id: number) => {
-    router.post(
-        route('receptionist.approve'),
-        { client_id: id },
-        {
+// Modal and form state
+const isModalOpen = ref(false);
+const isEditMode = ref(false);
+const currentRequest = ref<Request | null>(null);
+const form = ref({ name: '', email: '', national_id: '', phone_number: '' });
+
+// Delete confirmation state
+const isDeleteDialogOpen = ref(false);
+const requestToDelete = ref<Request | null>(null);
+
+// Loading state
+const isLoading = ref(false);
+
+// Open modal for editing a request
+const openEditModal = (request: Request) => {
+    isEditMode.value = true;
+    currentRequest.value = request;
+    form.value = {
+        name: request.user.name,
+        email: request.user.email,
+        national_id: request.national_id,
+        phone_number: request.phone_number,
+    };
+    isModalOpen.value = true;
+};
+
+// Handle form submission (edit)
+const submitForm = () => {
+    isLoading.value = true;
+    if (isEditMode.value && currentRequest.value) {
+        // Update request
+        router.put(route('receptionist.update-request', currentRequest.value.id), form.value, {
             preserveScroll: true,
             onSuccess: () => {
-                requests.value = requests.value.filter((req) => req.id !== id);
+                isModalOpen.value = false;
+                isLoading.value = false;
+                router.reload({ only: ['requests'] }); // Refresh list
             },
-        },
-    );
+            onError: () => {
+                isLoading.value = false;
+            },
+        });
+    }
 };
+
+// Open delete confirmation dialog
+const openDeleteDialog = (request: Request) => {
+    requestToDelete.value = request;
+    isDeleteDialogOpen.value = true;
+};
+
+// Delete request
+const deleteRequest = () => {
+    if (requestToDelete.value) {
+        router.delete(route('receptionist.delete-request', requestToDelete.value.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                isDeleteDialogOpen.value = false; // Close the dialog
+                requestToDelete.value = null;
+                router.reload({ only: ['requests'] }); // Refresh list
+            },
+        });
+    }
+};
+
+// Approve request
+const approveRequest = (client_id: number) => {
+    router.post(route('receptionist.approve'), { client_id }, {
+        preserveScroll: true,
+        onSuccess: () => {
+            const requestIndex = requests.value.findIndex(r => r.id === client_id);
+            if (requestIndex !== -1) requests.value[requestIndex].status = 'Approved';
+        },
+    });
+};
+
+const tabs = [
+    {'label': 'Requests', 'href': route('receptionist.index')},
+    {'label': 'Reservation', 'href': route('receptionist.show-reservation')},
+]
 </script>
 
 <template>
-    <Head title="Receptionest" />
+    <Head title="Receptionist Requests" />
     <AppLayout :breadcrumbs="breadcrumbs">
-    <div class="w-full">
-        <div class="rounded-md border">
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>ID</TableHead>
-                        <TableHead>Client Name</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>National ID</TableHead>
-                        <TableHead>Phone Number</TableHead>
-                        <TableHead>Action</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    <template v-if="requests.length">
-                        <TableRow v-for="request in requests" :key="request.id">
-                            <TableCell>{{ request.id }}</TableCell>
-                            <TableCell>{{ request.user.name || 'N/A' }}</TableCell>
-                            <TableCell>{{ request.user.email || 'N/A' }}</TableCell>
-                            <TableCell>{{ request.national_id || 'N/A' }}</TableCell>
-                            <TableCell>{{ request.phone_number || 'N/A' }}</TableCell>
-                            <TableCell>
-                                <Button variant="outline" class="text-green-500" @click="approveRequest(request.id)"> Approve </Button>
-                            </TableCell>
-                        </TableRow>
-                    </template>
-                    <TableRow v-else>
-                        <TableCell colspan="6" class="h-24 text-center">No requests found.</TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
+        <div class="w-full p-6 max-w-8xl">
+            <TabsHeader title="Client Management" :tabs="tabs" />
+
+            <div class="flex justify-end mb-4">
+                <Button @click="openAddModal" class="gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                    Add Client
+                </Button>
+            </div>
+
+            <!-- Requests Table -->
+            <Card>
+                <CardHeader>
+                    <CardTitle>Requests</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>ID</TableHead>
+                                <TableHead>Client Name</TableHead>
+                                <TableHead>Email</TableHead>
+                                <TableHead>National ID</TableHead>
+                                <TableHead>Phone Number</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead class="w-32">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            <TableRow v-if="requests.length === 0">
+                                <TableCell colspan="7" class="h-24 text-center">
+                                    No requests found.
+                                </TableCell>
+                            </TableRow>
+                            <TableRow v-for="request in requests" :key="request.id">
+                                <TableCell>{{ request.id }}</TableCell>
+                                <TableCell>{{ request.user.name || 'N/A' }}</TableCell>
+                                <TableCell>{{ request.user.email || 'N/A' }}</TableCell>
+                                <TableCell>{{ request.national_id || 'N/A' }}</TableCell>
+                                <TableCell>{{ request.phone_number || 'N/A' }}</TableCell>
+                                <TableCell>
+                                    <span :class="request.status === 'Approved' ? 'text-green-500' : 'text-yellow-500'">
+                                        {{ request.status || 'Pending' }}
+                                    </span>
+                                </TableCell>
+                                <TableCell>
+                                    <div class="flex gap-2">
+                                        <Button
+                                            v-if="request.status !== 'Approved'"
+                                            variant="outline"
+                                            size="sm"
+                                            class="text-green-500"
+                                            @click="approveRequest(request.id)"
+                                        >
+                                            Approve
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            @click="openEditModal(request)"
+                                        >
+                                            Edit
+                                        </Button>
+                                        <Button
+                                            variant="destructive"
+                                            size="sm"
+                                            @click="openDeleteDialog(request)"
+                                        >
+                                            Delete
+                                        </Button>
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
         </div>
-    </div>
-</AppLayout>
+
+        <!-- Edit Modal -->
+        <Dialog v-model:open="isModalOpen">
+            <DialogContent class="sm:max-w-[600px]">
+                <DialogHeader>
+                    <DialogTitle>Edit Request</DialogTitle>
+                </DialogHeader>
+                <form @submit.prevent="submitForm" class="space-y-4">
+                    <div class="space-y-2">
+                        <Label>Name</Label>
+                        <Input v-model="form.name" placeholder="Enter client name" />
+                        <p v-if="page.props.errors.name" class="text-sm text-red-500">{{ page.props.errors.name }}</p>
+                    </div>
+                    <div class="space-y-2">
+                        <Label>Email</Label>
+                        <Input v-model="form.email" type="email" placeholder="Enter client email" />
+                        <p v-if="page.props.errors.email" class="text-sm text-red-500">{{ page.props.errors.email }}</p>
+                    </div>
+                    <div class="space-y-2">
+                        <Label>National ID</Label>
+                        <Input v-model="form.national_id" placeholder="Enter national ID" />
+                        <p v-if="page.props.errors.national_id" class="text-sm text-red-500">{{ page.props.errors.national_id }}</p>
+                    </div>
+                    <div class="space-y-2">
+                        <Label>Phone Number</Label>
+                        <Input v-model="form.phone_number" placeholder="Enter phone number" />
+                        <p v-if="page.props.errors.phone_number" class="text-sm text-red-500">{{ page.props.errors.phone_number }}</p>
+                    </div>
+                    <DialogFooter>
+                        <Button type="button" variant="outline" @click="isModalOpen = false">Cancel</Button>
+                        <Button type="submit" :disabled="isLoading">
+                            Save Changes
+                        </Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
+
+        <!-- Delete Confirmation Dialog -->
+        <Dialog v-model:open="isDeleteDialogOpen">
+            <DialogContent class="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>Confirm Deletion</DialogTitle>
+                    <DialogDescription>
+                        Are you sure you want to delete this request? This action cannot be undone.
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                    <Button type="button" variant="outline" @click="isDeleteDialogOpen = false">Cancel</Button>
+                    <Button type="button" variant="destructive" @click="deleteRequest">Delete</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    </AppLayout>
 </template>
+
+<style scoped>
+img {
+    transition: transform 0.2s ease-in-out;
+}
+
+img:hover {
+    transform: scale(1.05);
+}
+</style>
