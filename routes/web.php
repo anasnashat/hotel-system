@@ -12,11 +12,11 @@ use App\Http\Controllers\CountryController;
 
 
 Route::get('test/', [App\Http\Controllers\Dashboard\TestController::class, 'index']);
-Route::group(['prefix' => 'receptionist'], function () {
-    Route::get('/', [App\Http\Controllers\Dashboard\ReceptionistController::class, 'index'])->name('receptionist.index');
-    Route::post('approve', [App\Http\Controllers\Dashboard\ReceptionistController::class, 'approve'])->name('receptionist.approve');
-    Route::get('show-reservation', [App\Http\Controllers\Dashboard\ReceptionistController::class, 'showReservation'])->name('receptionist.show-reservation');
-});
+//Route::group(['prefix' => 'receptionist'], function () {
+//    Route::get('/', [App\Http\Controllers\Dashboard\ReceptionistController::class, 'index'])->name('receptionist.index');
+//    Route::post('approve', [App\Http\Controllers\Dashboard\ReceptionistController::class, 'approve'])->name('receptionist.approve');
+//    Route::get('show-reservation', [App\Http\Controllers\Dashboard\ReceptionistController::class, 'showReservation'])->name('receptionist.show-reservation');
+//});
 
 // =============================================== This is the routes for the floor CRUD ==============================================================
 Route::resource('floors', App\Http\Controllers\FloorController::class)->middleware(['auth', 'role:admin|manager']);
@@ -32,9 +32,11 @@ Route::resource('rooms', RoomController::class)->except(['update', 'destroy']);
         ->name('rooms.images.destroy');
 });
 
-
 // =============================================== End ==================================================================================================
 
+Route::resource('clients-management', App\Http\Controllers\Dashboard\ClientManagementController::class)->middleware(['auth', 'role:admin|manager']);
+Route::post('approve', [App\Http\Controllers\Dashboard\ClientManagementController::class, 'approve'])->name('client.approve');
+Route::get('show-reservation', [App\Http\Controllers\Dashboard\ClientManagementController::class, 'showReservation'])->name('receptionist.show-reservation');
 
 Route::middleware(['auth', 'role:admin|manager'])->prefix('manager')->group(function () {
     Route::get('/dashboard', [ManagerController::class, 'index'])->name('manager.dashboard');
