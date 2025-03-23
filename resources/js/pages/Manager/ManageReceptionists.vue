@@ -123,7 +123,7 @@ const deleteReceptionist = () => {
 // Ban receptionist
 const banReceptionist = (id: number) => {
     if (confirm('Are you sure you want to ban this receptionist?')) {
-        router.post(route('manager.ban-receptionist'), { id }, {
+        router.post(route('manager.ban-receptionist', id), {  }, {
             preserveScroll: true,
             onSuccess: () => {
                 const receptionistIndex = receptionists.findIndex(r => r.id === id);
@@ -135,16 +135,19 @@ const banReceptionist = (id: number) => {
 
 // Unban receptionist
 const unbanReceptionist = (id: number) => {
+    console.log('Unban', id);
     if (confirm('Are you sure you want to unban this receptionist?')) {
-        router.post(route('manager.unban-receptionist'), { id }, {
-            preserveScroll: true,
-            onSuccess: () => {
-                const receptionistIndex = receptionists.findIndex(r => r.id === id);
-                if (receptionistIndex !== -1) receptionists[receptionistIndex].is_banned = false;
-            },
-        });
+
+router.post(route('manager.unban-receptionist', id), {}, {
+    preserveScroll: true,
+    onSuccess: () => {
+        const receptionistIndex = receptionists.findIndex(r => r.id === id);
+        if (receptionistIndex !== -1) receptionists[receptionistIndex].is_banned = false;
+    }
+});
     }
 };
+
 const tabs = [
     { label: 'All Clients', href: route('manager.manage-clients') },
     { label: 'Pending Clients', href: route('manager.manage-receptionists') },
@@ -210,7 +213,7 @@ const tabs = [
                                             variant="outline"
                                             size="sm"
                                             class="text-yellow-500"
-                                            @click="banReceptionist(receptionist.id)"
+                                            @click="banReceptionist(receptionist)"
                                         >
                                             Ban
                                         </Button>
