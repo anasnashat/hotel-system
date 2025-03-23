@@ -13,7 +13,7 @@ import Alert from '@/components/Alert.vue';
 const page = usePage();
 const user = computed(() => page.props.auth.user);
 
-console.log('User Roles:', user.value.roles);
+// console.log('User Roles:', user.value.roles);
 const mainNavItems = computed<NavItem[]>(() => {
     const items: NavItem[] = [
         {
@@ -22,8 +22,8 @@ const mainNavItems = computed<NavItem[]>(() => {
             icon: LayoutGrid,
         },
         {
-            title: 'Receptionists',
-            href: route('receptionist.index'),
+            title: 'Client Management',
+            href: route('clients-management.index'),
             icon: LayoutGrid,
         },
         {
