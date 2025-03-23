@@ -28,7 +28,7 @@ const mainNavItems = computed<NavItem[]>(() => {
         },
         {
             title: 'Manager',
-            href: route('manager.manage-clients'),
+            href: route('managers.index'),
             icon: LayoutGrid,
         },
     ];
