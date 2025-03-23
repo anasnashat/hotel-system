@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Dashboard\AdminManagementController;
 use App\Http\Controllers\RoomController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -37,6 +38,13 @@ Route::resource('rooms', RoomController::class)->except(['update', 'destroy']);
 Route::resource('clients-management', App\Http\Controllers\Dashboard\ClientManagementController::class)->middleware(['auth', 'role:admin|manager']);
 Route::post('approve', [App\Http\Controllers\Dashboard\ClientManagementController::class, 'approve'])->name('client.approve');
 Route::get('show-reservation', [App\Http\Controllers\Dashboard\ClientManagementController::class, 'showReservation'])->name('receptionist.show-reservation');
+
+// =============================================== End ==================================================================================================
+
+Route::resource('managers', AdminManagementController::class);
+// =============================================== End ==================================================================================================
+
+
 
 Route::middleware(['auth', 'role:admin|manager'])->prefix('manager')->group(function () {
     Route::get('/dashboard', [ManagerController::class, 'index'])->name('manager.dashboard');
