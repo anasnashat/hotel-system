@@ -77,19 +77,22 @@ class ManagerController extends Controller
 }
 
 
-    public function manageReceptionists()
-    {
-        $receptionists = User::whereHas('roles', function ($query) {
-            $query->where('name', '=', 'receptionist');
-        })->get()->map(function ($receptionist) {
-            $receptionist->is_banned = $receptionist->isbanned();
-            return $receptionist;
-        });
 
-        return inertia('Manager/ManageReceptionists', [
-            'receptionists' => $receptionists,
-        ]);
-    }
+public function manageReceptionists()
+{
+    $receptionists = User::whereHas('roles', function ($query) {
+        $query->where('name', '=', 'receptionist');
+    })->get()->map(function ($receptionist) {
+        $receptionist->is_banned = $receptionist->isbanned();
+        return $receptionist;
+    });
+
+    return inertia('Manager/ManageReceptionists', [
+        'receptionists' => $receptionists,
+    ]);
+}
+
+
 
     public function updateReceptionist(Request $request, $id)
     {
