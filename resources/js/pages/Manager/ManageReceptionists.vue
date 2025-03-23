@@ -149,8 +149,8 @@ router.post(route('manager.unban-receptionist', id), {}, {
 };
 
 const tabs = [
-    { label: 'All Clients', href: route('manager.manage-clients') },
-    { label: 'Pending Clients', href: route('manager.manage-receptionists') },
+    { label: 'Managers', href: route('managers.index') },
+    { label: 'Receptionists', href: route('manager.manage-receptionists') },
 ];
 </script>
 
