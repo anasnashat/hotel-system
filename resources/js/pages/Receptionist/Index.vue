@@ -15,7 +15,7 @@ import TabsHeader from '@/components/TabsHeader.vue';
 // Breadcrumbs
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Receptionist Requests', href: '/receptionist/requests' },
+    { title: 'Clients Requests', href: '/Client/requests' },
 ];
 
 // Page props
@@ -67,12 +67,26 @@ const submitForm = () => {
     isLoading.value = true;
     if (isEditMode.value && currentRequest.value) {
         // Update request
-        router.put(route('receptionist.update-request', currentRequest.value.id), form.value, {
+        router.put(route('clients-management.update', currentRequest.value.id), form.value, {
             preserveScroll: true,
             onSuccess: () => {
+                // Update the local state
+                const index = requests.value.findIndex(r => r.id === currentRequest.value?.id);
+                if (index !== -1) {
+                    requests.value[index] = {
+                        ...requests.value[index],
+                        user: {
+                            ...requests.value[index].user,
+                            name: form.value.name,
+                            email: form.value.email,
+                        },
+                        national_id: form.value.national_id,
+                        phone_number: form.value.phone_number,
+                    };
+                }
+
                 isModalOpen.value = false;
                 isLoading.value = false;
-                router.reload({ only: ['requests'] }); // Refresh list
             },
             onError: () => {
                 isLoading.value = false;
@@ -90,12 +104,14 @@ const openDeleteDialog = (request: Request) => {
 // Delete request
 const deleteRequest = () => {
     if (requestToDelete.value) {
-        router.delete(route('receptionist.delete-request', requestToDelete.value.id), {
+        router.delete(route('clients-management.destroy', requestToDelete.value.user.id), {
             preserveScroll: true,
             onSuccess: () => {
+                // Remove the deleted request from the local state
+                requests.value = requests.value.filter(r => r.id !== requestToDelete.value?.id);
+
                 isDeleteDialogOpen.value = false; // Close the dialog
                 requestToDelete.value = null;
-                router.reload({ only: ['requests'] }); // Refresh list
             },
         });
     }
@@ -103,19 +119,22 @@ const deleteRequest = () => {
 
 // Approve request
 const approveRequest = (client_id: number) => {
-    router.post(route('receptionist.approve'), { client_id }, {
+    router.post(route('client.approve'), { client_id }, {
         preserveScroll: true,
         onSuccess: () => {
+            // Update the local state
             const requestIndex = requests.value.findIndex(r => r.id === client_id);
-            if (requestIndex !== -1) requests.value[requestIndex].status = 'Approved';
+            if (requestIndex !== -1) {
+                requests.value[requestIndex].status = 'Approved';
+            }
         },
     });
 };
 
 const tabs = [
-    {'label': 'Requests', 'href': route('receptionist.index')},
-    {'label': 'Reservation', 'href': route('receptionist.show-reservation')},
-]
+    { label: 'Requests', href: route('clients-management.index') },
+    { label: 'Reservation', href: route('receptionist.show-reservation') },
+];
 </script>
 
 <template>
@@ -123,15 +142,6 @@ const tabs = [
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="w-full p-6 max-w-8xl">
             <TabsHeader title="Client Management" :tabs="tabs" />
-
-            <div class="flex justify-end mb-4">
-                <Button @click="openAddModal" class="gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                    </svg>
-                    Add Client
-                </Button>
-            </div>
 
             <!-- Requests Table -->
             <Card>
