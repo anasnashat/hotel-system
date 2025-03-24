@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\UserProfile;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CountryController;
+use App\Http\Controllers\UserProfileController;
 
 
 Route::get('test/', [App\Http\Controllers\Dashboard\TestController::class, 'index']);
@@ -95,6 +96,15 @@ Route::get('/favorites', function () {
     return Inertia::render('Favorites');
 })->name('favorites');
 
+Route::middleware(['auth'])->group(function () {
+    // Explicitly define the dashboard route
+    Route::get('/userdashboard', [UserProfileController::class, 'index'])->name('userdashboard');
+    Route::get('/userdashboard/{id}/edit', [UserProfileController::class, 'edit'])->name('userdashboard.edit');
+    Route::put('/userdashboard/{id}/update', [UserProfileController::class, 'update'])->name('userdashboard.update');
+    Route::delete('/userdashboard/{id}/delete', [UserProfileController::class, 'destroy'])->name('userdashboard.delete');
+    // CRUD routes for user profiles
+    // Route::resource('userprofiles', UserProfileController::class);
+});
 
 Route::post('/logout', function (Request $request) {
     \Illuminate\Support\Facades\Auth::logout();
