@@ -43,7 +43,7 @@ Route::get('all-clients', [App\Http\Controllers\Dashboard\ClientManagementContro
 
 // =============================================== End ==================================================================================================
 
-Route::resource('managers', AdminManagementController::class)->middleware(['auth', 'role:admin']);;
+Route::resource('managers', AdminManagementController::class)->middleware(['auth', 'role:admin|manager']);;
 // =============================================== End ==================================================================================================
 
 
