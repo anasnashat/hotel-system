@@ -183,7 +183,7 @@ const tabs = [
                                         </Button>
                                     </div>
                                 </TableCell>
-                                <TableCell>
+                                <TableCell v-else>
                                         <p class="text-gray-500 italic bg-gray-100 p-2 rounded-md border border-gray-300">
                                             You can't perform any actions on this Floor.
                                         </p>
