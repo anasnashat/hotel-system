@@ -216,7 +216,7 @@ const tabs = [
                             <TableRow>
                                 <TableHead>ID</TableHead>
                                 <TableHead>Name</TableHead>
-                                <TableHead>Email</TableHead>manager1@hotel.com
+                                <TableHead>Email</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead>Created At</TableHead>
                                 <TableHead v-if="isAdmin">Created By</TableHead>
