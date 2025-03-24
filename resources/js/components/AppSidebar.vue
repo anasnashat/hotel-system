@@ -36,7 +36,7 @@ const mainNavItems = computed<NavItem[]>(() => {
     // Add Floor Management if the user is an admin or manager
     if (user.value?.roles && Array.isArray(user.value.roles)) {
         const isAdminOrManager = user.value.roles.some((role: { name: string }) => ['admin', 'manager'].includes(role.name));
-        console.log('Is Admin or Manager:', isAdminOrManager);
+        // console.log('Is Admin or Manager:', isAdminOrManager);
 
         if (isAdminOrManager) {
             items.push({

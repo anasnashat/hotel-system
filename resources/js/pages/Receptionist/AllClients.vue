@@ -15,7 +15,7 @@ import TabsHeader from '@/components/TabsHeader.vue';
 // Breadcrumbs
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Clients', href: '/clients' },
+    { title: 'Clients', href: route('receptionist.all-clients') },
 ];
 
 // Page props
@@ -144,12 +144,15 @@ const deleteClient = () => {
         });
     }
 };
+const isAdminOrManager = page.props.auth.user.roles.some((role: { name: string }) => ['admin', 'manager'].includes(role.name));
 
 const tabs = [
     { label: 'All Clients', href: route('receptionist.all-clients') },
     { label: 'Requests', href: route('clients-management.index') },
-    { label: 'Reservation', href: route('receptionist.show-reservation') },
 ];
+if (isAdminOrManager){
+    tabs.push({ label: 'Reservation', href: route('receptionist.show-reservation') })
+}
 </script>
 
 <template>

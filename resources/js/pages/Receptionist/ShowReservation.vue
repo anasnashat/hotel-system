@@ -2,7 +2,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { defineProps, ref } from 'vue';
-import { Head, router } from '@inertiajs/vue3';
+import { Head, router, usePage } from '@inertiajs/vue3';
 import {
     Pagination,
     PaginationEllipsis,
@@ -21,16 +21,20 @@ const props = defineProps<{ clients: any }>();
 
 // Reactive clients array
 const clients = ref(props.clients);
-
+const page = usePage() ;
 // Pagination
 const handlePageChange = (page: number) => {
     router.get(route('clients.index', { page }), {}, { preserveScroll: true });
 };
+const isAdminOrManager = page.props.auth.user.roles.some((role: { name: string }) => ['admin', 'manager'].includes(role.name));
+
 const tabs = [
     { label: 'All Clients', href: route('receptionist.all-clients') },
     { label: 'Requests', href: route('clients-management.index') },
-    { label: 'Reservation', href: route('receptionist.show-reservation') },
 ];
+if (isAdminOrManager){
+    tabs.push({ label: 'Reservation', href: route('receptionist.show-reservation') })
+}
 </script>
 
 <template>
