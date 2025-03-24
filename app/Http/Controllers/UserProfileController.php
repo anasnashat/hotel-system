@@ -72,9 +72,14 @@ class UserProfileController extends Controller
             'name' => $request->input('name', $user->name),
             'email' => $request->input('email', $user->email),
         ]);
-        // Update or create user profile
+
+        
         $profile = UserProfile::firstOrCreate(['user_id' => $user->id]);
-    
+
+        // Update phone number
+        $profile->phone_number = $request->input('phone_number', $profile->phone_number);
+        $profile->save();
+
          if ($request->hasFile('avatar')) {
         // Delete old avatar if exists
         if ($user->avatar_image) {
@@ -86,7 +91,7 @@ class UserProfileController extends Controller
         $user->update(['avatar_image' => $avatarPath]);
     }
     
-        $profile->save();
+        
     
         return back()->with([
             'success' => 'Profile updated successfully',
