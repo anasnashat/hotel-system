@@ -19,7 +19,7 @@ class EnsureUserIsRoomOwner
         $roomId = $request->route('room');
         $room = Room::findOrFail($roomId);
         if (!$room || $room->created_by !== auth()->id()) {
-            return redirect()->back()->with('error', 'You are not authorized to delete this image');
+            return redirect()->back()->with('error', 'You are not authorized to  this action.');
         }
         return $next($request);
     }
