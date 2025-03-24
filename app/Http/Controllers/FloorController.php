@@ -94,6 +94,9 @@ class FloorController extends Controller
         $floor = Floor::findOrFail($id);
         try {
             DB::beginTransaction();
+            if ($floor->rooms()->exists()) {
+                return redirect()->back()->with('error', 'Floor has rooms, cannot delete.');
+            }
             $floor->delete();
             DB::commit();
             return redirect()->route('floors.index')->with('success', 'Floors deleted successfully.');
