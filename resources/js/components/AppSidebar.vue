@@ -21,14 +21,20 @@ const mainNavItems = computed<NavItem[]>(() => {
             href: '/dashboard',
             icon: LayoutGrid,
         },
+
         {
-            title: 'Client Management',
-            href: route('clients-management.index'),
+            title: 'Manage Manager',
+            href: route('managers.index'),
             icon: LayoutGrid,
         },
         {
-            title: 'Manager',
-            href: route('managers.index'),
+            title: 'Manage Receptionist',
+            href: route('manager.manage-receptionists'),
+            icon: LayoutGrid,
+        },
+        {
+            title: 'Manage Clients',
+            href: route('clients-management.index'),
             icon: LayoutGrid,
         },
     ];
@@ -40,7 +46,7 @@ const mainNavItems = computed<NavItem[]>(() => {
 
         if (isAdminOrManager) {
             items.push({
-                title: 'Floor Management',
+                title: 'Manage Floors',
                 href: route('floors.index'),
                 icon: LayoutGrid,
             });
@@ -49,12 +55,11 @@ const mainNavItems = computed<NavItem[]>(() => {
 
     // Add Rooms Management if the user is an admin
     if (user.value?.roles && Array.isArray(user.value.roles)) {
-        const isAdmin = user.value.roles.some((role: { name: string }) => role.name === 'admin');
-        console.log('Is Admin:', isAdmin);
+        const isAdminOrManager = user.value.roles.some((role: { name: string }) => ['admin', 'manager'].includes(role.name));
 
-        if (isAdmin) {
+        if (isAdminOrManager) {
             items.push({
-                title: 'Rooms Management',
+                title: 'Manage Rooms',
                 href: route('rooms.index'),
                 icon: LayoutGrid,
             });

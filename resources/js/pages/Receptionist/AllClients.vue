@@ -72,7 +72,7 @@ const submitForm = () => {
     isLoading.value = true;
     if (isEditMode.value && currentClient.value) {
         // Update client
-        router.put(route('clients.update', currentClient.value.id), form.value, {
+        router.put(route('clients-management.update', currentClient.value.id), form.value, {
             preserveScroll: true,
             onSuccess: () => {
                 // Update the local state
@@ -99,7 +99,7 @@ const submitForm = () => {
         });
     } else {
         // Create client
-        router.post(route('clients.store'), form.value, {
+        router.post(route('clients-management.store'), form.value, {
             preserveScroll: true,
             onSuccess: () => {
                 // Add the new client to the local state
@@ -132,7 +132,7 @@ const openDeleteDialog = (client: Client) => {
 // Delete client
 const deleteClient = () => {
     if (clientToDelete.value) {
-        router.delete(route('clients.destroy', clientToDelete.value.id), {
+        router.delete(route('clients-management.destroy', clientToDelete.value.id), {
             preserveScroll: true,
             onSuccess: () => {
                 // Remove the deleted client from the local state
@@ -144,14 +144,16 @@ const deleteClient = () => {
         });
     }
 };
+
 const isAdminOrManager = page.props.auth.user.roles.some((role: { name: string }) => ['admin', 'manager'].includes(role.name));
 
 const tabs = [
     { label: 'Requests', href: route('clients-management.index') },
-    { label: 'Reservation', href: route('receptionist.show-reservation') }
+    { label: 'Reservation', href: route('receptionist.show-reservation') },
+    { label: 'My Approved Clients', href: route('receptionist.myApprovedClients') },
 ];
-if (isAdminOrManager){
-    tabs.push(    { label: 'All Clients', href: route('receptionist.all-clients') })
+if (isAdminOrManager) {
+    tabs.push({ label: 'All Clients', href: route('receptionist.all-clients') });
 }
 </script>
 

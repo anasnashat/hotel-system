@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateClientRequest;
 use App\Models\Reservation;
 use App\Models\User;
 use App\Models\UserProfile;
@@ -60,16 +61,35 @@ class ClientManagementController extends Controller
             'client_id' => 'required|exists:users,id'
         ]);
 
-        $userProfile = UserProfile::findOrFail($request->client_id);
-        $userProfile->update([
-            'approved_by' => auth()->id(),
-            'approved_at' => now(),
-        ]);
+        try {
+            DB::beginTransaction();
+            $userProfile = UserProfile::findOrFail($request->client_id);
+            $userProfile->update([
+                'approved_by' => auth()->id(),
+                'approved_at' => now(),
+            ]);
+            DB::commit();
+            return back()->with([
+                'success' => 'Client approved successfully',
+            ]);
+        } catch (\Exception){
+            DB::rollBack();
+            return back()->with([
+                'error' => 'Something went wrong',
+            ]);
+        }
+
 //        dd($userProfile);
+    }
 
+    public function myApprovedClients()
+    {
+        $clients = UserProfile::with('user')->whereHas('user.roles', function ($query) {
+            $query->where('name', '=', 'client');
+        })->where('approved_by', '=', auth()->id())->paginate(10);
 
-        return back()->with([
-            'success' => 'Client approved successfully',
+        return inertia('Receptionist/MyApprovedClients', [
+            'clients' => $clients
         ]);
     }
 
@@ -105,33 +125,35 @@ class ClientManagementController extends Controller
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+   
+    public function update(UpdateClientRequest $request, string $id)
     {
         $user = UserProfile::findOrFail($id);
 
-        $request = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->user->id,
-            'phone_number' => 'required|string|max:255',
-            'national_id' => 'required|string|max:255|unique:user_profiles,national_id,' . $id,
+        try {
+            DB::beginTransaction();
+            $user->user->update([
+                'name' => $request['name'],
+                'email' => $request['email'],
+            ]);
+            $user->update([
+                'phone_number' => $request['phone_number'],
+                'national_id' => $request['national_id'],
+            ]);
+            DB::commit();
+            return back()->with([
+                'success' => 'Client updated successfully',
+            ]);
+        } catch (\Exception $e){
+            DB::rollBack();
+            return back()->with([
+                'error' => 'Something went wrong',
+            ]);
+        }
 
-        ]);
-        $user->user->update([
-            'name' => $request['name'],
-            'email' => $request['email'],
-        ]);
-        $user->update([
-            'phone_number' => $request['phone_number'],
-            'national_id' => $request['national_id'],
-        ]);
-        return back()->with([
-            'success' => 'Client updated successfully',
-        ]);
 
     }
+
 
     /**
      * Remove the specified resource from storage.

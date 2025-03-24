@@ -185,7 +185,6 @@ const handlePageChange = (page: number) => {
 };
 
 const tabs = [
-    { label: 'Managers', href: route('managers.index') },
     { label: 'Receptionists', href: route('manager.manage-receptionists') },
 ];
 </script>
@@ -235,7 +234,7 @@ const tabs = [
                                 <TableCell>{{ receptionist.email }}</TableCell>
                                 <TableCell>{{ receptionist.is_banned ? 'Banned' : 'Active' }}</TableCell>
                                 <TableCell>{{ new Date(receptionist.created_at).toLocaleDateString() }}</TableCell>
-                                <TableCell v-if="isAdmin">{{ receptionist.profile?.created_by?.name }}</TableCell>
+                                <TableCell v-if="isAdmin">{{ receptionist.profile?.created_by?.name ||"N/A"}}</TableCell>
                                 <TableCell v-if="isAdmin || page.props.auth.user.id === receptionist.profile?.created_by?.id">
                                     <div class="flex gap-2">
                                         <Button

@@ -26,16 +26,16 @@ const form = useForm({
     password_confirmation: "",
     gender: "",
     national_id: "",
-    country: "", 
+    country: "",
     country_code: "",
     phone_number: "",
     avatar: null,
 });
 
 /**
- * Function to check if a given field value (e.g., email, national ID, phone number) 
+ * Function to check if a given field value (e.g., email, national ID, phone number)
  * already exists in the system to prevent duplicates.
- * 
+ *
  * */
 const checkExistence = async (field, value) => {
     if (!value) return false; // Prevent sending empty values
@@ -59,7 +59,7 @@ const checkExistence = async (field, value) => {
 const nextStep = async () => {
     form.clearErrors();
     // Validate fields before moving forward
-    if(step.value==1 && /\d/.test(form.name) ) return form.setError("name", "Name should not contain numbers.");
+    if(step.value===1 && /\d/.test(form.name) ) return form.setError("name", "Name should not contain numbers.");
     if (step.value === 1 && !form.name) return form.setError("name", "Name is required");
     if (step.value === 1 && !form.email) return form.setError("email", "Email is required");
     if (step.value === 1 && !form.password) return form.setError("password", "Password is required");
@@ -73,18 +73,18 @@ const nextStep = async () => {
     const emailExists = await checkExistence("email", form.email);
     if (emailExists) return form.setError("email", "Email is already registered");
 
-    if(step.value==2 && !/^\d+$/.test(form.national_id)) return form.setError("national_id", "National ID should contain only digits.");
+    if(step.value===2 && !/^\d+$/.test(form.national_id)) return form.setError("national_id", "National ID should contain only digits.");
     if (step.value === 2 && !form.gender) return form.setError("gender", "Gender is required");
     if (step.value === 2 && !form.national_id) return form.setError("national_id", "National ID is required");
     if (step.value === 2 && !form.country) return form.setError("country", "Country is required");
     if (step.value === 2 && !form.phone_number) return form.setError("phone_number", "Phone Number is required");
-    if(step.value==2 && !/^\d+$/.test(form.phone_number)) return form.setError("phone_number", "Phone number should contain only digits.");
+    if(step.value===2 && !/^\d+$/.test(form.phone_number)) return form.setError("phone_number", "Phone number should contain only digits.");
     const nationalIdExists = await checkExistence("national_id", form.national_id);
     if (nationalIdExists) return form.setError("national_id", "National ID is already registered");
 
     const phoneExists = await checkExistence("phone_number", form.phone_number);
     if (phoneExists) return form.setError("phone_number", "Phone number is already registered");
-    
+
     step.value++;
 };
 
@@ -98,7 +98,7 @@ const submit = () => {
         forceFormData: true,
         onError: (errors) => {
             if (errors.email) {
-                form.setError("email", errors.email); 
+                form.setError("email", errors.email);
             }
             console.log("Validation errors:", errors);
         },
@@ -162,7 +162,7 @@ const updateCountryCode = () => {
 
             <!-- Step 2: Personal Details -->
             <div v-if="step === 2">
-                
+
                 <div class="space-y-2 mb-2 mt-2 ms-2">
                     <Label>Gender</Label>
                     <div class="flex items-center space-x-3 cursor-pointer">
@@ -186,7 +186,7 @@ const updateCountryCode = () => {
                 <option v-for="country in countries" :key="country.cca2" :value="country.name">
                 {{ country.name }}
             </option>
-            </select>                                  
+            </select>
             <p v-if="form.errors.country" class="text-red-500 text-sm mb-2">{{ form.errors.country }}</p>
 
                 <Label>Country Code</Label>
@@ -204,7 +204,7 @@ const updateCountryCode = () => {
             <div v-if="step === 3">
                 <Label>Profile Picture</Label>
                 <Input type="file" @change="(e) => form.avatar = e.target.files[0]" class="mb-4 mt-1"/>
-                
+
              <!-- Checkboxes -->
              <div class="mt-4">
                     <label class="flex items-center space-x-2">
@@ -221,7 +221,7 @@ const updateCountryCode = () => {
                         <Button variant="outline" @click="prevStep">Back</Button>
                         <Button @click="submit" :disabled="!termsAccepted || !honestyConfirmed" class="bg-[#5b5329] text-white disabled:opacity-50">Register</Button>
                     </div>
-                
+
             </div>
         </CardContent>
     </Card>

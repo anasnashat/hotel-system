@@ -4,7 +4,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { router, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -36,6 +35,7 @@ const page = usePage();
 interface Floor {
     id: number;
     name: string;
+    number: number,
     created_by: { name: string };
 }
 
@@ -142,7 +142,7 @@ const tabs = [
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                     </svg>
-                    Add Client
+                    Add Floor
                 </Button>
             </div>
 
@@ -157,6 +157,7 @@ const tabs = [
                             <TableRow>
                                 <TableHead>ID</TableHead>
                                 <TableHead>Name</TableHead>
+                                <TableHead>Number</TableHead>
                                 <TableHead v-if="$page.props.auth.user.roles[0].name === 'admin'">Created By</TableHead>
                                 <TableHead class="w-32">Actions</TableHead>
                             </TableRow>
@@ -170,8 +171,9 @@ const tabs = [
                             <TableRow v-for="floor in floors.data" :key="floor.id">
                                 <TableCell>{{ floor.id }}</TableCell>
                                 <TableCell>{{ floor.name }}</TableCell>
+                                <TableCell>{{ floor.number }}</TableCell>
                                 <TableCell v-if="$page.props.auth.user.roles[0].name === 'admin'">{{ floor.created_by.name }}</TableCell>
-                                <TableCell>
+                                <TableCell v-if="page.props.auth.user.id === floor.created_by.id || page.props.auth.user.roles[0].name === 'admin'">
                                     <div class="flex gap-2">
                                         <Button variant="outline" size="sm" @click="openEditModal(floor)">
                                             Edit
@@ -180,6 +182,11 @@ const tabs = [
                                             Delete
                                         </Button>
                                     </div>
+                                </TableCell>
+                                <TableCell v-else>
+                                        <p class="text-gray-500 italic bg-gray-100 p-2 rounded-md border border-gray-300">
+                                            You can't perform any actions on this Floor.
+                                        </p>
                                 </TableCell>
                             </TableRow>
                         </TableBody>

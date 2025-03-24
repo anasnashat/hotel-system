@@ -226,7 +226,7 @@ const tabs = [
                                 <TableCell>{{ room.floor_name }}</TableCell>
                                 <TableCell v-if="$page.props.auth.user.roles[0].name === 'admin'">{{ room.manager_name }}</TableCell>
 
-                                <TableCell v-if="room.manager_id === $page.props.auth.user.id">
+                                <TableCell v-if="room.manager_id === $page.props.auth.user.id || $page.props.auth.user.roles[0].name === 'admin'">
                                     <div class="flex gap-2">
                                         <Button variant="outline" size="sm" @click="openEditModal(room)">
                                             Edit
@@ -234,6 +234,13 @@ const tabs = [
                                         <Button variant="destructive" size="sm" @click="openDeleteDialog(room)">
                                             Delete
                                         </Button>
+                                    </div>
+                                </TableCell>
+                                <TableCell v-else>
+                                    <div class="flex gap-2">
+                                        <p class="text-gray-500 italic bg-gray-100 p-2 rounded-md border border-gray-300">
+                                            You can't perform any actions on this Room.
+                                        </p>
                                     </div>
                                 </TableCell>
                             </TableRow>
@@ -293,7 +300,7 @@ const tabs = [
                         <p v-if="page.props.errors.capacity" class="text-sm text-red-500">{{ page.props.errors.capacity }}</p>
                     </div>
                     <div class="space-y-2">
-                        <Label>Price per night ($)</Label>
+                        <Label>Price  ($)</Label>
                         <Input v-model="form.price" type="number" step="0.01" placeholder="Enter price in dollars" />
                         <p v-if="page.props.errors.price" class="text-sm text-red-500">{{ page.props.errors.price }}</p>
                     </div>
