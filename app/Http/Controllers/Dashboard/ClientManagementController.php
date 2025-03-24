@@ -125,9 +125,7 @@ class ClientManagementController extends Controller
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+   
     public function update(UpdateClientRequest $request, string $id)
     {
         $user = UserProfile::findOrFail($id);
