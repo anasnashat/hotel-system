@@ -26,14 +26,16 @@ const page = usePage() ;
 const handlePageChange = (page: number) => {
     router.get(route('clients.index', { page }), {}, { preserveScroll: true });
 };
+
 const isAdminOrManager = page.props.auth.user.roles.some((role: { name: string }) => ['admin', 'manager'].includes(role.name));
 
 const tabs = [
     { label: 'Requests', href: route('clients-management.index') },
-    { label: 'Reservation', href: route('receptionist.show-reservation') }
+    { label: 'Reservation', href: route('receptionist.show-reservation') },
+    { label: 'My Approved Clients', href: route('receptionist.myApprovedClients') },
 ];
-if (isAdminOrManager){
-    tabs.push(    { label: 'All Clients', href: route('receptionist.all-clients') })
+if (isAdminOrManager) {
+    tabs.push({ label: 'All Clients', href: route('receptionist.all-clients') });
 }
 </script>
 
