@@ -37,11 +37,19 @@ const form = useForm({
  *
  * */
 const checkExistence = async (field, value) => {
+    if (!value) return false; // Prevent sending empty values
+
     try {
         const response = await axios.post("/check-existence", { field, value });
-        return response.data.exists;
+
+        if (response.data && typeof response.data.exists !== "undefined") {
+            return response.data.exists;
+        } else {
+            console.error(`Unexpected response format for ${field}:`, response.data);
+            return false;
+        }
     } catch (error) {
-        console.error(`Error checking ${field}:`, error);
+        console.error(`Error checking ${field}:`, error.response?.data || error.message);
         return false;
     }
 };
