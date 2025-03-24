@@ -63,18 +63,15 @@ class UserProfileController extends Controller
     public function update(UpdateUserProfileRequest $request, string $id)
     {
         $user = Auth::user();
-        dd($user);
         // Ensure user is updating their own profile or they have admin privileges
         if ($user->id != $id) {
             abort(403, 'Unauthorized action.');
         }
-    
         // Update user information
         $user->update([
             'name' => $request->input('name', $user->name),
             'email' => $request->input('email', $user->email),
         ]);
-    
         // Update or create user profile
         $profile = UserProfile::firstOrCreate(['user_id' => $user->id]);
     
