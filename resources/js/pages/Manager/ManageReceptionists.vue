@@ -185,7 +185,6 @@ const handlePageChange = (page: number) => {
 };
 
 const tabs = [
-    { label: 'Managers', href: route('managers.index') },
     { label: 'Receptionists', href: route('manager.manage-receptionists') },
 ];
 </script>
