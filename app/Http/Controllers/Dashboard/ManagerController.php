@@ -24,16 +24,27 @@ public function manageReceptionists()
     ]);
 }
 
-    public function updateReceptionist(UpdateReceptionistRequest $request, $id)
-   {
+public function updateReceptionist(UpdateReceptionistRequest $request, $id)
+{
     $user = User::findOrFail($id);
+
+    $avatarPath = $user->avatar_image;
+    if ($request->hasFile('avatar_image')) {
+        $avatarPath = $request->file('avatar_image')->store('avatars', 'public');
+    }
+
     $user->update([
         'name' => $request->name,
         'email' => $request->email,
+        'avatar_image' => $avatarPath,
+    ]);
+
+    $user->profile()->update([
+        'national_id' => $request->national_id,
     ]);
 
     return redirect()->back()->with('success', 'Receptionist updated successfully.');
-    }
+}
 
 
     public function storeReceptionist(StoreReceptionistRequest $request)

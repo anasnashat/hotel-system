@@ -30,4 +30,20 @@ class StoreReceptionistRequest extends FormRequest
             ];
     
     }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Name is required',
+            'email.required' => 'Email is required',
+            'email.email' => 'Email must be a valid email address',
+            'email.unique' => 'Email is already taken',
+            'password.required' => 'Password is required',
+            'password.min' => 'Password must be at least 8 characters',
+            'national_id.required' => 'National ID is required',
+            'avatar_image.image' => 'Avatar must be an image',
+            'avatar_image.mimes' => 'Avatar must be a jpeg, png, jpg, or gif',
+            'avatar_image.max' => 'Avatar must be less than 2MB',
+        ];
+    }
 }

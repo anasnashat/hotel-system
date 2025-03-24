@@ -25,7 +25,21 @@ class UpdateReceptionistRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $this->route('id'),
             'national_id' => 'required|string|max:255',
-            'avatar_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+           
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Name is required',
+            'email.required' => 'Email is required',
+            'email.email' => 'Email must be a valid email address',
+            'email.unique' => 'Email is already taken',
+            'national_id.required' => 'National ID is required',
+            'avatar_image.image' => 'Avatar must be an image',
+            'avatar_image.mimes' => 'Avatar must be a jpeg, png, jpg, or gif',
+            
         ];
     }
 }
