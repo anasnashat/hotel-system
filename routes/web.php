@@ -38,10 +38,11 @@ Route::resource('rooms', RoomController::class)->except(['update', 'destroy']);
 Route::resource('clients-management', App\Http\Controllers\Dashboard\ClientManagementController::class)->middleware(['auth', 'role:admin|manager']);
 Route::post('approve', [App\Http\Controllers\Dashboard\ClientManagementController::class, 'approve'])->name('client.approve');
 Route::get('show-reservation', [App\Http\Controllers\Dashboard\ClientManagementController::class, 'showReservation'])->name('receptionist.show-reservation');
+Route::get('all-clients', [App\Http\Controllers\Dashboard\ClientManagementController::class, 'allClients'])->name('receptionist.all-clients');
 
 // =============================================== End ==================================================================================================
 
-Route::resource('managers', AdminManagementController::class);
+Route::resource('managers', AdminManagementController::class)->middleware(['auth', 'role:admin']);;
 // =============================================== End ==================================================================================================
 
 
