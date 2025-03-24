@@ -1,11 +1,8 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Dashboard\AdminManagementController;
-use App\Http\Controllers\RoomController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use App\Http\Controllers\Dashboard\ManagerController;
 use App\Models\User;
 use App\Models\UserProfile;
 use Illuminate\Http\Request;
@@ -13,56 +10,7 @@ use App\Http\Controllers\CountryController;
 use App\Http\Controllers\UserProfileController;
 
 
-Route::get('test/', [App\Http\Controllers\Dashboard\TestController::class, 'index']);
-//Route::group(['prefix' => 'receptionist'], function () {
-//    Route::get('/', [App\Http\Controllers\Dashboard\ReceptionistController::class, 'index'])->name('receptionist.index');
-//    Route::post('approve', [App\Http\Controllers\Dashboard\ReceptionistController::class, 'approve'])->name('receptionist.approve');
-//    Route::get('show-reservation', [App\Http\Controllers\Dashboard\ReceptionistController::class, 'showReservation'])->name('receptionist.show-reservation');
-//});
 
-// =============================================== This is the routes for the floor CRUD ==============================================================
-Route::resource('floors', App\Http\Controllers\FloorController::class)->middleware(['auth', 'role:admin|manager']);
-// =============================================== End ==================================================================================================
-
-// =============================================== This is the routes for the floor CRUD ==============================================================
-Route::middleware(['auth', 'role:admin|manager'])->group(function () {
-Route::resource('rooms', RoomController::class)->except(['update', 'destroy']);
-    Route::put('/rooms/{room}', [RoomController::class, 'update'])->middleware('room.owner')->name('rooms.update');
-    Route::delete('/rooms/{room}', [RoomController::class, 'destroy'])->middleware('room.owner')->name('rooms.destroy');
-    Route::delete('/rooms/{room}/images/{image}', [RoomController::class, 'deleteImage'])
-        ->middleware('room.owner')
-        ->name('rooms.images.destroy');
-});
-
-// =============================================== End ==================================================================================================
-
-Route::resource('clients-management', App\Http\Controllers\Dashboard\ClientManagementController::class)->middleware(['auth', 'role:admin|manager|receptionist']);
-Route::post('approve', [App\Http\Controllers\Dashboard\ClientManagementController::class, 'approve'])->name('client.approve');
-Route::get('show-reservation', [App\Http\Controllers\Dashboard\ClientManagementController::class, 'showReservation'])->name('receptionist.show-reservation');
-Route::get('all-clients', [App\Http\Controllers\Dashboard\ClientManagementController::class, 'allClients'])->name('receptionist.all-clients')->middleware(['auth', 'role:admin|manager']);
-
-// =============================================== End ==================================================================================================
-
-Route::resource('managers', AdminManagementController::class)->middleware(['auth', 'role:admin|manager']);;
-// =============================================== End ==================================================================================================
-
-
-
-Route::middleware(['auth', 'role:admin|manager'])->prefix('manager')->group(function () {
-    Route::get('/dashboard', [ManagerController::class, 'index'])->name('manager.dashboard');
-    Route::get('/manage-clients', [ManagerController::class, 'manageClients'])->name('manager.manage-clients');
-    Route::get('/clients/{id}/edit', [ManagerController::class, 'editClient'])->name('manager.edit-client');
-    Route::put('/clients/{id}/update', [ManagerController::class, 'updateClient'])->name('manager.update-client');
-    Route::delete('/clients/{id}/delete', [ManagerController::class, 'deleteClient'])->name('manager.delete-client');
-    Route::post('/clients/approve', [ManagerController::class, 'approve'])->name('manager.approve-client');
-    // Routes for managing receptionists
-    Route::get('/manage-receptionists', [ManagerController::class, 'manageReceptionists'])->name('manager.manage-receptionists');
-    Route::put('/receptionists/{id}/update', [ManagerController::class, 'updateReceptionist'])->name('manager.update-receptionist');
-    Route::delete('/receptionists/{id}/delete', [ManagerController::class, 'deleteReceptionist'])->name('manager.delete-receptionist');
-    Route::post('/manager/store-receptionist', [ManagerController::class, 'storeReceptionist'])->name('manager.store-receptionist');
-    Route::post('/receptionists/{id}/ban', [ManagerController::class, 'banReceptionist'])->name('manager.ban-receptionist');
-    Route::post('/receptionists/{id}/unban', [ManagerController::class, 'unbanReceptionist'])->name('manager.unban-receptionist');
-});
 
 Route::get('/login', [AuthenticatedSessionController::class, 'create'])
     ->name('login');
@@ -163,3 +111,4 @@ Route::get('/waiting-approval', function () {
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
+require __DIR__ . '/dashboard.php';
