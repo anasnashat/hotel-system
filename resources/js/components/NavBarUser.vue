@@ -77,9 +77,11 @@ const logout = () => {
 
     <!-- Show User Icon and Logout Button if user is logged in -->
     <template v-else>
+      <Link href="/userdashboard">
       <button class="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
         <UserIcon :size="20" />
       </button>
+    </Link>
       <button @click="logout" class="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
         <LogOut :size="20" />
       </button>
