@@ -13,6 +13,7 @@ const countries = ref([]); // Store country data
 
 // Define a reactive reference to track the current step of the registration proces
 const step = ref(1);
+
 // Checkbox States
 const termsAccepted = ref(false);
 const honestyConfirmed = ref(false);
