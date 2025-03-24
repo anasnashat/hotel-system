@@ -75,16 +75,16 @@ class UserProfileController extends Controller
         // Update or create user profile
         $profile = UserProfile::firstOrCreate(['user_id' => $user->id]);
     
-        if ($request->hasFile('avatar')) {
-            // Delete old avatar if exists
-            if ($profile->avatar) {
-                Storage::disk('public')->delete($profile->avatar);
-            }
-    
-            // Store new avatar
-            $avatarPath = $request->file('avatar')->store('avatars', 'public');
-            $profile->avatar = $avatarPath;
+         if ($request->hasFile('avatar')) {
+        // Delete old avatar if exists
+        if ($user->avatar_image) {
+            Storage::disk('public')->delete($user->avatar_image);
         }
+
+        // Store new avatar
+        $avatarPath = $request->file('avatar')->store('avatars', 'public');
+        $user->update(['avatar_image' => $avatarPath]);
+    }
     
         $profile->save();
     

@@ -109,10 +109,7 @@ Route::middleware(['auth'])->group(function () {
     // Explicitly define the dashboard route
     Route::get('/userdashboard', [UserProfileController::class, 'index'])->name('userdashboard');
     Route::get('/userdashboard/{id}/edit', [UserProfileController::class, 'edit'])->name('userdashboard.edit');
-    Route::put('/userdashboard/{id}/update', [UserProfileController::class, 'update'])->name('userdashboard.update');
-    Route::delete('/userdashboard/{id}/delete', [UserProfileController::class, 'destroy'])->name('userdashboard.delete');
-    // CRUD routes for user profiles
-    // Route::resource('userprofiles', UserProfileController::class);
+    Route::post('/userdashboard/{id}/update', [UserProfileController::class, 'update'])->name('userdashboard.update');
 });
 
 Route::post('/logout', function (Request $request) {

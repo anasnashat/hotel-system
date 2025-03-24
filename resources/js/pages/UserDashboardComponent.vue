@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 const props = defineProps<{
-  user?: { id: number; name: string; email: string };
+  user?: { id: number; name: string; email: string, avatar_image?: string };
   profile?: { avatar?: string };
 }>();
 
@@ -48,11 +48,18 @@ const handleFileChange = (event: Event) => {
 
 // Submit form
 const submit = () => {
+  const formData = new FormData();
+  formData.append("name", form.name);
+  formData.append("email", form.email);
+  if (form.avatar) {
+    formData.append("avatar", form.avatar);
+  }
   if (!user.value.id) return; // Prevent errors if user ID is missing
-  form.put(route('userdashboard.update', user.value.id ),{
+  form.post(route('userdashboard.update', user.value.id ),{
     preserveScroll: true,
     onSuccess: () => {
       isModalOpen.value = false;
+      window.location.reload();
     }
   });
 };
@@ -66,7 +73,7 @@ const submit = () => {
       </CardHeader>
       <CardContent>
         <div class="flex flex-col items-center">
-            <img :src="profile.avatar ? `/storage/${profile.avatar}` : '/default-avatar-image.png'" 
+            <img :src="user.avatar_image ? `/storage/${user.avatar_image}` : '/default-avatar-image.png'" 
             alt="User Avatar" 
             class="w-24 h-24 rounded-full mb-4 border shadow" />
           
