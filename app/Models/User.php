@@ -56,6 +56,9 @@ class User extends Authenticatable implements BannableContract
     }
 
 
+
+
+
     /**
      * Get the attributes that should be cast.
      *

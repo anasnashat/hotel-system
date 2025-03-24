@@ -15,68 +15,73 @@ import TabsHeader from '@/components/TabsHeader.vue';
 // Breadcrumbs
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Clients Requests', href: '/Client/requests' },
+    { title: 'Clients', href: '/clients' },
 ];
 
 // Page props
 const page = usePage();
 
-// Request interface
-interface Request {
+// Client interface
+interface Client {
     id: number;
     user: { name: string; email: string };
     national_id: string;
     phone_number: string;
-    status: string; // Added status field
 }
 
 // Props
-const { requests: initialRequests } = defineProps<{ requests: Request[] }>();
+const { clients: initialClients } = defineProps<{ clients: Client[] }>();
 
-// Reactive requests array
-const requests = ref<Request[]>(initialRequests);
+// Reactive clients array
+const clients = ref<Client[]>(initialClients);
 
 // Modal and form state
 const isModalOpen = ref(false);
 const isEditMode = ref(false);
-const currentRequest = ref<Request | null>(null);
+const currentClient = ref<Client | null>(null);
 const form = ref({ name: '', email: '', national_id: '', phone_number: '' });
 
 // Delete confirmation state
 const isDeleteDialogOpen = ref(false);
-const requestToDelete = ref<Request | null>(null);
+const clientToDelete = ref<Client | null>(null);
 
 // Loading state
 const isLoading = ref(false);
 
-// Open modal for editing a request
-const openEditModal = (request: Request) => {
-    isEditMode.value = true;
-    currentRequest.value = request;
-    form.value = {
-        name: request.user.name,
-        email: request.user.email,
-        national_id: request.national_id,
-        phone_number: request.phone_number,
-    };
+// Open modal for adding/editing a client
+const openClientModal = (client: Client | null) => {
+    if (client) {
+        isEditMode.value = true;
+        currentClient.value = client;
+        form.value = {
+            name: client.user.name,
+            email: client.user.email,
+            national_id: client.national_id,
+            phone_number: client.phone_number,
+        };
+    } else {
+        isEditMode.value = false;
+        currentClient.value = null;
+        form.value = { name: '', email: '', national_id: '', phone_number: '' };
+    }
     isModalOpen.value = true;
 };
 
-// Handle form submission (edit)
+// Handle form submission (create/edit)
 const submitForm = () => {
     isLoading.value = true;
-    if (isEditMode.value && currentRequest.value) {
-        // Update request
-        router.put(route('clients-management.update', currentRequest.value.id), form.value, {
+    if (isEditMode.value && currentClient.value) {
+        // Update client
+        router.put(route('clients.update', currentClient.value.id), form.value, {
             preserveScroll: true,
             onSuccess: () => {
                 // Update the local state
-                const index = requests.value.findIndex(r => r.id === currentRequest.value?.id);
+                const index = clients.value.findIndex(c => c.id === currentClient.value?.id);
                 if (index !== -1) {
-                    requests.value[index] = {
-                        ...requests.value[index],
+                    clients.value[index] = {
+                        ...clients.value[index],
                         user: {
-                            ...requests.value[index].user,
+                            ...clients.value[index].user,
                             name: form.value.name,
                             email: form.value.email,
                         },
@@ -92,43 +97,52 @@ const submitForm = () => {
                 isLoading.value = false;
             },
         });
-    }
-};
-
-// Open delete confirmation dialog
-const openDeleteDialog = (request: Request) => {
-    requestToDelete.value = request;
-    isDeleteDialogOpen.value = true;
-};
-
-// Delete request
-const deleteRequest = () => {
-    if (requestToDelete.value) {
-        router.delete(route('clients-management.destroy', requestToDelete.value.user.id), {
+    } else {
+        // Create client
+        router.post(route('clients.store'), form.value, {
             preserveScroll: true,
             onSuccess: () => {
-                // Remove the deleted request from the local state
-                requests.value = requests.value.filter(r => r.id !== requestToDelete.value?.id);
+                // Add the new client to the local state
+                clients.value.push({
+                    id: clients.value.length + 1,
+                    user: {
+                        name: form.value.name,
+                        email: form.value.email,
+                    },
+                    national_id: form.value.national_id,
+                    phone_number: form.value.phone_number,
+                });
 
-                isDeleteDialogOpen.value = false; // Close the dialog
-                requestToDelete.value = null;
+                isModalOpen.value = false;
+                isLoading.value = false;
+            },
+            onError: () => {
+                isLoading.value = false;
             },
         });
     }
 };
 
-// Approve request
-const approveRequest = (client_id: number) => {
-    router.post(route('client.approve'), { client_id }, {
-        preserveScroll: true,
-        onSuccess: () => {
-            // Update the local state
-            const requestIndex = requests.value.findIndex(r => r.id === client_id);
-            if (requestIndex !== -1) {
-                requests.value[requestIndex].status = 'Approved';
-            }
-        },
-    });
+// Open delete confirmation dialog
+const openDeleteDialog = (client: Client) => {
+    clientToDelete.value = client;
+    isDeleteDialogOpen.value = true;
+};
+
+// Delete client
+const deleteClient = () => {
+    if (clientToDelete.value) {
+        router.delete(route('clients.destroy', clientToDelete.value.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                // Remove the deleted client from the local state
+                clients.value = clients.value.filter(c => c.id !== clientToDelete.value?.id);
+
+                isDeleteDialogOpen.value = false; // Close the dialog
+                clientToDelete.value = null;
+            },
+        });
+    }
 };
 
 const tabs = [
@@ -139,15 +153,15 @@ const tabs = [
 </script>
 
 <template>
-    <Head title="Receptionist Requests" />
+    <Head title="Clients" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="w-full p-6 max-w-8xl">
             <TabsHeader title="Client Management" :tabs="tabs" />
 
-            <!-- Requests Table -->
+            <!-- Clients Table -->
             <Card>
                 <CardHeader>
-                    <CardTitle>Requests</CardTitle>
+                    <CardTitle>Clients</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <Table>
@@ -158,49 +172,34 @@ const tabs = [
                                 <TableHead>Email</TableHead>
                                 <TableHead>National ID</TableHead>
                                 <TableHead>Phone Number</TableHead>
-                                <TableHead>Status</TableHead>
                                 <TableHead class="w-32">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            <TableRow v-if="requests.length === 0">
-                                <TableCell colspan="7" class="h-24 text-center">
-                                    No requests found.
+                            <TableRow v-if="clients.length === 0">
+                                <TableCell colspan="6" class="h-24 text-center">
+                                    No clients found.
                                 </TableCell>
                             </TableRow>
-                            <TableRow v-for="request in requests" :key="request.id">
-                                <TableCell>{{ request.id }}</TableCell>
-                                <TableCell>{{ request.user.name || 'N/A' }}</TableCell>
-                                <TableCell>{{ request.user.email || 'N/A' }}</TableCell>
-                                <TableCell>{{ request.national_id || 'N/A' }}</TableCell>
-                                <TableCell>{{ request.phone_number || 'N/A' }}</TableCell>
-                                <TableCell>
-                                    <span :class="request.status === 'Approved' ? 'text-green-500' : 'text-yellow-500'">
-                                        {{ request.status || 'Pending' }}
-                                    </span>
-                                </TableCell>
+                            <TableRow v-for="client in clients" :key="client.id">
+                                <TableCell>{{ client.id }}</TableCell>
+                                <TableCell>{{ client.user.name || 'N/A' }}</TableCell>
+                                <TableCell>{{ client.user.email || 'N/A' }}</TableCell>
+                                <TableCell>{{ client.national_id || 'N/A' }}</TableCell>
+                                <TableCell>{{ client.phone_number || 'N/A' }}</TableCell>
                                 <TableCell>
                                     <div class="flex gap-2">
                                         <Button
-                                            v-if="request.status !== 'Approved'"
                                             variant="outline"
                                             size="sm"
-                                            class="text-green-500"
-                                            @click="approveRequest(request.id)"
-                                        >
-                                            Approve
-                                        </Button>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            @click="openEditModal(request)"
+                                            @click="openClientModal(client)"
                                         >
                                             Edit
                                         </Button>
                                         <Button
                                             variant="destructive"
                                             size="sm"
-                                            @click="openDeleteDialog(request)"
+                                            @click="openDeleteDialog(client)"
                                         >
                                             Delete
                                         </Button>
@@ -213,11 +212,11 @@ const tabs = [
             </Card>
         </div>
 
-        <!-- Edit Modal -->
+        <!-- Add/Edit Client Modal -->
         <Dialog v-model:open="isModalOpen">
             <DialogContent class="sm:max-w-[600px]">
                 <DialogHeader>
-                    <DialogTitle>Edit Request</DialogTitle>
+                    <DialogTitle>{{ isEditMode ? 'Edit Client' : 'Add Client' }}</DialogTitle>
                 </DialogHeader>
                 <form @submit.prevent="submitForm" class="space-y-4">
                     <div class="space-y-2">
@@ -243,7 +242,7 @@ const tabs = [
                     <DialogFooter>
                         <Button type="button" variant="outline" @click="isModalOpen = false">Cancel</Button>
                         <Button type="submit" :disabled="isLoading">
-                            Save Changes
+                            {{ isEditMode ? 'Save Changes' : 'Add Client' }}
                         </Button>
                     </DialogFooter>
                 </form>
@@ -256,12 +255,12 @@ const tabs = [
                 <DialogHeader>
                     <DialogTitle>Confirm Deletion</DialogTitle>
                     <DialogDescription>
-                        Are you sure you want to delete this request? This action cannot be undone.
+                        Are you sure you want to delete this client? This action cannot be undone.
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
                     <Button type="button" variant="outline" @click="isDeleteDialogOpen = false">Cancel</Button>
-                    <Button type="button" variant="destructive" @click="deleteRequest">Delete</Button>
+                    <Button type="button" variant="destructive" @click="deleteClient">Delete</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

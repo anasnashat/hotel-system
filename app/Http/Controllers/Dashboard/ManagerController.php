@@ -77,32 +77,52 @@ class ManagerController extends Controller
 }
 
 
-    public function manageReceptionists()
-    {
-        $receptionists = User::whereHas('roles', function ($query) {
-            $query->where('name', '=', 'receptionist');
-        })->get()->map(function ($receptionist) {
-            $receptionist->is_banned = $receptionist->isbanned();
-            return $receptionist;
-        });
 
-        return inertia('Manager/ManageReceptionists', [
-            'receptionists' => $receptionists,
-        ]);
+public function manageReceptionists()
+{
+    $receptionists = User::with("profile.createdBy")->whereHas('roles', function ($query) {
+        $query->where('name', '=', 'receptionist');
+    })->get()->map(function ($receptionist) {
+        $receptionist->is_banned = $receptionist->isbanned();
+        return $receptionist;
+
+    });
+
+    return inertia('Manager/ManageReceptionists', [
+        'receptionists' => $receptionists,
+    ]);
+}
+
+
+
+public function updateReceptionist(Request $request, $id)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email,' . $id,
+        'national_id' => 'required|string|max:255',
+        'avatar_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+
+    $user = User::findOrFail($id);
+
+    $avatarPath = $user->avatar_image;
+    if ($request->hasFile('avatar_image')) {
+        $avatarPath = $request->file('avatar_image')->store('avatars', 'public');
     }
 
-    public function updateReceptionist(Request $request, $id)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-        ]);
+    $user->update([
+        'name' => $request->name,
+        'email' => $request->email,
+        'avatar_image' => $avatarPath,
+    ]);
 
-        $receptionist = User::find($id);
-        $receptionist->update($request->only(['name', 'email']));
+    $user->profile()->update([
+        'national_id' => $request->national_id,
+    ]);
 
-        return back()->with('success', 'Receptionist updated successfully.');
-    }
+    return redirect()->back()->with('success', 'Receptionist updated successfully.');
+}
 
     public function deleteReceptionist($id)
     {
@@ -111,24 +131,39 @@ class ManagerController extends Controller
 
         return back()->with('success', 'Receptionist deleted successfully.');
     }
+    
     public function storeReceptionist(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:8',
+            'national_id' => 'required|string|max:255',
+            'avatar_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-
-        $receptionist = User::create([
+    
+        $avatarPath = null;
+        if ($request->hasFile('avatar_image')) {
+            $avatarPath = $request->file('avatar_image')->store('avatars', 'public');
+        }
+    
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
+            'avatar_image' => $avatarPath,
         ]);
-
-        $receptionist->assignRole('receptionist');
-
-        return back()->with('success', 'Receptionist created successfully.');
+    
+        $user->profile()->create([
+            'national_id' => $request->national_id,
+            'created_by'  => auth()->id(),   
+        ]);
+    
+        $user->assignRole('receptionist');
+    
+        return redirect()->back()->with('success', 'Manager created successfully.');
     }
+
 
     public function banReceptionist($id)
     {

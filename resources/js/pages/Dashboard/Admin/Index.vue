@@ -4,6 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { router, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -22,38 +23,29 @@ import TabsHeader from '@/components/TabsHeader.vue';
 // Breadcrumbs
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Manage Receptionists', href: '/manager/manage-receptionists' },
+    { title: 'Manage Managers', href: '/admin/manage-managers' },
 ];
 
 // Page props
 const page = usePage();
-const isAdmin = page.props.auth.user.roles.some((role: { name: string }) => ['admin'].includes(role.name));
 
-// Receptionist interface
-interface Receptionist {
+// Manager interface
+interface Manager {
     id: number;
     name: string;
     email: string;
-    is_banned: boolean;
+    national_id: string;
+    avatar_image?: string;
     created_at: string;
-    profile?: {
-        created_by: {
-            name: string;
-        };
-        national_id: string;
-    };
 }
 
 // Props
-const { receptionists: initialReceptionists } = defineProps<{ receptionists: any }>();
-
-// Reactive receptionists array
-const receptionists = ref<Receptionist[]>(initialReceptionists);
+const { managers } = defineProps<{ managers: any }>();
 
 // Modal and form state
 const isModalOpen = ref(false);
 const isEditMode = ref(false);
-const currentReceptionist = ref<Receptionist | null>(null);
+const currentManager = ref<Manager | null>(null);
 const form = ref({
     name: '',
     email: '',
@@ -72,27 +64,27 @@ const handleFileUpload = (event: Event) => {
 
 // Delete confirmation state
 const isDeleteDialogOpen = ref(false);
-const receptionistToDelete = ref<Receptionist | null>(null);
+const managerToDelete = ref<Manager | null>(null);
 
 // Loading state
 const isLoading = ref(false);
 
-// Open modal for adding a new receptionist
+// Open modal for adding a new manager
 const openAddModal = () => {
     isEditMode.value = false;
     form.value = { name: '', email: '', password: '', national_id: '', avatar_image: null }; // Reset form
     isModalOpen.value = true;
 };
 
-// Open modal for editing a receptionist
-const openEditModal = (receptionist: Receptionist) => {
+// Open modal for editing a manager
+const openEditModal = (manager: Manager) => {
     isEditMode.value = true;
-    currentReceptionist.value = receptionist;
+    currentManager.value = manager;
     form.value = {
-        name: receptionist.name,
-        email: receptionist.email,
+        name: manager.name,
+        email: manager.email,
         password: '', // Password is not populated for security reasons
-        national_id: receptionist.profile?.national_id || '',
+        national_id: manager.profile.national_id,
         avatar_image: null, // Avatar image is not populated (can be handled separately if needed)
     };
     isModalOpen.value = true;
@@ -112,13 +104,13 @@ const submitForm = () => {
         formData.append('avatar_image', form.value.avatar_image);
     }
 
-    if (isEditMode.value && currentReceptionist.value) {
+    if (isEditMode.value && currentManager.value) {
         formData.append('_method', 'PUT'); // Use PUT for updates
     }
 
-    const url = isEditMode.value && currentReceptionist.value
-        ? route('manager.update-receptionist', currentReceptionist.value.id)
-        : route('manager.store-receptionist');
+    const url = isEditMode.value && currentManager.value
+        ? route('managers.update', currentManager.value.id)
+        : route('managers.store');
 
     router.post(url, formData, {
         preserveScroll: true,
@@ -134,46 +126,18 @@ const submitForm = () => {
 };
 
 // Delete handling
-const openDeleteDialog = (receptionist: Receptionist) => {
-    receptionistToDelete.value = receptionist;
+const openDeleteDialog = (manager: Manager) => {
+    managerToDelete.value = manager;
     isDeleteDialogOpen.value = true;
 };
 
-const deleteReceptionist = () => {
-    if (receptionistToDelete.value) {
-        router.delete(route('manager.delete-receptionist', receptionistToDelete.value.id), {
+const deleteManager = () => {
+    if (managerToDelete.value) {
+        router.delete(route('managers.destroy', managerToDelete.value.id), {
             preserveScroll: true,
             onSuccess: () => {
                 isDeleteDialogOpen.value = false;
-                receptionistToDelete.value = null;
-            },
-        });
-    }
-};
-
-// Ban receptionist
-const banReceptionist = (id: number) => {
-    if (confirm('Are you sure you want to ban this receptionist?')) {
-        router.post(route('manager.ban-receptionist', { id }), {}, {
-            preserveScroll: true,
-            onSuccess: () => {
-                receptionists.value = receptionists.value.map((r) =>
-                    r.id === id ? { ...r, is_banned: true } : r
-                );
-            },
-        });
-    }
-};
-
-// Unban receptionist
-const unbanReceptionist = (id: number) => {
-    if (confirm('Are you sure you want to unban this receptionist?')) {
-        router.post(route('manager.unban-receptionist', { id }), {}, {
-            preserveScroll: true,
-            onSuccess: () => {
-                receptionists.value = receptionists.value.map((r) =>
-                    r.id === id ? { ...r, is_banned: false } : r
-                );
+                managerToDelete.value = null;
             },
         });
     }
@@ -181,7 +145,7 @@ const unbanReceptionist = (id: number) => {
 
 // Pagination
 const handlePageChange = (page: number) => {
-    router.get(route('manager.manage-receptionists', { page }), {}, { preserveScroll: true });
+    router.get(route('managers.index', { page }), {}, { preserveScroll: true });
 };
 
 const tabs = [
@@ -191,24 +155,24 @@ const tabs = [
 </script>
 
 <template>
-    <Head title="Manage Receptionists" />
+    <Head title="Manage Managers" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="w-full p-6 max-w-8xl">
-            <TabsHeader title="Manage Receptionists" :tabs="tabs" />
+            <TabsHeader title="Manage Managers" :tabs="tabs" />
 
             <div class="flex justify-end mb-4">
                 <Button @click="openAddModal" class="gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                     </svg>
-                    Add Receptionist
+                    Add Manager
                 </Button>
             </div>
 
-            <!-- Receptionists Table -->
+            <!-- Managers Table -->
             <Card>
                 <CardHeader>
-                    <CardTitle>Receptionists</CardTitle>
+                    <CardTitle>Managers</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <Table>
@@ -218,61 +182,29 @@ const tabs = [
                                 <TableHead>Name</TableHead>
                                 <TableHead>Email</TableHead>
                                 <TableHead>National ID</TableHead>
-                                <TableHead>Status</TableHead>
                                 <TableHead>Created At</TableHead>
-                                <TableHead v-if="isAdmin">Created By</TableHead>
                                 <TableHead class="w-32">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            <TableRow v-if="receptionists.length === 0">
-                                <TableCell colspan="8" class="h-24 text-center">
-                                    No receptionists found.
+                            <TableRow v-if="managers.data.length === 0">
+                                <TableCell colspan="6" class="h-24 text-center">
+                                    No managers found.
                                 </TableCell>
                             </TableRow>
-                            <TableRow v-for="receptionist in receptionists" :key="receptionist.id">
-                                <TableCell>{{ receptionist.id }}</TableCell>
-                                <TableCell>{{ receptionist.name }}</TableCell>
-                                <TableCell>{{ receptionist.email }}</TableCell>
-                                <TableCell>{{ receptionist.profile?.national_id }}</TableCell>
-                                <TableCell>{{ receptionist.is_banned ? 'Banned' : 'Active' }}</TableCell>
-                                <TableCell>{{ new Date(receptionist.created_at).toLocaleDateString() }}</TableCell>
-                                <TableCell v-if="isAdmin">{{ receptionist.profile?.created_by?.name }}</TableCell>
-                                <TableCell v-if="isAdmin || page.props.auth.user.id === receptionist.profile?.created_by?.id">
+                            <TableRow v-for="manager in managers.data" :key="manager.id">
+                                <TableCell>{{ manager.id }}</TableCell>
+                                <TableCell>{{ manager.name }}</TableCell>
+                                <TableCell>{{ manager.email }}</TableCell>
+                                <TableCell>{{ manager.profile.national_id }}</TableCell>
+                                <TableCell>{{ new Date(manager.created_at).toLocaleDateString() }}</TableCell>
+                                <TableCell>
                                     <div class="flex gap-2">
-                                        <Button
-                                            v-if="isAdmin || page.props.auth.user.id === receptionist.profile?.created_by?.id"
-                                            variant="outline"
-                                            size="sm"
-                                            @click="openEditModal(receptionist)"
-                                        >
+                                        <Button variant="outline" size="sm" @click="openEditModal(manager)">
                                             Edit
                                         </Button>
-                                        <Button
-                                            v-if="isAdmin || page.props.auth.user.id === receptionist.profile?.created_by?.id"
-                                            variant="destructive"
-                                            size="sm"
-                                            @click="openDeleteDialog(receptionist)"
-                                        >
+                                        <Button variant="destructive" size="sm" @click="openDeleteDialog(manager)">
                                             Delete
-                                        </Button>
-                                        <Button
-                                            v-if="!receptionist.is_banned"
-                                            variant="outline"
-                                            size="sm"
-                                            class="text-yellow-500"
-                                            @click="banReceptionist(receptionist.id)"
-                                        >
-                                            Ban
-                                        </Button>
-                                        <Button
-                                            v-if="receptionist.is_banned"
-                                            variant="outline"
-                                            size="sm"
-                                            class="text-green-500"
-                                            @click="unbanReceptionist(receptionist.id)"
-                                        >
-                                            Unban
                                         </Button>
                                     </div>
                                 </TableCell>
@@ -285,17 +217,17 @@ const tabs = [
             <!-- Pagination -->
             <div class="mt-6 flex justify-center">
                 <Pagination
-                    v-if="initialReceptionists.last_page > 1"
-                    :total="initialReceptionists.total"
-                    :items-per-page="initialReceptionists.per_page"
+                    v-if="managers.last_page > 1"
+                    :total="managers.total"
+                    :items-per-page="managers.per_page"
                     :sibling-count="1"
-                    :default-page="initialReceptionists.current_page"
+                    :default-page="managers.current_page"
                     show-edges
                     @update:page="handlePageChange"
                 >
                     <PaginationList v-slot="{ items }" class="flex items-center gap-1">
-                        <PaginationFirst @click="handlePageChange(1)" :disabled="initialReceptionists.current_page === 1" />
-                        <PaginationPrev @click="handlePageChange(initialReceptionists.current_page - 1)" :disabled="initialReceptionists.current_page === 1" />
+                        <PaginationFirst @click="handlePageChange(1)" :disabled="managers.current_page === 1" />
+                        <PaginationPrev @click="handlePageChange(managers.current_page - 1)" :disabled="managers.current_page === 1" />
 
                         <template v-for="(item, index) in items" :key="index">
                             <PaginationListItem
@@ -305,7 +237,7 @@ const tabs = [
                             >
                                 <Button
                                     class="w-10 h-10 p-0"
-                                    :variant="item.value === initialReceptionists.current_page ? 'default' : 'outline'"
+                                    :variant="item.value === managers.current_page ? 'default' : 'outline'"
                                     @click="handlePageChange(item.value)"
                                 >
                                     {{ item.value }}
@@ -314,8 +246,8 @@ const tabs = [
                             <PaginationEllipsis v-else :key="item.type" :index="index" />
                         </template>
 
-                        <PaginationNext @click="handlePageChange(initialReceptionists.current_page + 1)" :disabled="initialReceptionists.current_page === initialReceptionists.last_page" />
-                        <PaginationLast @click="handlePageChange(initialReceptionists.last_page)" :disabled="initialReceptionists.current_page === initialReceptionists.last_page" />
+                        <PaginationNext @click="handlePageChange(managers.current_page + 1)" :disabled="managers.current_page === managers.last_page" />
+                        <PaginationLast @click="handlePageChange(managers.last_page)" :disabled="managers.current_page === managers.last_page" />
                     </PaginationList>
                 </Pagination>
             </div>
@@ -325,25 +257,25 @@ const tabs = [
         <Dialog v-model:open="isModalOpen">
             <DialogContent class="sm:max-w-[600px]">
                 <DialogHeader>
-                    <DialogTitle>{{ isEditMode ? 'Edit Receptionist' : 'Create New Receptionist' }}</DialogTitle>
+                    <DialogTitle>{{ isEditMode ? 'Edit Manager' : 'Create New Manager' }}</DialogTitle>
                 </DialogHeader>
                 <form @submit.prevent="submitForm" enctype="multipart/form-data" class="space-y-4">
                     <!-- Name Field -->
                     <div class="space-y-2">
                         <Label>Name</Label>
-                        <Input v-model="form.name" placeholder="Enter receptionist name" />
+                        <Input v-model="form.name" placeholder="Enter manager name" />
                         <p v-if="page.props.errors.name" class="text-sm text-red-500">{{ page.props.errors.name }}</p>
                     </div>
 
                     <!-- Email Field -->
                     <div class="space-y-2">
                         <Label>Email</Label>
-                        <Input v-model="form.email" type="email" placeholder="Enter receptionist email" />
+                        <Input v-model="form.email" type="email" placeholder="Enter manager email" />
                         <p v-if="page.props.errors.email" class="text-sm text-red-500">{{ page.props.errors.email }}</p>
                     </div>
 
                     <!-- Password Field -->
-                    <div v-if="!isEditMode" class="space-y-2">
+                    <div v-if="isEditMode" class="space-y-2">
                         <Label>Password</Label>
                         <Input v-model="form.password" type="password" placeholder="Enter password" />
                         <p v-if="page.props.errors.password" class="text-sm text-red-500">{{ page.props.errors.password }}</p>
@@ -367,7 +299,7 @@ const tabs = [
                     <DialogFooter>
                         <Button type="button" variant="outline" @click="isModalOpen = false">Cancel</Button>
                         <Button type="submit" :disabled="isLoading">
-                            {{ isEditMode ? 'Save Changes' : 'Create Receptionist' }}
+                            {{ isEditMode ? 'Save Changes' : 'Create Manager' }}
                         </Button>
                     </DialogFooter>
                 </form>
@@ -380,12 +312,12 @@ const tabs = [
                 <DialogHeader>
                     <DialogTitle>Confirm Deletion</DialogTitle>
                     <DialogDescription>
-                        Are you sure you want to delete this receptionist? This action cannot be undone.
+                        Are you sure you want to delete this manager? This action cannot be undone.
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
                     <Button type="button" variant="outline" @click="isDeleteDialogOpen = false">Cancel</Button>
-                    <Button type="button" variant="destructive" @click="deleteReceptionist">Delete</Button>
+                    <Button type="button" variant="destructive" @click="deleteManager">Delete</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

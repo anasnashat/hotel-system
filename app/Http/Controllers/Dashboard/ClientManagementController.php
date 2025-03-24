@@ -26,6 +26,18 @@ class ClientManagementController extends Controller
         ]);
     }
 
+    public function allClients()
+    {
+        $clients = UserProfile::with('user')->whereHas('user.roles', function ($query) {
+            $query->where('name', '=', 'client');
+        })->get();
+
+//        dd($requests);
+        return inertia('Receptionist/AllClients', [
+            'clients' => $clients
+        ]);
+    }
+
     public function showReservation()
     {
         $clients = Reservation::with(['client.profile', 'room'])

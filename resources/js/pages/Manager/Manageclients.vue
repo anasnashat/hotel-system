@@ -121,7 +121,7 @@ const deleteClient = () => {
 
 // Approve client
 const approveClient = (id: number) => {
-    router.post(route('manager.approve-client'), { client_id: id }, {
+    router.post(route('receptionist.approve'), { client_id: id }, {
         preserveScroll: true,
         onSuccess: () => {
             const clientIndex = clients.findIndex(c => c.id === id);
