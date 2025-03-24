@@ -134,11 +134,11 @@ const approveRequest = (client_id: number) => {
 const isAdminOrManager = page.props.auth.user.roles.some((role: { name: string }) => ['admin', 'manager'].includes(role.name));
 
 const tabs = [
-    { label: 'All Clients', href: route('receptionist.all-clients') },
     { label: 'Requests', href: route('clients-management.index') },
+    { label: 'Reservation', href: route('receptionist.show-reservation') }
 ];
 if (isAdminOrManager){
-    tabs.push({ label: 'Reservation', href: route('receptionist.show-reservation') })
+    tabs.push(    { label: 'All Clients', href: route('receptionist.all-clients') })
 }
 </script>
 
