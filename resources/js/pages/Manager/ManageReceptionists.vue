@@ -216,8 +216,7 @@ const tabs = [
                             <TableRow>
                                 <TableHead>ID</TableHead>
                                 <TableHead>Name</TableHead>
-                                <TableHead>Email</TableHead>
-                                <TableHead>National ID</TableHead>
+                                <TableHead>Email</TableHead>manager1@hotel.com
                                 <TableHead>Status</TableHead>
                                 <TableHead>Created At</TableHead>
                                 <TableHead v-if="isAdmin">Created By</TableHead>
@@ -234,7 +233,6 @@ const tabs = [
                                 <TableCell>{{ receptionist.id }}</TableCell>
                                 <TableCell>{{ receptionist.name }}</TableCell>
                                 <TableCell>{{ receptionist.email }}</TableCell>
-                                <TableCell>{{ receptionist.profile?.national_id }}</TableCell>
                                 <TableCell>{{ receptionist.is_banned ? 'Banned' : 'Active' }}</TableCell>
                                 <TableCell>{{ new Date(receptionist.created_at).toLocaleDateString() }}</TableCell>
                                 <TableCell v-if="isAdmin">{{ receptionist.profile?.created_by?.name }}</TableCell>
