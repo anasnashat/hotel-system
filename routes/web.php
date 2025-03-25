@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\StripeController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Models\User;
@@ -109,6 +110,13 @@ Route::get('/waiting-approval', function () {
     return Inertia::render('auth/WaitingApproval');
 })->name('waiting-approval');
 
+
+
+Route::get('stripe/{room}', [StripeController::class, 'index']);
+Route::post('stripe/create-charge', [StripeController::class, 'createCharge'])->name('stripe.create-charge');
+
+
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
 require __DIR__ . '/dashboard.php';
+
