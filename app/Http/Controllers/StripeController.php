@@ -10,58 +10,73 @@ use Stripe;
 
 class StripeController extends Controller
 {
-    public function index(Room $room)
+    public function index()
     {
-        return view('checkout', compact('room'));
+        $cartItems = auth()->user()->cart->all();
+//        dd($cartItems);
+        return view('checkout', compact('cartItems'));
     }
 
     public function createCharge(Request $request)
     {
-
-
-
         try {
-            $room = Room::with('reservations')->findOrFail($request->room_id);
-            Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
-//            dd($room->reservations()->isReserved()->get());
+            $cartItems = auth()->user()->cart->all();
+            $totalAmount = 0;
 
-            // Check if the room is already reserved
-            if ($room->reservations()->isReserved()->get()) {
-                return back()->with('error', 'The room is already reserved.');
+            foreach ($cartItems as $cartItem) {
+                $room = Room::with('reservations')->find($cartItem->room_id);
+
+                if (!$room) {
+                    return back()->with('error', 'Room not found.');
+                }
+
+                if ($room->reservations()->isReserved()->exists()) {
+                    return back()->with('error', "The room with number {$room->number} is already reserved.");
+                }
+
+                if ($room->capacity < $cartItem->accompany_number) {
+                    return back()->with('error', 'The number of accompanying persons exceeds the room capacity.');
+                }
+
+                $totalAmount += $room->price;
             }
-            if ($room->capacity < $request->accompany_number) {
-                return back()->with('error', 'The number of accompanying persons exceeds the room capacity.');
-            }
+
+            Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
             $status = Stripe\Charge::create([
-                "amount" => $room->price,
+                "amount" => $totalAmount * 100, // Stripe expects the amount in cents
                 "currency" => "usd",
                 "source" => $request->stripeToken,
-                "description" => "Room reservation for " . $room->name
+                "description" => "Room reservation for user " . auth()->user()->name
             ]);
 
             if ($status->status == 'succeeded') {
-                // Create reservation
-                $reservation = $room->reservations()->create([
-                    'client_id' => auth()->id(),
-                    'is_reserved' => true,
-                    'accompany_number' => $request->accompany_number,
-                    'price_at_booking' => $room->price,
-                    'payment_intent_id' => $status->id,
-                    'status' => 'confirmed'
-                ]);
+                foreach ($cartItems as $cartItem) {
+                    $room = Room::find($cartItem->room_id);
 
-                Payment::create([
-                    'reservation_id' => $reservation->id,
-                    'payment_intent_id' => $status->id,
-                    'payment_method_id' => $status->payment_method,
-                ]);
+                    // Create reservation
+                    $reservation = $room->reservations()->create([
+                        'client_id' => auth()->id(),
+                        'is_reserved' => true,
+                        'accompany_number' => $cartItem->accompany_number,
+                        'price_at_booking' => $room->price,
+                        'payment_intent_id' => $status->id,
+                        'status' => 'confirmed'
+                    ]);
 
-                return redirect()->route('reservations.index')->with('success', 'Room reserved successfully!');
+                    Payment::create([
+                        'reservation_id' => $reservation->id,
+                        'payment_intent_id' => $status->id,
+                        'payment_method_id' => $status->payment_method,
+                    ]);
+                }
+
+                return redirect()->route('reservations.index')->with('success', 'Rooms reserved successfully!');
             }
 
             return back()->with('error', 'Payment failed. Please try again.');
         } catch (\Exception $e) {
             return back()->with('error', 'Something went wrong: ' . $e->getMessage());
         }
-    }}
+    }
+}
