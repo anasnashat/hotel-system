@@ -19,6 +19,7 @@
         "rinvex/countries": "^9.0",
         "spatie/laravel-medialibrary": "*",
         "spatie/laravel-permission": "^6.16",
+        "stripe/stripe-php": "^16.6",
         "tightenco/ziggy": "^2.4"
     },
     "require-dev": {
