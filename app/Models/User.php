@@ -10,12 +10,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use Laravel\Sanctum\HasApiTokens;
+
 
 class User extends Authenticatable implements BannableContract
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasRoles, SoftDeletes;
+    use HasFactory, HasApiTokens, Notifiable, HasRoles, SoftDeletes;
     use Bannable;
+
 
 
     /**
@@ -72,6 +75,6 @@ class User extends Authenticatable implements BannableContract
         ];
     }
 
-    
+
 
 }
