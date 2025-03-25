@@ -158,7 +158,7 @@ public function destroy($id)
     try {
         DB::beginTransaction();
         $room = Room::findOrFail($id);
-        if ($room->reservations()->count() > 0){
+        if ($room->reservations()->isReserved()->get()){
             return redirect()->back()->with('error', 'Room has reservations, cannot deleted');
         }
         $room->delete();
