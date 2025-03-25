@@ -82,7 +82,8 @@ const handleCheckout = () => {
             <TableBody>
               <TableRow v-for="item in cartStore.cart" :key="item.id" class="border-b">
                 <TableCell class="p-3">
-                  <img :src="item.image" alt="Product" class="w-16 h-16 object-cover rounded-md" />
+                  <img v-if="room.first_image_url" :src="room.first_image_url" alt="Room" class="w-16 h-16 object-cover rounded-md" />
+                  <img :src="RoomC" alt="Product" class="w-16 h-16 object-cover rounded-md" />
                 </TableCell>
                 <TableCell class="p-3">{{ item.name }}</TableCell>
                 <TableCell class="p-3">{{ formatCurrency (item.price) }}</TableCell>

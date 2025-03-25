@@ -2,8 +2,6 @@ export interface Room {
   id: number;
   name: string;
   price: number;
-  image: string;
-  room_image?: string;
   first_image_url?: string;
   description?: string;
   features?: string[];
@@ -32,4 +30,4 @@ export interface SharedData {
     user: User | null;
   };
   [key: string]: any;
-} 
+}

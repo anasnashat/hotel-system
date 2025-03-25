@@ -1,11 +1,14 @@
 import '../css/app.css';
 
-import { createInertiaApp } from '@inertiajs/vue3';
+import { createInertiaApp, router } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
 import { createPinia } from 'pinia';
 import { initializeTheme } from './composables/useAppearance';
+
+
+
 
 
 // Extend ImportMeta interface for Vite...
@@ -36,7 +39,8 @@ createInertiaApp({
         const pinia = createPinia();  // ✅ Create Pinia instance
         app.use(plugin)
            .use(ZiggyVue)
-           .use(pinia)  // ✅ Use Pinia in the app
+           .use(pinia)// ✅ Use Pinia in the app 
+           .use(router) 
            .mount(el);
     },
     progress: {

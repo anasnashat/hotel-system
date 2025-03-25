@@ -10,12 +10,23 @@ use Illuminate\Validation\ValidationException;
 use App\Models\Room;
 use App\Http\Controllers\CartController;
 use App\Http\Resources\RoomResource;
+use App\Http\Controllers\FavoriteController;
+
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/cart', [CartController::class, 'index']);
     Route::post('/cart', [CartController::class, 'store']);
     Route::delete('/cart/{id}', [CartController::class, 'destroy']);
 });
+
+Route::get('/rooms/{id}', function ($id) {
+    return new RoomResource(Room::findOrFail($id));
+});
+
+
+
+
 
 Route::get('/rooms', function (Request $request) {
     return RoomResource::collection(Room::paginate(10)); // Paginated response
@@ -49,9 +60,7 @@ Route::post('/sanctum/token', function (Request $request) {
 
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/favorites', [UserItemsController::class, 'addFavorite'])->name('favorites.add');
-    Route::delete('/favorites', [UserItemsController::class, 'removeFavorite'])->name('favorites.remove');
-
-    Route::post('/cart', [UserItemsController::class, 'addToCart'])->name('cart.add');
-    Route::delete('/cart', [UserItemsController::class, 'removeFromCart'])->name('cart.remove');
+    Route::get('/favorites', [FavoriteController::class, 'index']); // List all favorites
+    Route::post('/favorites/{room}', [FavoriteController::class, 'store']); // Add favorite
+    Route::delete('/favorites/{room}', [FavoriteController::class, 'destroy']);
 });

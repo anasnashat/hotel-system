@@ -14,6 +14,8 @@ import Swal from 'sweetalert2';
 import { router } from '@inertiajs/vue3';
 import { formatCurrency } from '@/utils/currencyFormatter';
 import { type Room } from '@/types';
+import axios from 'axios';
+
 
 const cartStore = useCartStore();
 const favoriteStore = useFavoriteStore();
@@ -31,6 +33,7 @@ const isFavorite = computed(() => {
          favoriteStore.favoriteRooms.some((item) => item.id === props.room.id);
 });
 
+
 // Add to cart function
 const addToCart = () => {
   if (!isBooked.value) {
@@ -38,7 +41,7 @@ const addToCart = () => {
       id: props.room.id,
       name: props.room.name,
       price: props.room.price,
-      image: props.room.image,
+      image: props.first_image_url,
     });
 
     Swal.fire({
@@ -83,9 +86,12 @@ const toggleFavorite = () => {
 };
 
 
+
+
 const goToRoomDetails = (roomId: number) => {
-  router.visit(`/room/${roomId}`);
+    router.visit(`/room/${roomId}`);
 };
+
 
 
 </script>
@@ -94,12 +100,9 @@ const goToRoomDetails = (roomId: number) => {
   <Card class="overflow-hidden shadow-lg bg-white dark:bg-gray-800 mt-5 relative transform transition-transform duration-300 ease-in-out hover:scale-105">
     <!-- Room Image -->
     <div class="relative">
-      <!-- <img src="http://127.0.0.1:8000/storage/1/deluxe.jpeg" alt="Test Image"> -->
+
       <img v-if="room.first_image_url" :src="room.first_image_url" alt="Room Image" class="w-full h-auto" />
 
-
-      <!-- <img :src="'/storage/' + room.image" alt="Room Image" /> -->
-      <!-- <img :src="room.image" :alt="room.name" v-if="" class="w-full h-48 object-cover" /> -->
       
       <!-- Favorite Heart Icon -->
       <button 
@@ -109,7 +112,7 @@ const goToRoomDetails = (roomId: number) => {
         <Heart 
           :size="24" 
           class="transition-all duration-300" 
-          :class="isFavorite ? 'text-red-500 fill-current' : 'text-gray-500'"
+          :class="isFavorite ? 'text-red-500 fill-red-500' : 'text-gray-500'"
         />
       </button>
     </div>
@@ -149,11 +152,11 @@ const goToRoomDetails = (roomId: number) => {
       </DialogHeader>
       
       <!-- Room Image -->
-      <img :src="room.image" :alt="room.name" class="w-full h-56 object-cover rounded-lg my-3" />
+      <img :src="room.first_image_url" alt="Room Image" class="w-full h-56 object-cover rounded-lg my-3" />
 
       <!-- Room Info -->
       <p class="text-gray-600 dark:text-gray-300 mb-3 font-medium font-semibold">{{ room.description }}</p>
-      <p class="text-lg font-semibold text-gray-800 dark:text-white">${{ room.price.toFixed(2) }} per night</p>
+      <p class="text-lg font-semibold text-gray-800 dark:text-white">{{formatCurrency(room.price) }} per night</p>
 
       <!-- Room Features -->
       <ul v-if="room.features && room.features.length" class="mt-3 list-disc list-inside text-gray-600 dark:text-gray-300">

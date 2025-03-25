@@ -26,6 +26,13 @@ Route::get('/', function () {
     return Inertia::render('Home');
 })->name('home');
 
+Route::get('/room/{id}', function ($id) {
+    $room = Room::findOrFail($id);
+    return Inertia::render('RoomDetails', ['id' => $id]); // ✅ Pass 'id'
+})->name('room.details');
+
+Route::get('/favorites/{room}', [FavoriteController::class, 'show']);
+
 
 Route::get('/room/{id}', function ($id) {
     return Inertia::render('RoomDetails', ['id' => $id]);

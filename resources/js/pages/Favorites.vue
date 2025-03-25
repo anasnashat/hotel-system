@@ -24,7 +24,7 @@
       <TableBody>
         <TableRow v-for="room in favoriteStore.favoriteRooms" :key="room.id">
           <TableCell>
-            <img v-if="room.image" :src="room.image" alt="Room" class="w-16 h-16 object-cover rounded-md" />
+            <img v-if="room.first_image_url" :src="room.first_image_url" alt="Room" class="w-16 h-16 object-cover rounded-md" />
             <span v-else class="text-gray-400">No Image</span>
           </TableCell>
           <TableCell>{{ room.name || "No Name" }}</TableCell>
