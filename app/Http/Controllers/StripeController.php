@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
 use App\Models\Payment;
 use App\Models\Reservation;
 use App\Models\Room;
@@ -70,6 +71,8 @@ class StripeController extends Controller
                         'payment_method_id' => $status->payment_method,
                     ]);
                 }
+
+                Cart::whereIn('id', $cartItems->pluck('id'))->delete();
 
                 return redirect()->route('reservations.index')->with('success', 'Rooms reserved successfully!');
             }
