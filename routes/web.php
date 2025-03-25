@@ -112,7 +112,7 @@ Route::get('/waiting-approval', function () {
 
 
 
-Route::get('stripe/{room}', [StripeController::class, 'index']);
+Route::get('stripe/', [StripeController::class, 'index']);
 Route::post('stripe/create-charge', [StripeController::class, 'createCharge'])->name('stripe.create-charge');
 
 
