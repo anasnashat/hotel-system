@@ -16,17 +16,38 @@ class UserItemsController extends Controller
             'room_id' => 'required|exists:rooms,id',
         ]);
 
-        $favorite = Favorite::create($request->only(['room_id']));
+        $user = auth()->id();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
 
-        return response()->json($favorite, 201);
+        $exists = Favorite::where('room_id', $request->room_id)
+            ->where('user_id', $user)
+            ->exists();
+
+        if ($exists) {
+            return response()->json(['message' => 'Room already in favorites'], 409);
+        }
+
+        $favorite = Favorite::create([
+            'room_id' => $request->room_id,
+            'user_id' => $user,
+        ]);
+
+        return response()->json(['message' => 'Room added to favorites', 'data' => $favorite], 201);
     }
+
+
+
     public function removeFavorite(Request $request)
     {
         $request->validate([
             'room_id' => 'required|exists:rooms,id',
         ]);
 
-        $favorite = Favorite::where('room_id', $request->room_id)->first();
+        $favorite = Favorite::where('room_id', $request->room_id)
+            ->where('user_id', auth()->id())
+            ->first();
 
         if (!$favorite) {
             return response()->json(['message' => 'Favorite not found'], 404);
@@ -45,12 +66,19 @@ class UserItemsController extends Controller
 
         try {
             DB::beginTransaction();
-            $cart = Cart::where('room_id', $request->room_id)->first();
+
+            $cart = Cart::where('room_id', $request->room_id)
+                ->where('user_id', auth()->id())
+                ->first();
+
             if ($cart) {
                 return response()->json(['message' => 'Room already added to cart'], 400);
-            } else {
-                Cart::create($request->only(['room_id']));
             }
+
+            Cart::create([
+                'room_id' => $request->room_id,
+            ]);
+
             DB::commit();
             return response()->json(['message' => 'Room added to cart successfully'], 200);
         } catch (\Exception $e) {
@@ -65,7 +93,9 @@ class UserItemsController extends Controller
             'room_id' => 'required|exists:rooms,id',
         ]);
 
-        $cart = Cart::where('room_id', $request->room_id)->first();
+        $cart = Cart::where('room_id', $request->room_id)
+            ->where('user_id', auth()->id())
+            ->first();
 
         if (!$cart) {
             return response()->json(['message' => 'Room not found in cart'], 404);
@@ -75,5 +105,4 @@ class UserItemsController extends Controller
 
         return response()->json(['message' => 'Room removed from cart successfully'], 200);
     }
-
 }
