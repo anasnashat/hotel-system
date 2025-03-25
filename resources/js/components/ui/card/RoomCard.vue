@@ -41,7 +41,7 @@ const addToCart = () => {
       id: props.room.id,
       name: props.room.name,
       price: props.room.price,
-      image: props.first_image_url,
+      image: props.room.first_image_url,
     });
 
     Swal.fire({
