@@ -16,6 +16,22 @@ const page = usePage<SharedData>();
 const user = computed(() => page.props.auth.user as User | null);
 const userLoggedIn = computed(() => !!user.value);
 
+// Alert state
+const showGuestAlert = ref(false);
+
+// Handle "Booking Status" click
+const handleBookingStatusClick = (event: Event) => {
+    if (!userLoggedIn.value) {
+        event.preventDefault(); // Stop navigation
+        showGuestAlert.value = true;
+
+        // Auto-hide alert after 5 seconds
+        setTimeout(() => {
+            showGuestAlert.value = false;
+        }, 10000);
+    }
+};
+
 // Logout function
 const logout = () => {
     router.post('/logout');
@@ -48,6 +64,14 @@ const logout = () => {
         </SidebarMenuItem>
     </SidebarMenu>
 
+           <!-- Alert for Guests -->
+    <transition name="fade">
+      <div v-if="showGuestAlert" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-3">
+        <AlertTriangle class="w-6 h-6" />
+        <span>⚠️ You must be logged in to check your Booking Status.</span>
+      </div>
+    </transition>
+
   <div class="flex items-center space-x-4">
     <!-- Favorite Icon -->
      <Link href="/favorites">
@@ -67,6 +91,16 @@ const logout = () => {
     </button>
     <span v-if="cartStore.cart.length > 0"  class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">{{ cartStore.cart.length }}</span>
     </div>
+    </Link> 
+
+    
+    <!-- Booking Status Link -->
+    <Link 
+      href="/booking-status" 
+      @click="handleBookingStatusClick"
+      class="relative flex items-center px-4 py-2 text-white font-semibold bg-gradient-to-r from-[#5b5329] to-[#867b45] rounded-lg shadow-md transition-transform transform hover:scale-105 hover:shadow-lg"
+    >
+      <span class="mr-2">📅</span> Booking Status
     </Link>
 
     <!-- Show Register/Login if user is not logged in -->
@@ -89,3 +123,12 @@ const logout = () => {
   </div>
   
 </template>
+<style>
+.Link:hover {
+  background: linear-gradient(to right, #867b45, #5b5329);
+}
+.Link:active {
+  transform: scale(0.95);
+}
+
+</style>

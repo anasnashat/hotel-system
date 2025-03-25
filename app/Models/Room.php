@@ -70,5 +70,10 @@ class Room extends Model implements HasMedia
             $floor->number =  self::generateUniqueFloorNumber();
         });
     }
+    // public function getImageUrlAttribute()
+    // {
+    // $media = $this->getFirstMedia('rooms_image');
+    // return $media ? $media->getUrl() : asset('images/default.jpg');
+    // } 
 }
 

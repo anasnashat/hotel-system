@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { usePage } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
 import NavBarMain from '@/components/NavBarMain.vue';
+import { formatCurrency } from '@/utils/currencyFormatter';
 
 interface User {
   id: number;
@@ -84,9 +85,9 @@ const handleCheckout = () => {
                   <img :src="item.image" alt="Product" class="w-16 h-16 object-cover rounded-md" />
                 </TableCell>
                 <TableCell class="p-3">{{ item.name }}</TableCell>
-                <TableCell class="p-3">${{ item.price.toFixed(2) }}</TableCell>
+                <TableCell class="p-3">{{ formatCurrency (item.price) }}</TableCell>
                 <TableCell class="p-3">1</TableCell>
-                <TableCell class="p-3">${{ (item.price * 1).toFixed(2) }}</TableCell>
+                <TableCell class="p-3">{{ formatCurrency (item.price*1)}}</TableCell>
                 <TableCell class="p-3">
                   <Button variant="destructive" @click="removeItem(item.id)">Delete</Button>
                 </TableCell>
@@ -96,7 +97,7 @@ const handleCheckout = () => {
 
           <!-- Total Price & Checkout Button -->
           <div class="flex justify-between items-center mt-6">
-            <h3 class="text-xl font-semibold cardTitle">Total: ${{ totalPrice.toFixed(2) }}</h3>
+            <h3 class="text-xl font-semibold cardTitle">Total: {{ formatCurrency (totalPrice) }}</h3>
             <Button variant="default" class="w-1/4 border border-[#5b5329] bg-[#5b5329] text-white font-medium px-4 py-1 rounded-md hover:bg-white hover:text-[#5b5329] transition duration-300" @click="handleCheckout">Checkout</Button>
           </div>
         </div>

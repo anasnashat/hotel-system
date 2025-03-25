@@ -12,7 +12,6 @@ use App\Http\Controllers\UserProfileController;
 
 
 
-
 Route::get('/login', [AuthenticatedSessionController::class, 'create'])
     ->name('login');
 Route::post('/login', [AuthenticatedSessionController::class, 'store']);
@@ -26,6 +25,15 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
 Route::get('/', function () {
     return Inertia::render('Home');
 })->name('home');
+
+
+Route::get('/room/{id}', function ($id) {
+    return Inertia::render('RoomDetails', ['id' => $id]);
+})->name('room');
+
+Route::get('/booking-status', function () {
+    return Inertia::render('BookingStatus');
+})->name('booking.status')->middleware('auth'); // Ensure only logged-in users can view it
 
 
 //This route to check if email,phone,national_id already exits

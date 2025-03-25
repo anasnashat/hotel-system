@@ -1,21 +1,25 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import RoomCard from './RoomCard.vue';
-
-interface Room {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  description: string;
-}
+import axios from "axios";
+import { type Room } from '@/types';
 
 const rooms = ref<Room[]>([]);
 
-onMounted(async () => {
-  const response = await fetch('/data/rooms.json');
-  rooms.value = await response.json();
-});
+const fetchRooms = async () => {
+    try {
+        const response = await axios.get("http://127.0.0.1:8000/api/rooms");
+        rooms.value = response.data.data;
+    } catch (error) {
+        console.error("Error fetching rooms:", error);
+    }
+};
+
+onMounted(fetchRooms);
+
+
+
+
 </script>
 
 <template>

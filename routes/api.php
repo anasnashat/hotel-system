@@ -7,6 +7,19 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use App\Models\Room;
+use App\Http\Controllers\CartController;
+use App\Http\Resources\RoomResource;
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/cart', [CartController::class, 'index']);
+    Route::post('/cart', [CartController::class, 'store']);
+    Route::delete('/cart/{id}', [CartController::class, 'destroy']);
+});
+
+Route::get('/rooms', function (Request $request) {
+    return RoomResource::collection(Room::paginate(10)); // Paginated response
+});
 
 Route::post('/tokens/create', function (Request $request) {
     $token = $request->user()->createToken($request->token_name);

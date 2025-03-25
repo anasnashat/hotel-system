@@ -1,32 +1,55 @@
 import { defineStore } from "pinia";
-import { computed, ref, watch } from "vue";
+import { ref, computed } from "vue";
+import axios from "axios";
 
 export const useFavoriteStore = defineStore("favorite", () => {
-  // Load favorites from localStorage or initialize as an empty array
-  const favoriteRooms = ref(JSON.parse(localStorage.getItem("favoriteRooms") || "[]"));
+  const favoriteRooms = ref<any[]>([]); // Store favorite rooms
+  const isLoading = ref(false);
 
-  // Save favorites to localStorage whenever it changes
-  watch(favoriteRooms, (newFavorites) => {
-    localStorage.setItem("favoriteRooms", JSON.stringify(newFavorites));
-  }, { deep: true });
+  // Fetch favorites from the database
+  const fetchFavorites = async () => {
+    isLoading.value = true;
+    try {
+      const response = await axios.get("http://127.0.0.1:8000/api/favorites", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }, // Ensure authentication
+      });
+      favoriteRooms.value = response.data.map((fav: any) => fav.room); // Store only rooms
+    } catch (error) {
+      console.error("Error fetching favorites:", error);
+    }
+    isLoading.value = false;
+  };
 
-  // Add a room to favorites (ensure unique entries)
-  const addFavorite = (room: { id: number; name: string; price: number; image?: string }) => {
-    if (!room || !room.id) return; // Prevent invalid rooms
-    if (!favoriteRooms.value.some((fav: { id: number }) => fav.id === room.id)) {
-      favoriteRooms.value.push(room);
+  // Add a room to favorites (database)
+  const addFavorite = async (room: { id: number; name: string; price: number; image?: string }) => {
+    try {
+      await axios.post(`http://127.0.0.1:8000/api/favorites/${room.id}`, {}, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      favoriteRooms.value.push(room); // Update local store
+    } catch (error) {
+      console.error("Error adding to favorites:", error);
     }
   };
 
-  // Remove a room from favorites
-  const removeFavorite = (roomId: number) => {
-    favoriteRooms.value = favoriteRooms.value.filter((fav: { id: number }) => fav.id !== roomId);
+  // Remove a room from favorites (database)
+  const removeFavorite = async (roomId: number) => {
+    try {
+      await axios.delete(`http://127.0.0.1:8000/api/favorites/${roomId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      favoriteRooms.value = favoriteRooms.value.filter(room => room.id !== roomId);
+    } catch (error) {
+      console.error("Error removing from favorites:", error);
+    }
   };
 
-  return { 
-    favoriteRooms, 
-    addFavorite, 
-    removeFavorite, 
-    favoriteCount: computed(() => favoriteRooms.value.length) 
+  return {
+    favoriteRooms,
+    isLoading,
+    fetchFavorites,
+    addFavorite,
+    removeFavorite,
+    favoriteCount: computed(() => favoriteRooms.value.length),
   };
 });

@@ -11,20 +11,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useCartStore } from '@/stores/cart';
 import { useFavoriteStore } from '@/stores/favorite';
 import Swal from 'sweetalert2';
-
-
-interface Room {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  description: string;
-  features: string[];
-}
+import { router } from '@inertiajs/vue3';
+import { formatCurrency } from '@/utils/currencyFormatter';
+import { type Room } from '@/types';
 
 const cartStore = useCartStore();
 const favoriteStore = useFavoriteStore();
-// const isFavorite = ref(false);
 const favoriteCount = ref(0);
 
 
@@ -91,13 +83,23 @@ const toggleFavorite = () => {
 };
 
 
+const goToRoomDetails = (roomId: number) => {
+  router.visit(`/room/${roomId}`);
+};
+
+
 </script>
 
 <template>
   <Card class="overflow-hidden shadow-lg bg-white dark:bg-gray-800 mt-5 relative transform transition-transform duration-300 ease-in-out hover:scale-105">
     <!-- Room Image -->
     <div class="relative">
-      <img :src="room.image" :alt="room.name" class="w-full h-48 object-cover" />
+      <!-- <img src="http://127.0.0.1:8000/storage/1/deluxe.jpeg" alt="Test Image"> -->
+      <img v-if="room.first_image_url" :src="room.first_image_url" alt="Room Image" class="w-full h-auto" />
+
+
+      <!-- <img :src="'/storage/' + room.image" alt="Room Image" /> -->
+      <!-- <img :src="room.image" :alt="room.name" v-if="" class="w-full h-48 object-cover" /> -->
       
       <!-- Favorite Heart Icon -->
       <button 
@@ -121,12 +123,15 @@ const toggleFavorite = () => {
 
     <!-- Card Content -->
     <CardContent class="px-4 py-2">
-      <p class="text-gray-600 dark:text-gray-400">${{ room.price.toFixed(2) }} per night</p>
+      <p class="text-gray-600 dark:text-gray-400">{{ formatCurrency(room.price)}} per night</p>
     </CardContent>
 
     <!-- Card Footer -->
     <CardFooter class="p-4 flex space-x-2">
-      <Button variant="outline" class="w-1/2 border border-[#5b5329] text-[#5b5329] font-medium px-4 py-1 rounded-md hover:bg-[#5b5329] hover:text-white transition duration-300 dark:text-white dark:hover:bg-[#5b5329] dark:hover:text-white" @click="isModalOpen = true">
+      <Button
+        variant="outline"
+        class="w-1/2 border border-[#5b5329] text-[#5b5329] font-medium px-4 py-1 rounded-md hover:bg-[#5b5329] hover:text-white transition duration-300 dark:text-white dark:hover:bg-[#5b5329] dark:hover:text-white"
+        @click="goToRoomDetails(room.id)">
         More Details
       </Button>
       <Button @click="addToCart" :disabled="isBooked"   :class="isBooked ? 'bg-gray-400 text-white border-gray-400 cursor-not-allowed' : 'bg-[#5b5329] text-white border-[#5b5329] hover:bg-white hover:text-[#5b5329]'"  class="w-1/2 border border-[#5b5329] bg-[#5b5329] text-white font-medium px-4 py-1 rounded-md hover:bg-white hover:text-[#5b5329] transition duration-300">
@@ -161,6 +166,7 @@ const toggleFavorite = () => {
       </Button>
     </DialogContent>
   </Dialog>
+
 </template>
 
 
