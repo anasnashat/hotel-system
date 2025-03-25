@@ -26,11 +26,14 @@ class Cart extends Model
     }
 
 
-    public static function boot()
+    public static function boot(): void
     {
         parent::boot();
-        static::creating(function ($cart) {
-            $cart->user_id = auth()->id();
+
+        static::creating(function ($favorite) {
+            if (auth()->check()) {
+                $favorite->user_id = auth()->id();
+            }
         });
     }
 }
