@@ -62,6 +62,7 @@ class UserItemsController extends Controller
     {
         $request->validate([
             'room_id' => 'required|exists:rooms,id',
+            'accompany_number' => 'required|integer|min:1',
         ]);
 
         try {
@@ -77,13 +78,14 @@ class UserItemsController extends Controller
 
             Cart::create([
                 'room_id' => $request->room_id,
+                'accompany_number' => $request->accompany_number,
             ]);
 
             DB::commit();
             return response()->json(['message' => 'Room added to cart successfully'], 200);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Something went wrong'], 500);
+            return response()->json(['message' => $e], 500);
         }
     }
 
