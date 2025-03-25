@@ -12,7 +12,9 @@ class Cart extends Model
     protected $primaryKey = 'id';
     protected $fillable = [
         'room_id',
+        'accompany_number',
     ];
+
 
     public $timestamps = true;
     public function user()
