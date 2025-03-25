@@ -28,8 +28,12 @@ class Favorite extends Model
     }
     public static function boot(): void
     {
+        parent::boot();
+
         static::creating(function ($favorite) {
-            $favorite->user_id = auth()->id;
+            if (auth()->check()) {
+                $favorite->user_id = auth()->id();
+            }
         });
     }
 
