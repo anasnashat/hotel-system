@@ -9,6 +9,8 @@ use App\Models\User;
 use App\Models\UserProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Notifications\ClientApprovedNotification;
+use Illuminate\Support\Facades\Notification;
 
 class ClientManagementController extends Controller
 {
@@ -69,6 +71,12 @@ class ClientManagementController extends Controller
                 'approved_at' => now(),
             ]);
             DB::commit();
+            // $client = User::findOrFail($request->client_id);
+            $client = $userProfile->user;
+            // dd($client);
+            $client->notify(new ClientApprovedNotification($client));
+            // Notification::send($client, new ClientApprovedNotification($client));
+
             return back()->with([
                 'success' => 'Client approved successfully',
             ]);
