@@ -52,28 +52,29 @@ class TestController extends Controller
 //           'description' => 'first room',
 //           'floor_id' => 10,
 //       ]);
-        $room = Room::findOrFail(24);
+//        $room = Room::findOrFail(24);
 
 
-       dd($room);
+
+//       dd($room->reservations()->count());
 
 
 // Retrieve stored images
-        $media = $room->getMedia('room_images');
-        dd($media);
+//        $media = $room->getMedia('room_images');
+//        dd($media);
 
-//        $reservation = Reservation::create([
-//            'reservation_code'=> 5555,
-//            'client_id'=>11,
-//            'room_id'=>1,
-//            'check_in_date'=>'2021-09-09',
-//            'check_out_date'=>'2021-09-10',
-//            'accompany_number'=>1,
-//            'price_at_booking'=>2000,
-//            'payment_intent_id'=>'payment_intent_id',
-//            'payment_method_id'=>'sssss'
-//        ]);
-//        dd($reservation);
+        $reservation = Reservation::create([
+            'reservation_code'=> 5555555,
+            'client_id'=>11,
+            'room_id'=>24,
+            'check_in_date'=>'2021-09-09',
+            'check_out_date'=>'2021-09-10',
+            'accompany_number'=>1,
+            'price_at_booking'=>2000,
+            'payment_intent_id'=>'payment_intent_id',
+            'payment_method_id'=>'sssss'
+        ]);
+        dd($reservation);
 
 //        $clients = Reservation::with(['client.profile', 'room'])->whereHas('client.profile', function ($query) {
 //            $query->whereNotNull('approved_by')
