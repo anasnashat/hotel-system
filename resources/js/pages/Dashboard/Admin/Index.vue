@@ -4,7 +4,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { router, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -274,7 +273,7 @@ const tabs = [
                     </div>
 
                     <!-- Password Field -->
-                    <div v-if="isEditMode" class="space-y-2">
+                    <div class="space-y-2">
                         <Label>Password</Label>
                         <Input v-model="form.password" type="password" placeholder="Enter password" />
                         <p v-if="page.props.errors.password" class="text-sm text-red-500">{{ page.props.errors.password }}</p>
