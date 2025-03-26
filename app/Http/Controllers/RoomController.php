@@ -86,7 +86,7 @@ public function store(StoreRoomRequest $request)
         return redirect()->route('rooms.index')->with('success', 'Room created successfully.');
     } catch (\Exception $e) {
         DB::rollBack();
-        return redirect()->back()->with('error', 'An error occurred while creating the room');
+        return redirect()->back()->with('error', $e);
     }
 }
 
@@ -158,8 +158,8 @@ public function destroy($id)
 {
     try {
         DB::beginTransaction();
-        $room = Room::findOrFail($id);
-        if ($room->reservations()->isReserved()->get()){
+        $room = Room::with("reservations")->findOrFail($id);
+        if ($room->reservations()->isReserved()->exists()) {
             return redirect()->back()->with('error', 'Room has reservations, cannot deleted');
         }
         $room->delete();

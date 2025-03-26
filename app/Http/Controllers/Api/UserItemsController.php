@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Favorite;
+use App\Models\Room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -68,27 +69,69 @@ class UserItemsController extends Controller
         try {
             DB::beginTransaction();
 
-            $cart = Cart::where('room_id', $request->room_id)
-                ->where('user_id', auth()->id())
-                ->first();
+            $userId = auth()->id();
+            $room = Room::findOrFail($request->room_id);
 
-            if ($cart) {
-                return response()->json(['message' => 'Room already added to cart'], 400);
+            if ($request->accompany_number > $room->capacity) {
+                return response()->json([
+                    'message' => 'Number of guests exceeds room capacity (Max: ' . $room->capacity . ')'
+                ], 422);
             }
 
-            Cart::create([
-                'room_id' => $request->room_id,
-                'accompany_number' => $request->accompany_number,
-            ]);
+            // Check if the same room already exists in cart
+            $existingCart = Cart::where('room_id', $request->room_id)
+                ->where('user_id', $userId)
+                ->first();
+
+            if ($existingCart) {
+                // If accompany number is the same, return conflict
+                if ($existingCart->accompany_number == $request->accompany_number) {
+                    return response()->json([
+                        'message' => 'This room with the same guest count is already in your cart'
+                    ], 409);
+                }
+
+                // Don't allow reducing guest count
+                if ($existingCart->accompany_number > $request->accompany_number) {
+                    return response()->json([
+                        'message' => 'You cannot reduce the guest count'
+                    ], 422);
+                }
+
+                // Check if new count exceeds capacity
+                if ($request->accompany_number > $room->capacity) {
+                    return response()->json([
+                        'message' => 'Updated guest count exceeds room capacity (Max: ' . $room->capacity . ')'
+                    ], 422);
+                }
+
+                // Update the existing cart item
+                $existingCart->update([
+                    'accompany_number' => $request->accompany_number
+                ]);
+
+                $message = 'Cart item updated successfully';
+            } else {
+                // Create new cart item
+                Cart::create([
+                    'room_id' => $request->room_id,
+                    'accompany_number' => $request->accompany_number
+                ]);
+
+                $message = 'Room added to cart successfully';
+            }
 
             DB::commit();
-            return response()->json(['message' => 'Room added to cart successfully'], 200);
+            return response()->json(['message' => $message], 200);
+
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => $e], 500);
+            return response()->json([
+                'message' => 'Failed to update cart',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
-
     public function removeFromCart(Request $request)
     {
         $request->validate([
