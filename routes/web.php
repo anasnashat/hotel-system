@@ -130,17 +130,20 @@ Route::get('/waiting-approval', function () {
 })->name('waiting-approval');
 
 
+Route::middleware(['auth'])->group(function (){
+    Route::get('checkout/', [StripeController::class, 'index']);
+    Route::post('checkout/create-charge', [StripeController::class, 'createCharge'])->name('stripe.create-charge');
 
-Route::get('checkout/', [StripeController::class, 'index']);
-Route::post('checkout/create-charge', [StripeController::class, 'createCharge'])->name('stripe.create-charge');
 
 
+    Route::post('cart/', [UserItemsController::class, 'addToCart']);
+    Route::delete('cart/', [UserItemsController::class, 'removeFromCart']);
 
-Route::post('cart/', [UserItemsController::class, 'addToCart']);
-Route::delete('cart/', [UserItemsController::class, 'removeFromCart']);
+    Route::post('favorites/', [UserItemsController::class, 'addFavorite']);
+    Route::delete('favorites/', [UserItemsController::class, 'removeFavorite']);
 
-Route::post('favorites/', [UserItemsController::class, 'addFavorite']);
-Route::delete('favorites/', [UserItemsController::class, 'removeFavorite']);
+
+});
 
 
 require __DIR__ . '/settings.php';
