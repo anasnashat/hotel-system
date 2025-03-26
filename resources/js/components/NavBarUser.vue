@@ -86,17 +86,17 @@ const logout = () => {
     <!-- Shopping Cart Icon -->
      <Link href="/cart">
      <div class="relative">
-      <button class="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+      <button  class="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
       <ShoppingCart :size="20" />
     </button>
     <span v-if="cartStore.cart.length > 0"  class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">{{ cartStore.cart.length }}</span>
     </div>
-    </Link> 
+    </Link>
 
-    
+
     <!-- Booking Status Link -->
-    <Link 
-      href="/booking-status" 
+    <Link
+      href="/booking-status"
       @click="handleBookingStatusClick"
       class="relative flex items-center px-4 py-2 text-white font-semibold bg-gradient-to-r from-[#5b5329] to-[#867b45] rounded-lg shadow-md transition-transform transform hover:scale-105 hover:shadow-lg"
     >
@@ -121,7 +121,7 @@ const logout = () => {
       </button>
     </template>
   </div>
-  
+
 </template>
 <style>
 .Link:hover {
