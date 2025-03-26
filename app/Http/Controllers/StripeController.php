@@ -13,7 +13,8 @@ class StripeController extends Controller
 {
     public function index()
     {
-        $cartItems = auth()->user()->cart->all();
+        $cartItems = auth()->user()->cart()->get();
+//        dd($cartItems);
 //        dd($cartItems);
         return view('checkout', compact('cartItems'));
     }
@@ -21,7 +22,7 @@ class StripeController extends Controller
     public function createCharge(Request $request)
     {
         try {
-            $cartItems = auth()->user()->cart->all();
+            $cartItems = auth()->user()->cart()->get();
             $totalAmount = 0;
 
             foreach ($cartItems as $cartItem) {
@@ -45,7 +46,7 @@ class StripeController extends Controller
             Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
             $status = Stripe\Charge::create([
-                "amount" => $totalAmount * 100, // Stripe expects the amount in cents
+                "amount" => $totalAmount, // Stripe expects the amount in cents
                 "currency" => "usd",
                 "source" => $request->stripeToken,
                 "description" => "Room reservation for user " . auth()->user()->name
