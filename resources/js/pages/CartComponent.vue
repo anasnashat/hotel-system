@@ -77,10 +77,12 @@ const updateQuantity = async (room_id: number, newQuantity: number) => {
     }
 };
 
+
+
 const removeItem = async (room_id: number) => {
     try {
         await router.delete('/cart', {
-            data: { room_id, accompany_number: item.accompany_number },
+            data: { room_id },
             preserveScroll: true,
             onSuccess: () => {
                 Swal.fire({
