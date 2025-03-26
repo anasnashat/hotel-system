@@ -57,9 +57,8 @@ class Room extends Model implements HasMedia
 
     protected static function generateUniqueFloorNumber(): int
     {
-        $maxNumber = Room::max('number');
-        $randomNumber = rand(1, 1000);
-        return $maxNumber ? $maxNumber + $randomNumber : 1000;
+        $maxNumber = Room::withTrashed()->max('number');
+        return $maxNumber ? $maxNumber + 1 : 1000;
     }
     protected static function boot()
     {
@@ -74,6 +73,6 @@ class Room extends Model implements HasMedia
     // {
     // $media = $this->getFirstMedia('rooms_image');
     // return $media ? $media->getUrl() : asset('images/default.jpg');
-    // } 
+    // }
 }
 
