@@ -28,7 +28,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 // Page props
 const page = usePage();
-
 // Room interface
 interface Room {
     id: number;
