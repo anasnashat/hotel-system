@@ -19,7 +19,7 @@ class UserItemsController extends Controller
 
         $user = auth()->id();
         if (!$user) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return redirect()->back()->with(['message' => 'Unauthorized'], 401);
         }
 
         $exists = Favorite::where('room_id', $request->room_id)
@@ -27,7 +27,7 @@ class UserItemsController extends Controller
             ->exists();
 
         if ($exists) {
-            return response()->json(['message' => 'Room already in favorites'], 409);
+            return redirect()->back()->with(['message' => 'Room already in favorites'], 409);
         }
 
         $favorite = Favorite::create([
@@ -35,7 +35,7 @@ class UserItemsController extends Controller
             'user_id' => $user,
         ]);
 
-        return response()->json(['message' => 'Room added to favorites', 'data' => $favorite], 201);
+        return redirect()->back()->with(['message' => 'Room added to favorites', 'data' => $favorite], 201);
     }
 
 
@@ -51,12 +51,12 @@ class UserItemsController extends Controller
             ->first();
 
         if (!$favorite) {
-            return response()->json(['message' => 'Favorite not found'], 404);
+            return redirect()->back()->with(['message' => 'Favorite not found'], 404);
         }
 
         $favorite->delete();
 
-        return response()->json(['message' => 'Favorite removed successfully'], 200);
+        return redirect()->back()->with(['message' => 'Favorite removed successfully'], 200);
     }
 
     public function addToCart(Request $request)
@@ -73,7 +73,7 @@ class UserItemsController extends Controller
             $room = Room::findOrFail($request->room_id);
 
             if ($request->accompany_number > $room->capacity) {
-                return response()->json([
+                return redirect()->back()->with([
                     'message' => 'Number of guests exceeds room capacity (Max: ' . $room->capacity . ')'
                 ], 422);
             }
@@ -86,21 +86,15 @@ class UserItemsController extends Controller
             if ($existingCart) {
                 // If accompany number is the same, return conflict
                 if ($existingCart->accompany_number == $request->accompany_number) {
-                    return response()->json([
+                    return redirect()->back()->with([
                         'message' => 'This room with the same guest count is already in your cart'
                     ], 409);
                 }
 
-                // Don't allow reducing guest count
-                if ($existingCart->accompany_number > $request->accompany_number) {
-                    return response()->json([
-                        'message' => 'You cannot reduce the guest count'
-                    ], 422);
-                }
 
                 // Check if new count exceeds capacity
                 if ($request->accompany_number > $room->capacity) {
-                    return response()->json([
+                    return redirect()->back()->with([
                         'message' => 'Updated guest count exceeds room capacity (Max: ' . $room->capacity . ')'
                     ], 422);
                 }
@@ -122,11 +116,11 @@ class UserItemsController extends Controller
             }
 
             DB::commit();
-            return response()->json(['message' => $message], 200);
+            return redirect()->back()->with(['message' => $message], 200);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
+            return redirect()->back()->with([
                 'message' => 'Failed to update cart',
                 'error' => $e->getMessage()
             ], 500);
@@ -143,11 +137,11 @@ class UserItemsController extends Controller
             ->first();
 
         if (!$cart) {
-            return response()->json(['message' => 'Room not found in cart'], 404);
+            return redirect()->back()->with(['message' => 'Room not found in cart'], 404);
         }
 
         $cart->delete();
 
-        return response()->json(['message' => 'Room removed from cart successfully'], 200);
+        return redirect()->back()->with(['message' => 'Room removed from cart successfully'], 200);
     }
 }
