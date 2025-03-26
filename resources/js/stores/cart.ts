@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed, watch, onMounted } from 'vue';
+import { route } from 'ziggy-js';
+import { router } from '@inertiajs/vue3';
 
 interface CartItem {
   id: number;
@@ -14,6 +16,7 @@ export const useCartStore = defineStore('cart', () => {
 
   // Add a room to the cart (book it)
   const addToCart = (item: CartItem) => {
+      router.post('/cart', {room_id: item.id, accompany_number:1});
     const alreadyBooked = cart.value.some((i) => i.id === item.id);
     if (!alreadyBooked) {
       cart.value.push(item);
