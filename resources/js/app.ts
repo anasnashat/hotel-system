@@ -25,7 +25,7 @@ declare module 'vite/client' {
     }
 }
 
-import { useFavoriteStore } from './stores/favorite';
+// import { useFavoriteStore } from './stores/favorite';
 
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
@@ -38,9 +38,9 @@ createInertiaApp({
 
         const pinia = createPinia();  // ✅ Create Pinia instance
         app.use(plugin)
+            .use(pinia)
+            .use(router)
            .use(ZiggyVue)
-           .use(pinia)// ✅ Use Pinia in the app 
-           .use(router) 
            .mount(el);
     },
     progress: {
