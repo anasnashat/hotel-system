@@ -29,7 +29,7 @@ const isBooked = computed(() => {
   return cartStore.cart.some((item) => item.id === props.room.id);
 });
 const isFavorite = computed(() => {
-  return Array.isArray(favoriteStore.favoriteRooms) && 
+  return Array.isArray(favoriteStore.favoriteRooms) &&
          favoriteStore.favoriteRooms.some((item) => item.id === props.room.id);
 });
 
@@ -103,15 +103,15 @@ const goToRoomDetails = (roomId: number) => {
 
       <img v-if="room.first_image_url" :src="room.first_image_url" alt="Room Image" class="w-full h-auto" />
 
-      
+
       <!-- Favorite Heart Icon -->
-      <button 
-        @click="toggleFavorite" 
+      <button
+        @click="toggleFavorite"
         class="absolute top-3 right-3 p-2 rounded-full bg-white dark:bg-gray-900 shadow-md"
       >
-        <Heart 
-          :size="24" 
-          class="transition-all duration-300" 
+        <Heart
+          :size="24"
+          class="transition-all duration-300"
           :class="isFavorite ? 'text-red-500 fill-red-500' : 'text-gray-500'"
         />
       </button>
@@ -126,7 +126,7 @@ const goToRoomDetails = (roomId: number) => {
 
     <!-- Card Content -->
     <CardContent class="px-4 py-2">
-      <p class="text-gray-600 dark:text-gray-400">{{ formatCurrency(room.price)}} per night</p>
+      <p class="text-gray-600 dark:text-gray-400">{{ formatCurrency(room.price)}} </p>
     </CardContent>
 
     <!-- Card Footer -->
@@ -150,7 +150,7 @@ const goToRoomDetails = (roomId: number) => {
           {{ room.name }}
         </DialogTitle>
       </DialogHeader>
-      
+
       <!-- Room Image -->
       <img :src="room.first_image_url" alt="Room Image" class="w-full h-56 object-cover rounded-lg my-3" />
 
