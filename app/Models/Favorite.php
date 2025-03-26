@@ -15,6 +15,7 @@ class Favorite extends Model
 
     protected $fillable = [
         'room_id',
+
     ];
 
     public $timestamps = true;
