@@ -63,11 +63,7 @@ Route::post('/check-existence', function (Request $request) {
     return response()->json(['exists' => $exists]);
 });
 
-Route::get('/cart', function () {
 
-    $cartItems = Cart::with('room')->where("user_id" , auth()->user()->id)->get();
-    return Inertia::render('CartComponent', ['cartItems' => $cartItems]);
-})->name('cart');
 
 Route::get('/favorites', function () {
     return Inertia::render('Favorites');
@@ -131,6 +127,11 @@ Route::get('/waiting-approval', function () {
 
 
 Route::middleware(['auth'])->group(function (){
+    Route::get('/cart', function () {
+
+        $cartItems = Cart::with('room')->where("user_id" , auth()->user()->id)->get();
+        return Inertia::render('CartComponent', ['cartItems' => $cartItems]);
+    })->name('cart');
     Route::get('checkout/', [StripeController::class, 'index']);
     Route::post('checkout/create-charge', [StripeController::class, 'createCharge'])->name('stripe.create-charge');
 
