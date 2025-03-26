@@ -18,29 +18,38 @@ class RoomController extends Controller
      * Display a listing of the resource.
      */
 
-     public function index()
-     {
-         $rooms = Room::with(['floor', 'createdBy', 'media'])->paginate(10)
-             ->through(function ($room) {
-                 return [
-                     'id' => $room->id,
-                     'number' => $room->number,
-                     'capacity' => $room->capacity,
-                     'description' => $room->description,
-                     'price' => $room->price,
-                     'floor_name' => $room->floor->name ?? 'N/A',
-                     'manager_name' => $room->createdBy->name,
-                     'manager_id' => $room->createdBy->id,
-                     'floor_id' => $room->floor_id,
-                     'first_image_url' => $room->getFirstMediaUrl('rooms_image') ?: null, // Ensure null if no image
-                 ];
-             });
-     
-         return Inertia::render('Dashboard/Room/Index', [
-             'rooms' => $rooms,
-         ]);
-     }
-     
+    public function index()
+    {
+        $floors = Floor::all();
+        $rooms = Room::with(['floor', 'createdBy', 'media'])
+            ->paginate(10)
+            ->through(function ($room) {
+                return [
+                    'id' => $room->id,
+                    'number' => $room->number,
+                    'capacity' => $room->capacity,
+                    'description' => $room->description,
+                    'price' => $room->price,
+                    'floor_name' => $room->floor->name ?? 'N/A',
+                    'manager_name' => $room->createdBy->name,
+                    'manager_id' => $room->createdBy->id,
+                    'floor_id' => $room->floor_id,
+                    'images' => $room->media->map(function ($media) {
+                        return [
+                            'id' => $media->id,
+                            'url' => $media->getUrl(),
+                        ];
+                    }),
+                    'first_image_url' => $room->getFirstMediaUrl('rooms_image'),
+                ];
+            });
+
+        return Inertia::render('Dashboard/Room/Index', [
+            'rooms' => $rooms,
+            'floors' => $floors,
+        ]);
+    }
+
 
     /**
      * Show the form for creating a new resource.
