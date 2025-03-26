@@ -8,6 +8,7 @@ use App\Models\Favorite;
 use App\Models\Room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class UserItemsController extends Controller
 {
@@ -17,28 +18,25 @@ class UserItemsController extends Controller
             'room_id' => 'required|exists:rooms,id',
         ]);
 
-        $user = auth()->id();
-        if (!$user) {
-            return redirect()->back()->with(['message' => 'Unauthorized'], 401);
+        if (!auth()->check()) {
+            return back()->with('error', 'Please login to add favorites');
         }
 
         $exists = Favorite::where('room_id', $request->room_id)
-            ->where('user_id', $user)
+            ->where('user_id', auth()->id())
             ->exists();
 
         if ($exists) {
-            return redirect()->back()->with(['message' => 'Room already in favorites'], 409);
+            return back()->with('error', 'This room is already in your favorites');
         }
 
-        $favorite = Favorite::create([
+        Favorite::create([
             'room_id' => $request->room_id,
-            'user_id' => $user,
+            'user_id' => auth()->id(),
         ]);
 
-        return redirect()->back()->with(['message' => 'Room added to favorites', 'data' => $favorite], 201);
+        return back()->with('success', 'Room added to favorites successfully');
     }
-
-
 
     public function removeFavorite(Request $request)
     {
@@ -48,15 +46,11 @@ class UserItemsController extends Controller
 
         $favorite = Favorite::where('room_id', $request->room_id)
             ->where('user_id', auth()->id())
-            ->first();
-
-        if (!$favorite) {
-            return redirect()->back()->with(['message' => 'Favorite not found'], 404);
-        }
+            ->firstOrFail();
 
         $favorite->delete();
 
-        return redirect()->back()->with(['message' => 'Favorite removed successfully'], 200);
+        return back()->with('success', 'Room removed from favorites');
     }
 
     public function addToCart(Request $request)
@@ -69,63 +63,48 @@ class UserItemsController extends Controller
         try {
             DB::beginTransaction();
 
-            $userId = auth()->id();
             $room = Room::findOrFail($request->room_id);
 
             if ($request->accompany_number > $room->capacity) {
-                return redirect()->back()->with([
-                    'message' => 'Number of guests exceeds room capacity (Max: ' . $room->capacity . ')'
-                ], 422);
+                return back()->with('error',
+                    "Number of guests exceeds room capacity (Max: {$room->capacity})"
+                );
             }
 
-            // Check if the same room already exists in cart
+            if ($room->reservations()->isReserved()->exists()) {
+                return back()->with('error', 'This room is already reserved');
+            }
+
             $existingCart = Cart::where('room_id', $request->room_id)
-                ->where('user_id', $userId)
+                ->where('user_id', auth()->id())
                 ->first();
 
             if ($existingCart) {
-                // If accompany number is the same, return conflict
                 if ($existingCart->accompany_number == $request->accompany_number) {
-                    return redirect()->back()->with([
-                        'message' => 'This room with the same guest count is already in your cart'
-                    ], 409);
+                    return back()->with('info', 'This room is already in your cart');
                 }
 
-
-                // Check if new count exceeds capacity
-                if ($request->accompany_number > $room->capacity) {
-                    return redirect()->back()->with([
-                        'message' => 'Updated guest count exceeds room capacity (Max: ' . $room->capacity . ')'
-                    ], 422);
-                }
-
-                // Update the existing cart item
                 $existingCart->update([
                     'accompany_number' => $request->accompany_number
                 ]);
-
-                $message = 'Cart item updated successfully';
+                $message = 'Cart updated successfully';
             } else {
-                // Create new cart item
                 Cart::create([
                     'room_id' => $request->room_id,
                     'accompany_number' => $request->accompany_number
                 ]);
-
                 $message = 'Room added to cart successfully';
             }
 
             DB::commit();
-            return redirect()->back()->with(['message' => $message], 200);
+            return back()->with('success', $message);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with([
-                'message' => 'Failed to update cart',
-                'error' => $e->getMessage()
-            ], 500);
+            return back()->with('error', 'Failed to update cart: '.$e->getMessage());
         }
     }
+
     public function removeFromCart(Request $request)
     {
         $request->validate([
@@ -134,14 +113,10 @@ class UserItemsController extends Controller
 
         $cart = Cart::where('room_id', $request->room_id)
             ->where('user_id', auth()->id())
-            ->first();
-
-        if (!$cart) {
-            return redirect()->back()->with(['message' => 'Room not found in cart'], 404);
-        }
+            ->firstOrFail();
 
         $cart->delete();
 
-        return redirect()->back()->with(['message' => 'Room removed from cart successfully'], 200);
+        return back()->with('success', 'Room removed from cart');
     }
 }

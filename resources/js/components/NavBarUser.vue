@@ -97,7 +97,6 @@ const logout = () => {
     <!-- Booking Status Link -->
     <Link
       href="/booking-status"
-      @click="handleBookingStatusClick"
       class="relative flex items-center px-4 py-2 text-white font-semibold bg-gradient-to-r from-[#5b5329] to-[#867b45] rounded-lg shadow-md transition-transform transform hover:scale-105 hover:shadow-lg"
     >
       <span class="mr-2">📅</span> Booking Status
