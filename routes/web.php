@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\Api\UserItemsController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\StripeController;
+use App\Models\Cart;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Models\User;
@@ -62,7 +64,9 @@ Route::post('/check-existence', function (Request $request) {
 });
 
 Route::get('/cart', function () {
-    return Inertia::render('CartComponent');
+
+    $cartItems = Cart::with('room')->where("user_id" , auth()->user()->id)->get();
+    return Inertia::render('CartComponent', ['cartItems' => $cartItems]);
 })->name('cart');
 
 Route::get('/favorites', function () {
@@ -127,8 +131,16 @@ Route::get('/waiting-approval', function () {
 
 
 
-Route::get('stripe/', [StripeController::class, 'index']);
-Route::post('stripe/create-charge', [StripeController::class, 'createCharge'])->name('stripe.create-charge');
+Route::get('checkout/', [StripeController::class, 'index']);
+Route::post('checkout/create-charge', [StripeController::class, 'createCharge'])->name('stripe.create-charge');
+
+
+
+Route::post('cart/', [UserItemsController::class, 'addToCart']);
+Route::delete('cart/', [UserItemsController::class, 'removeFromCart']);
+
+Route::post('favorites/', [UserItemsController::class, 'addFavorite']);
+Route::delete('favorites/', [UserItemsController::class, 'removeFavorite']);
 
 
 require __DIR__ . '/settings.php';
