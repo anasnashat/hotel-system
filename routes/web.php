@@ -64,8 +64,11 @@ Route::post('/check-existence', function (Request $request) {
 });
 
 Route::get('/cart', function () {
+    if (!Auth::check()) {
+        return redirect('/login')->with('error', 'You must be logged in to view the cart.');
+    }
 
-    $cartItems = Cart::with('room')->where("user_id" , auth()->user()->id)->get();
+    $cartItems = Cart::with('room')->where("user_id", Auth::id())->get();
     return Inertia::render('CartComponent', ['cartItems' => $cartItems]);
 })->name('cart');
 
@@ -136,7 +139,7 @@ Route::post('checkout/create-charge', [StripeController::class, 'createCharge'])
 
 
 
-Route::post('cart/', [UserItemsController::class, 'addToCart']);
+Route::middleware(['auth'])->post('/cart', [UserItemsController::class, 'addToCart']);
 Route::delete('cart/', [UserItemsController::class, 'removeFromCart']);
 
 Route::post('favorites/', [UserItemsController::class, 'addFavorite']);
