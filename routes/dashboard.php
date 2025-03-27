@@ -39,7 +39,7 @@ Route::middleware(['auth'])->prefix('dashboard')->group(function () {
 
     // =============================================== End ==================================================================================================
 
-    Route::resource('managers', AdminManagementController::class)->middleware([ 'role:admin|manager']);;
+    Route::resource('managers', AdminManagementController::class)->middleware([ 'role:admin']);;
     // =============================================== End ==================================================================================================
 
 
