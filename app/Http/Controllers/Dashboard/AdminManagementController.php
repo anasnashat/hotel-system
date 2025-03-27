@@ -129,7 +129,9 @@ public function store(Request $request)
     public function destroy(User $manager)
     {
         $manager->delete();
-        Storage::disk('public')->delete($manager->avatar_image);
+        if ($manager->avatar_image){
+            Storage::disk('public')->delete($manager->avatar_image);
+        }
         return redirect()->back()->with('success', 'Manager deleted successfully.');
     }
 }
