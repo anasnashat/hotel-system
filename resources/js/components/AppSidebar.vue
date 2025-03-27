@@ -13,60 +13,68 @@ import Alert from '@/components/Alert.vue';
 const page = usePage();
 const user = computed(() => page.props.auth.user);
 
-// console.log('User Roles:', user.value.roles);
+const hasRole = (roleName: string) => {
+    return user.value?.roles?.includes(roleName);
+};
+
+const hasAnyRole = (roleNames: string[]) => {
+    return roleNames.some(role => user.value?.roles?.includes(role));
+};
+
 const mainNavItems = computed<NavItem[]>(() => {
-    const items: NavItem[] = [
+    const baseItems: NavItem[] = [
         {
             title: 'Dashboard',
             href: '/dashboard',
             icon: LayoutGrid,
-        },
-
-        {
-            title: 'Manage Manager',
-            href: route('managers.index'),
-            icon: LayoutGrid,
-        },
-        {
-            title: 'Manage Receptionist',
-            href: route('manager.manage-receptionists'),
-            icon: LayoutGrid,
-        },
-        {
-            title: 'Manage Clients',
-            href: route('clients-management.index'),
-            icon: LayoutGrid,
-        },
+        }
     ];
 
-    // Add Floor Management if the user is an admin or manager
-    if (user.value?.roles && Array.isArray(user.value.roles)) {
-        const isAdminOrManager = user.value.roles.some((role: { name: string }) => ['admin', 'manager'].includes(role.name));
-        // console.log('Is Admin or Manager:', isAdminOrManager);
+    // Manager-specific items
+    if (hasAnyRole(['admin', 'manager'])) {
+        baseItems.push(
 
-        if (isAdminOrManager) {
-            items.push({
+            {
+                title: 'Manage Receptionist',
+                href: route('manager.manage-receptionists'),
+                icon: LayoutGrid,
+            },
+            {
+                title: 'Manage Clients',
+                href: route('clients-management.index'),
+                icon: LayoutGrid,
+            }
+        );
+    }
+
+    // Admin/manager items
+    if (hasAnyRole(['admin', 'manager'])) {
+        baseItems.push(
+            {
                 title: 'Manage Floors',
                 href: route('floors.index'),
                 icon: LayoutGrid,
-            });
-        }
-    }
-
-    // Add Rooms Management if the user is an admin
-    if (user.value?.roles && Array.isArray(user.value.roles)) {
-        const isAdminOrManager = user.value.roles.some((role: { name: string }) => ['admin', 'manager'].includes(role.name));
-
-        if (isAdminOrManager) {
-            items.push({
+            },
+            {
                 title: 'Manage Rooms',
                 href: route('rooms.index'),
                 icon: LayoutGrid,
-            });
-        }
+            }
+        );
     }
 
-    return items;
+    // Admin-only items
+    if (hasRole('admin')) {
+        baseItems.push(
+            {
+                title: 'Manage Manager',
+                href: route('managers.index'),
+                icon: LayoutGrid,
+            },
+        );
+    }
+
+    return baseItems;
 });
 
 const footerNavItems: NavItem[] = [
