@@ -42,7 +42,7 @@ class HandleInertiaRequests extends Middleware
         $user = Auth::user();
 
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
-        $user = $request->user();
+//        $user = $request->user();
 
 
         return [
@@ -57,10 +57,11 @@ class HandleInertiaRequests extends Middleware
                     'name' => $user->name,
                     'email' => $user->email,
                     'roles' => $user->roles->pluck('name'), // Get roles
-                    'permissions' => $user->getAllPermissions()->pluck('name'), // Get permissions
-                ] : null,
+                    'permissions' => $user->getAllPermissions()->pluck('name'),
+                    'cart' => $user->cart()->get(),
 
-                'user' => $user,
+                    // Get permissions
+                ] : null,
 
             ],
             'ziggy' => [
