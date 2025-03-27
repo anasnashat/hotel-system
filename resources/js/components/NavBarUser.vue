@@ -12,10 +12,11 @@ import CartComponent from '@/pages/CartComponent.vue';
 const cartStore = useCartStore();
 const favoriteStore = useFavoriteStore();
 // Get user data from Inertia
-const page = usePage<SharedData>();
+const page = usePage();
 const user = computed(() => page.props.auth.user as User | null);
 const userLoggedIn = computed(() => !!user.value);
-
+const cart = page.props.auth?.user?.cart;
+console.log(cart);
 // Alert state
 const showGuestAlert = ref(false);
 
@@ -89,7 +90,7 @@ const logout = () => {
       <button  class="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
       <ShoppingCart :size="20" />
     </button>
-    <!-- <span v-if="cartStore.cart.length > 0"  class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">{{ cartStore.cart.length }}</span> -->
+     <span v-if="cart?.length> 0"  class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">{{ cart?.length  }}</span>
     </div>
     </Link>
 
