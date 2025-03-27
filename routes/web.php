@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\Api\UserItemsController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\StripeController;
 use App\Models\Cart;
+use App\Models\Reservation;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Models\User;
@@ -33,16 +35,16 @@ Route::get('/room/{id}', function ($id) {
     return Inertia::render('RoomDetails', ['id' => $id]); // ✅ Pass 'id'
 })->name('room.details');
 
-Route::get('/favorites/{room}', [FavoriteController::class, 'show']);
 
 
 Route::get('/room/{id}', function ($id) {
     return Inertia::render('RoomDetails', ['id' => $id]);
 })->name('room');
 
-Route::get('/booking-status', function () {
-    return Inertia::render('BookingStatus');
-})->name('booking.status')->middleware('auth'); // Ensure only logged-in users can view it
+//Route::get('/booking-status', function () {
+//
+//    return Inertia::render('BookingStatus');
+//})->name('booking.status')->middleware('auth'); // Ensure only logged-in users can view it
 
 
 //This route to check if email,phone,national_id already exits
@@ -142,6 +144,8 @@ Route::middleware(['auth'])->group(function (){
 
     Route::post('favorites/', [UserItemsController::class, 'addFavorite']);
     Route::delete('favorites/', [UserItemsController::class, 'removeFavorite']);
+
+    Route::get('reservation/', [ReservationController::class, 'index'])->name('reservation.index');
 
 
 });
