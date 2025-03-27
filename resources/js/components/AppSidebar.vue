@@ -27,6 +27,11 @@ const mainNavItems = computed<NavItem[]>(() => {
             title: 'Dashboard',
             href: '/dashboard',
             icon: LayoutGrid,
+        },
+        {
+            title: 'Manage Clients',
+            href: route('clients-management.index'),
+            icon: LayoutGrid,
         }
     ];
 
@@ -37,11 +42,6 @@ const mainNavItems = computed<NavItem[]>(() => {
             {
                 title: 'Manage Receptionist',
                 href: route('manager.manage-receptionists'),
-                icon: LayoutGrid,
-            },
-            {
-                title: 'Manage Clients',
-                href: route('clients-management.index'),
                 icon: LayoutGrid,
             }
         );
