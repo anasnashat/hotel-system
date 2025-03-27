@@ -19,68 +19,81 @@ class StripeController extends Controller
         return view('checkout', compact('cartItems'));
     }
 
-    public function createCharge(Request $request)
-    {
-        try {
-            $cartItems = auth()->user()->cart()->get();
-            $totalAmount = 0;
+   public function createCharge(Request $request)
+   {
+       try {
+           $cartItems = auth()->user()->cart()->get();
+           if ($cartItems->isEmpty()) {
+               return back()->with('error', 'Your cart is empty.');
+           }
 
-            foreach ($cartItems as $cartItem) {
-                $room = Room::with('reservations')->find($cartItem->room_id);
+           $totalAmount = 0;
 
-                if (!$room) {
-                    return back()->with('error', 'Room not found.');
-                }
+           // Begin transaction
+           return \DB::transaction(function () use ($cartItems, $request, &$totalAmount) {
+               // Lock the rooms for update to prevent concurrent reservations
+               $roomIds = $cartItems->pluck('room_id')->toArray();
+               $rooms = Room::whereIn('id', $roomIds)->lockForUpdate()->get();
 
-                if ($room->reservations()->isReserved()->exists()) {
-                    return back()->with('error', "The room with number {$room->number} is already reserved.");
-                }
+               foreach ($cartItems as $cartItem) {
+                   $room = $rooms->find($cartItem->room_id);
 
-                if ($room->capacity < $cartItem->accompany_number) {
-                    return back()->with('error', 'The number of accompanying persons exceeds the room capacity.');
-                }
+                   if (!$room) {
+                       return back()->with('error', 'Room not found.');
+                   }
 
-                $totalAmount += $room->price;
-            }
+                   if ($room->reservations()->isReserved()->exists()) {
+                       return back()->with('error', "The room with number {$room->number} is already reserved.");
+                   }
 
-            Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+                   if ($room->capacity < $cartItem->accompany_number) {
+                       return back()->with('error', 'The number of accompanying persons exceeds the room capacity.');
+                   }
 
-            $status = Stripe\Charge::create([
-                "amount" => $totalAmount, // Stripe expects the amount in cents
-                "currency" => "usd",
-                "source" => $request->stripeToken,
-                "description" => "Room reservation for user " . auth()->user()->name
-            ]);
+                   $totalAmount += $room->price;
+               }
 
-            if ($status->status == 'succeeded') {
-                foreach ($cartItems as $cartItem) {
-                    $room = Room::find($cartItem->room_id);
+               // Process payment
+               Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
-                    // Create reservation
-                    $reservation = $room->reservations()->create([
-                        'client_id' => auth()->id(),
-                        'is_reserved' => true,
-                        'accompany_number' => $cartItem->accompany_number,
-                        'price_at_booking' => $room->price,
-                        'payment_intent_id' => $status->id,
-                        'status' => 'confirmed'
-                    ]);
+               $status = Stripe\Charge::create([
+                   "amount" => $totalAmount,
+                   "currency" => "usd",
+                   "source" => $request->stripeToken,
+                   "description" => "Room reservation for user " . auth()->user()->name
+               ]);
 
-                    Payment::create([
-                        'reservation_id' => $reservation->id,
-                        'payment_intent_id' => $status->id,
-                        'payment_method_id' => $status->payment_method,
-                    ]);
-                }
+               if ($status->status == 'succeeded') {
+                   foreach ($cartItems as $cartItem) {
+                       $room = $rooms->find($cartItem->room_id);
 
-                Cart::whereIn('id', $cartItems->pluck('id'))->delete();
+                       // Create reservation
+                       $reservation = $room->reservations()->create([
+                           'client_id' => auth()->id(),
+                           'is_reserved' => true,
+                           'accompany_number' => $cartItem->accompany_number,
+                           'price_at_booking' => $room->price,
+                           'payment_intent_id' => $status->id,
+                           'status' => 'confirmed'
+                       ]);
 
-                return redirect()->route('reservations.index')->with('success', 'Rooms reserved successfully!');
-            }
+                       Payment::create([
+                           'reservation_id' => $reservation->id,
+                           'payment_intent_id' => $status->id,
+                           'payment_method_id' => $status->payment_method,
+                       ]);
+                   }
 
-            return back()->with('error', 'Payment failed. Please try again.');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Something went wrong: ' . $e->getMessage());
-        }
-    }
+                   // Clear the cart
+                   Cart::whereIn('id', $cartItems->pluck('id'))->delete();
+
+                   return redirect()->route('reservations.index')->with('success', 'Rooms reserved successfully!');
+               }
+
+               return back()->with('error', 'Payment failed. Please try again.');
+           });
+       } catch (\Exception $e) {
+           return back()->with('error', 'Something went wrong: ' . $e->getMessage());
+       }
+   }
 }
