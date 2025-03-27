@@ -54,6 +54,8 @@ const form = ref({
     description: '',
     floor_id: '',
     images: [] as File[],
+    is_reserved: false,
+
 });
 
 // Delete confirmation state
@@ -104,6 +106,8 @@ const openEditModal = (room: Room) => {
         description: room.description,
         floor_id: room.floor_id.toString(),
         images: [],
+        is_reserved: room.is_reserved,
+
     };
     isModalOpen.value = true;
 };
@@ -117,6 +121,8 @@ const submitForm = () => {
     formData.append('price', Math.round(parseFloat(form.value.price)).toString());
     formData.append('description', form.value.description);
     formData.append('floor_id', form.value.floor_id);
+    formData.append('is_reserved', form.value.is_reserved.toString());
+
 
     form.value.images.forEach((image, index) => {
         formData.append(`images[${index}]`, image);
@@ -344,6 +350,18 @@ const tabs = [
                         <Label>Upload New Images</Label>
                         <Input type="file" multiple @change="handleImageUpload" />
                         <p v-if="page.props.errors.images" class="text-sm text-red-500">{{ page.props.errors.images }}</p>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <Label>Reservation Status</Label>
+                        <input
+                            type="checkbox"
+                            v-model="form.is_reserved"
+                            class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                        />
+                        <span class="text-sm text-gray-600">
+                            {{ form.is_reserved ? 'Reserved' : 'Available' }}
+                        </span>
                     </div>
                     <DialogFooter>
                         <Button type="button" variant="outline" @click="isModalOpen = false">Cancel</Button>
