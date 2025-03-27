@@ -101,7 +101,7 @@ const goToRoomDetails = (roomId: number) => {
     <!-- Room Image -->
     <div class="relative">
 
-      <img v-if="room.first_image_url" :src="room.first_image_url" alt="Room Image" class="w-full h-auto" />
+      <img v-if="room.first_image_url" :src="room.first_image_url" alt="Room Image" class="w-full h-[300px] p-4" />
 
 
       <!-- Favorite Heart Icon -->
@@ -118,15 +118,15 @@ const goToRoomDetails = (roomId: number) => {
     </div>
 
     <!-- Card Header -->
-    <CardHeader class="flex justify-between items-center px-4 pt-4">
+    <!-- <CardHeader class="flex justify-between items-center px-4 pt-4">
       <CardTitle class="cardTitle">
         {{ room.name }}
       </CardTitle>
-    </CardHeader>
+    </CardHeader> -->
 
     <!-- Card Content -->
     <CardContent class="px-4 py-2">
-      <p class="text-gray-600 dark:text-gray-400">{{ formatCurrency(room.price)}} </p>
+      <p class="text-gray-600 dark:text-gray-400 cardTitle">{{ formatCurrency(room.price)}} </p>
     </CardContent>
 
     <!-- Card Footer -->
@@ -152,8 +152,9 @@ const goToRoomDetails = (roomId: number) => {
       </DialogHeader>
 
       <!-- Room Image -->
-      <img :src="room.first_image_url" alt="Room Image" class="w-full h-56 object-cover rounded-lg my-3" />
-
+       
+      <img :src="room.first_image_url" alt="Room Image" class="w-full h-56 
+       rounded-lg my-3 object-cover" />
       <!-- Room Info -->
       <p class="text-gray-600 dark:text-gray-300 mb-3 font-medium font-semibold">{{ room.description }}</p>
       <p class="text-lg font-semibold text-gray-800 dark:text-white">{{formatCurrency(room.price) }} per night</p>
@@ -177,6 +178,5 @@ const goToRoomDetails = (roomId: number) => {
 button {
   transition: all 0.3s ease-in-out;
 }
-
 
 </style>
