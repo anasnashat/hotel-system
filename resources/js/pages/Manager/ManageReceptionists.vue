@@ -27,7 +27,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 // Page props
 const page = usePage();
-const isAdmin = page.props.auth.user.roles.some((role: { name: string }) => ['admin'].includes(role.name));
+const isAdmin = page.props.auth.user.roles.includes('admin','manager');
 
 // Receptionist interface
 interface Receptionist {
@@ -238,7 +238,6 @@ const tabs = [
                                 <TableCell v-if="isAdmin || page.props.auth.user.id === receptionist.profile?.created_by?.id">
                                     <div class="flex gap-2">
                                         <Button
-                                            v-if="isAdmin || page.props.auth.user.id === receptionist.profile?.created_by?.id"
                                             variant="outline"
                                             size="sm"
                                             @click="openEditModal(receptionist)"
@@ -246,7 +245,6 @@ const tabs = [
                                             Edit
                                         </Button>
                                         <Button
-                                            v-if="isAdmin || page.props.auth.user.id === receptionist.profile?.created_by?.id"
                                             variant="destructive"
                                             size="sm"
                                             @click="openDeleteDialog(receptionist)"
@@ -274,7 +272,7 @@ const tabs = [
                                     </div>
                                 </TableCell>
                                 <TableCell v-else>
-            
+
                                     <p class="text-gray-500 italic bg-gray-100 p-2 rounded-md border border-gray-300">
                                         You can't perform any actions on this receptionist.
                                     </p>
