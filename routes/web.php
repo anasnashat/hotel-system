@@ -11,7 +11,7 @@ use App\Models\UserProfile;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\UserProfileController;
-
+use App\Models\Room;
 
 
 Route::get('/login', [AuthenticatedSessionController::class, 'create'])
@@ -63,14 +63,12 @@ Route::post('/check-existence', function (Request $request) {
     return response()->json(['exists' => $exists]);
 });
 
-Route::get('/cart', function () {
-    if (!Auth::check()) {
-        return redirect('/login')->with('error', 'You must be logged in to view the cart.');
-    }
-
-    $cartItems = Cart::with('room')->where("user_id", Auth::id())->get();
-    return Inertia::render('CartComponent', ['cartItems' => $cartItems]);
-})->name('cart');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/cart', function () {
+        $cartItems = Cart::with('room')->where("user_id", auth()->id())->get();
+        return Inertia::render('CartComponent', ['cartItems' => $cartItems]);
+    })->name('cart');
+});
 
 Route::get('/favorites', function () {
     return Inertia::render('Favorites');
@@ -133,17 +131,25 @@ Route::get('/waiting-approval', function () {
 })->name('waiting-approval');
 
 
+Route::middleware(['auth'])->group(function (){
+    Route::get('/cart', function () {
 
-Route::get('checkout/', [StripeController::class, 'index']);
-Route::post('checkout/create-charge', [StripeController::class, 'createCharge'])->name('stripe.create-charge');
+        $cartItems = Cart::with('room')->where("user_id" , auth()->user()->id)->get();
+        return Inertia::render('CartComponent', ['cartItems' => $cartItems]);
+    })->name('cart');
+    Route::get('checkout/', [StripeController::class, 'index']);
+    Route::post('checkout/create-charge', [StripeController::class, 'createCharge'])->name('stripe.create-charge');
 
 
 
-Route::middleware(['auth'])->post('/cart', [UserItemsController::class, 'addToCart']);
-Route::delete('cart/', [UserItemsController::class, 'removeFromCart']);
+    Route::post('cart/', [UserItemsController::class, 'addToCart']);
+    Route::delete('cart/', [UserItemsController::class, 'removeFromCart']);
 
-Route::post('favorites/', [UserItemsController::class, 'addFavorite']);
-Route::delete('favorites/', [UserItemsController::class, 'removeFavorite']);
+    Route::post('favorites/', [UserItemsController::class, 'addFavorite']);
+    Route::delete('favorites/', [UserItemsController::class, 'removeFavorite']);
+
+
+});
 
 
 require __DIR__ . '/settings.php';

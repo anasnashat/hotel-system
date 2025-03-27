@@ -148,7 +148,6 @@ const handleCheckout = () => {
                     <Table class="border border-gray-200 shadow-sm rounded-lg">
                         <TableHeader class="bg-gray-100">
                             <TableRow>
-                                <TableHead class="text-left p-3">Image</TableHead>
                                 <TableHead class="text-left p-3">Name</TableHead>
                                 <TableHead class="text-left p-3">Price</TableHead>
                                 <TableHead class="text-left p-3">accompany number</TableHead>
@@ -158,13 +157,7 @@ const handleCheckout = () => {
                         </TableHeader>
                         <TableBody>
                             <TableRow v-for="item in cartItems" :key="item.id" class="border-b">
-                                <TableCell class="p-3">
-                                    <img
-                                        :src="item.image || '/placeholder-room.jpg'"
-                                        :alt="`Room ${item.room.number}`"
-                                        class="w-16 h-16 object-cover rounded-md"
-                                    />
-                                </TableCell>
+                                
                                 <TableCell class="p-3">{{ item.room.number }}</TableCell>
                                 <TableCell class="p-3">{{ formatCurrency(item.room.price / 100) }}</TableCell>
                                 <TableCell class="p-3">
