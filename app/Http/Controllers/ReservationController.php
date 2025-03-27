@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreReservationRequest;
 use App\Http\Requests\UpdateReservationRequest;
 use App\Models\Reservation;
+use Inertia\Inertia;
+use Laravel\Prompts\Themes\Default\Renderer;
+use function Termwind\render;
 
 class ReservationController extends Controller
 {
@@ -13,7 +16,14 @@ class ReservationController extends Controller
      */
     public function index()
     {
-        //
+        $reservation = auth()->user()->reservations()->with('room')->get();
+        return Inertia::render(
+            'BookingStatus'
+            , [
+                'reservations' => $reservation
+            ]
+        );
+
     }
 
     /**
