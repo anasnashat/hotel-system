@@ -7,7 +7,7 @@
 
     <!-- Show alert if no favorite rooms exist -->
     <Alert v-if="!favoriteStore.isLoading && favoriteStore.favoriteRooms.length === 0" variant="destructive" class="mb-4">
-      <AlertTitle>No Favorites Yet</AlertTitle>
+      <AlertTitle>No Favorites Yet </AlertTitle>
       <AlertDescription>You haven't added any favorite rooms yet. Explore and save your favorite ones!</AlertDescription>
     </Alert>
 

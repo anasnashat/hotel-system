@@ -8,15 +8,21 @@ use App\Models\Reservation;
 use App\Models\Room;
 use Illuminate\Http\Request;
 use Stripe;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class StripeController extends Controller
 {
     public function index()
     {
-        $cartItems = auth()->user()->cart()->get();
+        // $cartItems = auth()->user()->cart()->get();
 //        dd($cartItems);
 //        dd($cartItems);
-        return view('checkout', compact('cartItems'));
+        // return view('checkout', compact('cartItems'));
+     return Inertia::render('checkout', [
+        'cartItems' => Cart::with('room')->get(),
+        'stripeKey' => config('services.stripe.key'),
+    ]);
     }
 
    public function createCharge(Request $request)
@@ -87,8 +93,8 @@ class StripeController extends Controller
                    // Clear the cart
                    Cart::whereIn('id', $cartItems->pluck('id'))->delete();
 
-                   return redirect()->route('reservations.index')->with('success', 'Rooms reserved successfully!');
-               }
+                   return Inertia::location(route('success.page'));               
+                }
 
                return back()->with('error', 'Payment failed. Please try again.');
            });

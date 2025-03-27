@@ -141,7 +141,10 @@ Route::middleware(['auth'])->group(function (){
     })->name('cart');
     Route::get('checkout/', [StripeController::class, 'index']);
     Route::post('checkout/create-charge', [StripeController::class, 'createCharge'])->name('stripe.create-charge');
-
+    
+    Route::get('/success', function () {
+        return Inertia::render('checkout-success');
+    })->name('success.page');
 
 
     Route::post('cart/', [UserItemsController::class, 'addToCart']);

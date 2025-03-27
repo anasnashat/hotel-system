@@ -3,6 +3,7 @@ import { ref, computed, watch, onMounted } from 'vue';
 import { route } from 'ziggy-js';
 import { router } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
+import axios from "axios";
 
 interface CartItem {
   id: number;
@@ -77,7 +78,7 @@ export const useCartStore = defineStore('cart', () => {
   };
 
   // Watch for cart changes and update localStorage
-  watch(cart, saveCart, { deep: true });
+   watch(cart, saveCart, { deep: true });
 
   // Load cart from localStorage when the store initializes
   onMounted(() => {

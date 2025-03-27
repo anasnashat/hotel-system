@@ -121,7 +121,7 @@ const submitForm = () => {
     formData.append('price', Math.round(parseFloat(form.value.price)).toString());
     formData.append('description', form.value.description);
     formData.append('floor_id', form.value.floor_id);
-    formData.append('is_reserved', form.value.is_reserved.toString());
+    // formData.append('is_reserved', form.value.is_reserved.toString());
 
 
     form.value.images.forEach((image, index) => {

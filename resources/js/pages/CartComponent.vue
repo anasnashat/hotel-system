@@ -126,7 +126,24 @@ const handleCheckout = () => {
             confirmButtonText: 'OK'
         });
     } else {
-        router.visit('/checkout');
+        const plainCartItems = cartItems.value.map(item => ({
+            id: item.id,
+            room_id: item.room_id,
+            accompany_number: item.accompany_number,
+            room: {
+                id: item.room.id,
+                number: item.room.number,
+                price: item.room.price,
+                capacity: item.room.capacity
+            }
+        }));
+
+        router.visit('/checkout', {
+            method: 'get',
+            data: {
+                cartItems: plainCartItems  // ✅ Now it’s JSON-serializable!
+            }
+        });
     }
 };
 </script>
