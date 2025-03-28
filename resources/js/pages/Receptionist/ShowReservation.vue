@@ -73,7 +73,7 @@ if (isAdminOrManager) {
                             <TableCell>{{ client.accompany_number || 'N/A' }}</TableCell>
                             <TableCell>{{ client.room?.number || 'N/A' }}</TableCell>
                             <TableCell>{{ client.client.profile.phone_number || 'N/A' }}</TableCell>
-                            <TableCell>{{ client.price_at_booking || 'N/A' }}</TableCell>
+                            <TableCell>{{ client.price_at_booking /100 || 'N/A' }} $</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
