@@ -15,7 +15,6 @@ class Reservation extends Model
     protected $fillable = [
         'client_id',
         'room_id',
-        'is_reserved',
         'accompany_number',
         'price_at_booking',
         'payment_intent_id',
