@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\UserItemsController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\StripeController;
 use App\Models\Cart;
@@ -26,9 +27,7 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
 //     return Inertia::render('Welcome');
 // })->name('home');
 
-Route::get('/', function () {
-    return Inertia::render('Home');
-})->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/room/{id}', function ($id) {
     $room = Room::findOrFail($id);
@@ -141,7 +140,7 @@ Route::middleware(['auth'])->group(function (){
     })->name('cart');
     Route::get('checkout/', [StripeController::class, 'index']);
     Route::post('checkout/create-charge', [StripeController::class, 'createCharge'])->name('stripe.create-charge');
-    
+
     Route::get('/success', function () {
         return Inertia::render('checkout-success');
     })->name('success.page');
@@ -154,6 +153,8 @@ Route::middleware(['auth'])->group(function (){
     Route::delete('favorites/', [UserItemsController::class, 'removeFavorite']);
 
     Route::get('reservation/', [ReservationController::class, 'index'])->name('reservation.index');
+
+//    Route::get('home', [HomeController::class, 'index']);
 
 
 });
