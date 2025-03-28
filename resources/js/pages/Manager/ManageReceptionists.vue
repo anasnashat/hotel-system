@@ -36,11 +36,13 @@ interface Receptionist {
     email: string;
     is_banned: boolean;
     created_at: string;
+    avatar_image?: string;
     profile?: {
         created_by: {
             name: string;
         };
         national_id: string;
+        
     };
 }
 
@@ -93,7 +95,7 @@ const openEditModal = (receptionist: Receptionist) => {
         email: receptionist.email,
         password: '', // Password is not populated for security reasons
         national_id: receptionist.profile?.national_id || '',
-        avatar_image: null, // Avatar image is not populated (can be handled separately if needed)
+        avatar_image: receptionist.avatar_image || null, 
     };
     isModalOpen.value = true;
 };
@@ -108,8 +110,8 @@ const submitForm = () => {
     formData.append('email', form.value.email);
     formData.append('password', form.value.password);
     formData.append('national_id', form.value.national_id);
-    if (form.value.avatar_image) {
-        formData.append('avatar_image', form.value.avatar_image);
+    if (form.value.avatar_image instanceof File) {
+    formData.append('avatar_image', form.value.avatar_image);
     }
 
     if (isEditMode.value && currentReceptionist.value) {
@@ -213,6 +215,7 @@ const tabs = [
                     <Table>
                         <TableHeader>
                             <TableRow>
+                                <TableHead>Avatar</TableHead>
                                 <TableHead>ID</TableHead>
                                 <TableHead>Name</TableHead>
                                 <TableHead>Email</TableHead>
@@ -229,6 +232,13 @@ const tabs = [
                                 </TableCell>
                             </TableRow>
                             <TableRow v-for="receptionist in receptionists" :key="receptionist.id">
+                                <TableCell>
+                                    <img 
+                                        :src="receptionist.avatar_image? `/storage/${receptionist.avatar_image}` : '/default-avatar-image.png'"
+                                        alt="Avatar" 
+                                        class="w-20 h-20 rounded-full object-cover border" />
+                                    
+                                </TableCell>
                                 <TableCell>{{ receptionist.id }}</TableCell>
                                 <TableCell>{{ receptionist.name }}</TableCell>
                                 <TableCell>{{ receptionist.email }}</TableCell>

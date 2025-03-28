@@ -84,7 +84,7 @@ const openEditModal = (manager: Manager) => {
         email: manager.email,
         password: '', // Password is not populated for security reasons
         national_id: manager.profile.national_id,
-        avatar_image: null, // Avatar image is not populated (can be handled separately if needed)
+        avatar_image: manager.avatar_image || null, 
     };
     isModalOpen.value = true;
 };
@@ -99,7 +99,7 @@ const submitForm = () => {
     formData.append('email', form.value.email);
     formData.append('password', form.value.password);
     formData.append('national_id', form.value.national_id);
-    if (form.value.avatar_image) {
+    if (form.value.avatar_image instanceof File) {
         formData.append('avatar_image', form.value.avatar_image);
     }
 
@@ -176,6 +176,7 @@ const tabs = [
                     <Table>
                         <TableHeader>
                             <TableRow>
+                                <TableHead>Image</TableHead>
                                 <TableHead>ID</TableHead>
                                 <TableHead>Name</TableHead>
                                 <TableHead>Email</TableHead>
@@ -191,6 +192,13 @@ const tabs = [
                                 </TableCell>
                             </TableRow>
                             <TableRow v-for="manager in managers.data" :key="manager.id">
+                                <TableCell>
+                                    <img 
+                                        :src="manager.avatar_image? `/storage/${manager.avatar_image}` : '/default-avatar-image.png'"
+                                        alt="Avatar" 
+                                        class="w-20 h-20 rounded-full object-cover border" />
+                                    
+                                </TableCell>
                                 <TableCell>{{ manager.id }}</TableCell>
                                 <TableCell>{{ manager.name }}</TableCell>
                                 <TableCell>{{ manager.email }}</TableCell>
