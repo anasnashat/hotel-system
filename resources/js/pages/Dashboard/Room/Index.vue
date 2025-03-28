@@ -167,6 +167,8 @@ const deleteRoom = () => {
     }
 };
 
+
+
 // Pagination
 const handlePageChange = (page: number) => {
     router.get(route('rooms.index', { page }), {}, { preserveScroll: true });
@@ -208,13 +210,13 @@ const tabs = [
                                 <TableHead>Price</TableHead>
                                 <TableHead>Description</TableHead>
                                 <TableHead>Floor</TableHead>
-                                <TableHead v-if="$page.props.auth.user.roles[0].name === 'admin'">Manager</TableHead>
+                                <TableHead v-if="$page.props.auth.user.roles.includes('admin')">Manager</TableHead>
                                 <TableHead class="w-32">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             <TableRow v-if="rooms.data.length === 0">
-                                <TableCell :colspan="$page.props.auth.user.roles[0].name === 'admin' ? 7 : 6" class="h-24 text-center">
+                                <TableCell :colspan="$page.props.auth.user.roles.includes('admin') ? 7 : 6" class="h-24 text-center">
                                     No rooms found.
                                 </TableCell>
                             </TableRow>
@@ -229,9 +231,9 @@ const tabs = [
                                 <TableCell>${{ (room.price / 100).toFixed(2) }}</TableCell>
                                 <TableCell class="max-w-xs truncate">{{ room.description }}</TableCell>
                                 <TableCell>{{ room.floor_name }}</TableCell>
-                                <TableCell v-if="$page.props.auth.user.roles[0].name === 'admin'">{{ room.manager_name }}</TableCell>
+                                <TableCell v-if="$page.props.auth.user.roles.includes('admin')">{{ room.manager_name }}</TableCell>
 
-                                <TableCell v-if="room.manager_id === $page.props.auth.user.id || $page.props.auth.user.roles[0].name === 'admin'">
+                                <TableCell v-if="room.manager_id === $page.props.auth.user.id || $page.props.auth.user.roles.includes('admin')">
                                     <div class="flex gap-2">
                                         <Button variant="outline" size="sm" @click="openEditModal(room)">
                                             Edit
