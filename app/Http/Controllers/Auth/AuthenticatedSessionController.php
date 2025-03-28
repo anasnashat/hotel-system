@@ -51,15 +51,15 @@ class AuthenticatedSessionController extends Controller
         }
 
         if ($user->hasRole('admin')) {
-            return redirect()->route('admin.dashboard');
+            return redirect()->route('managers');
         }
         if ($user->hasRole('manager')) {
-            return redirect()->route('manager.dashboard');
+            return redirect()->route('manager.manage-receptionists');
         }
         if ($user->hasRole('receptionist')) {
-            return redirect()->route('receptionist.dashboard');
+            return redirect()->route('clients-management.index');
         }
-            return redirect()->intended(route('home', absolute: false));
+            return redirect()->route('home');
     }
 
     /**
