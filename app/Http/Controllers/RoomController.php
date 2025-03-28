@@ -21,7 +21,7 @@ class RoomController extends Controller
     public function index()
     {
         $floors = Floor::all();
-        $rooms = Room::with(['floor', 'createdBy', 'media'])
+        $rooms = Room::with(['floor', 'createdBy', 'media', 'reservations'])
             ->paginate(10)
             ->through(function ($room) {
                 return [
@@ -30,6 +30,7 @@ class RoomController extends Controller
                     'capacity' => $room->capacity,
                     'description' => $room->description,
                     'price' => $room->price,
+                    'is_available' => $room->is_available,
                     'floor_name' => $room->floor->name ?? 'N/A',
                     'manager_name' => $room->createdBy->name,
                     'manager_id' => $room->createdBy->id,
@@ -133,6 +134,7 @@ public function update(UpdateRoomRequest $request, $id)
         $validated['price'] = $validated['price'] * 100;
 
         $room->update($validated);
+//        dd($room);
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
@@ -142,7 +144,6 @@ public function update(UpdateRoomRequest $request, $id)
                     ->toMediaCollection('rooms_image', 'public');
             }
         }
-
         DB::commit();
         return redirect()->back()->with('success', 'Room updated successfully.');
     } catch (\Exception $e) {
@@ -159,7 +160,7 @@ public function destroy($id)
     try {
         DB::beginTransaction();
         $room = Room::with("reservations")->findOrFail($id);
-        if ($room->reservations()->isReserved()->exists()) {
+        if (!$room->is_available) {
             return redirect()->back()->with('error', 'Room has reservations, cannot deleted');
         }
         $room->delete();
