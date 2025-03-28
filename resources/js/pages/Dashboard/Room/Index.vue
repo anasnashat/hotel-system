@@ -38,6 +38,7 @@ interface Room {
     floor_name: string;
     manager_name?: string;
     first_image_url?: string;
+    is_available: boolean;
     images?: { id: number; url: string }[];
 }
 
@@ -53,9 +54,8 @@ const form = ref({
     price: '',
     description: '',
     floor_id: '',
+    is_available: false,
     images: [] as File[],
-    is_reserved: false,
-
 });
 
 // Delete confirmation state
@@ -92,7 +92,7 @@ const handleImageUpload = (event: Event) => {
 // Open modal for adding a new room
 const openAddModal = () => {
     isEditMode.value = false;
-    form.value = { capacity: '', price: '', description: '', floor_id: '', images: [] };
+    form.value = { capacity: '', price: '', description: '', is_available: false ,floor_id: '', images: [] };
     isModalOpen.value = true;
 };
 
@@ -106,7 +106,7 @@ const openEditModal = (room: Room) => {
         description: room.description,
         floor_id: room.floor_id.toString(),
         images: [],
-        is_reserved: room.is_reserved,
+        is_available: room.is_available,
 
     };
     isModalOpen.value = true;
@@ -121,7 +121,7 @@ const submitForm = () => {
     formData.append('price', Math.round(parseFloat(form.value.price)).toString());
     formData.append('description', form.value.description);
     formData.append('floor_id', form.value.floor_id);
-    // formData.append('is_reserved', form.value.is_reserved.toString());
+formData.append('is_available', form.value.is_available ? '1' : '0');    // formData.append('is_available', form.value.is_available.toString());
 
 
     form.value.images.forEach((image, index) => {
@@ -352,17 +352,25 @@ const tabs = [
                         <p v-if="page.props.errors.images" class="text-sm text-red-500">{{ page.props.errors.images }}</p>
                     </div>
 
-                    <div class="flex items-center space-x-2">
-                        <Label>Reservation Status</Label>
-                        <input
-                            type="checkbox"
-                            v-model="form.is_reserved"
-                            class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                        />
-                        <span class="text-sm text-gray-600">
-                            {{ form.is_reserved ? 'Reserved' : 'Available' }}
-                        </span>
-                    </div>
+<div v-if="isEditMode" class="space-y-2">
+    <Label>Reservation Status</Label>
+    <div class="flex items-center space-x-3">
+        <button
+            type="button"
+            class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2"
+            :class="[form.is_available ?  'bg-green-500': 'bg-red-500' ]"
+            @click="form.is_available = !form.is_available"
+        >
+            <span
+                class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                :class="[form.is_available ? 'translate-x-5' : 'translate-x-0']"
+            />
+        </button>
+        <span class="text-sm" :class="form.is_available ?  'text-green-600' :'text-red-600'  ">
+            {{ form.is_available ? 'Available' : 'Reserved' }}
+        </span>
+    </div>
+</div>
                     <DialogFooter>
                         <Button type="button" variant="outline" @click="isModalOpen = false">Cancel</Button>
                         <Button type="submit" :disabled="isLoading">
