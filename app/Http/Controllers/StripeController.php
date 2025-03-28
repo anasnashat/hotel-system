@@ -7,6 +7,7 @@ use App\Models\Payment;
 use App\Models\Reservation;
 use App\Models\Room;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Stripe;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -36,7 +37,7 @@ class StripeController extends Controller
            $totalAmount = 0;
 
            // Begin transaction
-           return \DB::transaction(function () use ($cartItems, $request, &$totalAmount) {
+           return DB::transaction(function () use ($cartItems, $request, &$totalAmount) {
                // Lock the rooms for update to prevent concurrent reservations
                $roomIds = $cartItems->pluck('room_id')->toArray();
                $rooms = Room::whereIn('id', $roomIds)->lockForUpdate()->get();
