@@ -2,19 +2,16 @@
 import { ref, defineProps, computed } from 'vue';
 import { Heart } from 'lucide-vue-next';
 import Card from '@/components/ui/card/Card.vue';
-import CardHeader from '@/components/ui/card/CardHeader.vue';
 import CardContent from '@/components/ui/card/CardContent.vue';
 import CardFooter from '@/components/ui/card/CardFooter.vue';
-import CardTitle from '@/components/ui/card/CardTitle.vue';
 import Button from '@/components/ui/button/Button.vue';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useCartStore } from '@/stores/cart';
 import { useFavoriteStore } from '@/stores/favorite';
 import Swal from 'sweetalert2';
-import { router, usePage } from '@inertiajs/vue3';
+import { router } from '@inertiajs/vue3';
 import { formatCurrency } from '@/utils/currencyFormatter';
 import { type Room } from '@/types';
-import axios from 'axios';
 
 
 const cartStore = useCartStore();
