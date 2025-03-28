@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
 import RoomCard from './RoomCard.vue';
-import axios from "axios";
-import { type Room } from '@/types';
+
 
 // const rooms = ref<Room[]>([]);
 //
