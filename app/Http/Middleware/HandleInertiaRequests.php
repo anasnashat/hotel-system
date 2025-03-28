@@ -58,8 +58,8 @@ class HandleInertiaRequests extends Middleware
                     'email' => $user->email,
                     'roles' => $user->roles->pluck('name'), // Get roles
                     'permissions' => $user->getAllPermissions()->pluck('name'),
-                    'cart' => $user->cart()->get(),
-                    'favorites' => $user->favorites()->with('room.media')->get(),
+                    'cart' => $user->cart()->get() ?? [],
+                    'favorites' => $user->favorites()->with('room.media')->get() ?? [],
 
                     // Get permissions
                 ] : null,
