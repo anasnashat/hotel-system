@@ -37,7 +37,7 @@ interface Auth {
   };
 }
 
-const favorites = ref<{ room: { id: number } }[]>((page.props.auth as Auth).user.favorites);
+const favorites = ref<{ room: { id: number } }[]>((page.props.auth as Auth).user?.favorites);
 
 const isFavorite = computed(() => {
   return Array.isArray(favorites.value) &&
@@ -47,8 +47,6 @@ const isFavorite = computed(() => {
 
 // Add to cart function
 const addToCart = () => {
-  if (!isBooked.value) {
-      console.log("Adding to cart", props.room.id);
     cartStore.addToCart({
       id: props.room.id,
       name: props.room.name,
@@ -65,7 +63,7 @@ const addToCart = () => {
       toast: true,
       position: "top-end",
     });
-  }
+
 };
 
 
