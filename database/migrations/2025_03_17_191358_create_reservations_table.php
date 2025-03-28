@@ -16,7 +16,6 @@ return new class extends Migration {
             $table->uuid('reservation_code')->unique();
             $table->foreignId('client_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('room_id')->constrained()->restrictOnDelete();
-            $table->boolean('is_reserved')->default(false); // Indicates if the room is reserved
             $table->integer('accompany_number');
             $table->unsignedBigInteger('price_at_booking');
             $table->string('payment_intent_id')->nullable();
