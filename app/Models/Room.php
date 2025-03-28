@@ -15,7 +15,7 @@ class Room extends Model implements HasMedia
 
 
     // auth()->id
-    protected $fillable = ['capacity', 'price', 'description', 'floor_id'];
+    protected $fillable = ['capacity', 'price', 'description', 'floor_id', 'is_available'];
 
     public function floor()
     {
