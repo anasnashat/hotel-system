@@ -158,13 +158,13 @@ const tabs = [
                                 <TableHead>ID</TableHead>
                                 <TableHead>Name</TableHead>
                                 <TableHead>Number</TableHead>
-                                <TableHead v-if="$page.props.auth.user.roles[0].name === 'admin'">Created By</TableHead>
+                                <TableHead v-if="$page.props.auth.user.roles.includes('admin')">Created By</TableHead>
                                 <TableHead class="w-32">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             <TableRow v-if="floors.data.length === 0">
-                                <TableCell :colspan="$page.props.auth.user.roles[0].name === 'admin' ? 4 : 3" class="h-24 text-center">
+                                <TableCell :colspan="$page.props.auth.user.roles.includes('admin') ? 4 : 3" class="h-24 text-center">
                                     No floors found.
                                 </TableCell>
                             </TableRow>
@@ -172,8 +172,8 @@ const tabs = [
                                 <TableCell>{{ floor.id }}</TableCell>
                                 <TableCell>{{ floor.name }}</TableCell>
                                 <TableCell>{{ floor.number }}</TableCell>
-                                <TableCell v-if="$page.props.auth.user.roles[0].name === 'admin'">{{ floor.created_by.name }}</TableCell>
-                                <TableCell v-if="page.props.auth.user.id === floor.created_by.id || page.props.auth.user.roles[0].name === 'admin'">
+                                <TableCell v-if="$page.props.auth.user.roles.includes('admin')">{{ floor.created_by.name }}</TableCell>
+                                <TableCell v-if="page.props.auth.user.id === floor.created_by.id || $page.props.auth.user.roles.includes('admin')">
                                     <div class="flex gap-2">
                                         <Button variant="outline" size="sm" @click="openEditModal(floor)">
                                             Edit
