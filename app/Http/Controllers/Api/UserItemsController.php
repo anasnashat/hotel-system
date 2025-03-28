@@ -71,7 +71,7 @@ class UserItemsController extends Controller
                 );
             }
 
-            if ($room->reservations()->isReserved()->exists()) {
+            if (!$room->is_available) {
                 return back()->with('error', 'This room is already reserved');
             }
 
