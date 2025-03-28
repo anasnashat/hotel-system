@@ -19,6 +19,7 @@ class UpdateRoomRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
+
     public function rules(): array
     {
         return [
@@ -28,6 +29,7 @@ class UpdateRoomRequest extends FormRequest
             'floor_id' => 'sometimes|exists:floors,id', // Floor ID must exist in the floors table
             'images' => 'nullable|array', // Images are optional and must be an array
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Each image must be a valid image file (jpeg, png, jpg, gif) and less than 2MB
+            'is_available' => 'sometimes|boolean', // Room availability status must be a boolean value
         ];
     }
 
@@ -54,6 +56,7 @@ class UpdateRoomRequest extends FormRequest
             'images.*.image' => 'Each file must be an image.',
             'images.*.mimes' => 'Each image must be a file of type: jpeg, png, jpg, gif.',
             'images.*.max' => 'Each image may not be greater than 2MB.',
-        ];
+            'is_available.boolean' => 'The availability status must be true or false.',
+            ];
     }
 }
