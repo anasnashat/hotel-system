@@ -65,15 +65,16 @@ Route::post('/check-existence', function (Request $request) {
 });
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/favorites', function () {
+        return Inertia::render('Favorites');
+    })->name('favorites');
+
     Route::get('/cart', function () {
         $cartItems = Cart::with('room')->where("user_id", auth()->id())->get();
         return Inertia::render('CartComponent', ['cartItems' => $cartItems]);
     })->name('cart');
 });
 
-Route::get('/favorites', function () {
-    return Inertia::render('Favorites');
-})->name('favorites');
 
 Route::middleware(['auth'])->group(function () {
     // Explicitly define the dashboard route
