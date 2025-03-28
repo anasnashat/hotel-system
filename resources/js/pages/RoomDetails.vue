@@ -25,7 +25,7 @@ onMounted(fetchRooms);
       <h1 class="text-2xl font-bold mb-4 cardTitle">{{ room.name }}</h1>
       <img :src="room.first_image_url" class="w-full h-64 object-cover rounded-md mb-4" />
       <p class="text-gray-700">{{ room.description }}</p>
-      <p class="text-xl font-semibold mt-2 cardTitle">${{ room.price }} per night</p>
+      <p class="text-xl font-semibold mt-2 cardTitle">${{ room.price/100 }} per night</p>
     </div>
 </template>
 
