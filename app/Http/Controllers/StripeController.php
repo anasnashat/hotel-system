@@ -48,7 +48,7 @@ class StripeController extends Controller
                        return back()->with('error', 'Room not found.');
                    }
 
-                   if ($room->reservations()->isReserved()->exists()) {
+                   if (!$room->is_available) {
                        return back()->with('error', "The room with number {$room->number} is already reserved.");
                    }
 
@@ -76,12 +76,12 @@ class StripeController extends Controller
                        // Create reservation
                        $reservation = $room->reservations()->create([
                            'client_id' => auth()->id(),
-                           'is_reserved' => true,
                            'accompany_number' => $cartItem->accompany_number,
                            'price_at_booking' => $room->price,
                            'payment_intent_id' => $status->id,
                            'status' => 'confirmed'
                        ]);
+                       $room->update(['is_available' => 0]);
 
                        Payment::create([
                            'reservation_id' => $reservation->id,
@@ -93,7 +93,7 @@ class StripeController extends Controller
                    // Clear the cart
                    Cart::whereIn('id', $cartItems->pluck('id'))->delete();
 
-                   return Inertia::location(route('success.page'));               
+                   return Inertia::location(route('success.page'));
                 }
 
                return back()->with('error', 'Payment failed. Please try again.');
