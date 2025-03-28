@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useCartStore } from '@/stores/cart';
 import { useFavoriteStore } from '@/stores/favorite';
 import Swal from 'sweetalert2';
-import { router } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import { formatCurrency } from '@/utils/currencyFormatter';
 import { type Room } from '@/types';
 import axios from 'axios';
@@ -22,8 +22,10 @@ const favoriteStore = useFavoriteStore();
 const favoriteCount = ref(0);
 
 
+
 // Props for room details
 const props =defineProps<{ room: Room }>();
+
 
 const isBooked = computed(() => {
   return cartStore.cart.some((item) => item.id === props.room.id);
@@ -126,7 +128,7 @@ const goToRoomDetails = (roomId: number) => {
 
     <!-- Card Content -->
     <CardContent class="px-4 py-2">
-      <p class="text-gray-600 dark:text-gray-400 cardTitle">{{ formatCurrency(room.price)}} </p>
+      <p class="text-gray-600 dark:text-gray-400 cardTitle">{{ formatCurrency(room.price/100)}} </p>
     </CardContent>
 
     <!-- Card Footer -->
@@ -137,8 +139,8 @@ const goToRoomDetails = (roomId: number) => {
         @click="goToRoomDetails(room.id)">
         More Details
       </Button>
-      <Button @click="addToCart" :disabled="isBooked"   :class="isBooked ? 'bg-gray-400 text-white border-gray-400 cursor-not-allowed' : 'bg-[#5b5329] text-white border-[#5b5329] hover:bg-white hover:text-[#5b5329]'"  class="w-1/2 border border-[#5b5329] bg-[#5b5329] text-white font-medium px-4 py-1 rounded-md hover:bg-white hover:text-[#5b5329] transition duration-300">
-        {{ isBooked ? "Booked" : "Book Now" }}
+      <Button @click="addToCart" :disabled="!room.is_available"   :class="!room.is_available ? 'bg-gray-400 text-white border-gray-400 cursor-not-allowed' : 'bg-[#5b5329] text-white border-[#5b5329] hover:bg-white hover:text-[#5b5329]'"  class="w-1/2 border border-[#5b5329] bg-[#5b5329] text-white font-medium px-4 py-1 rounded-md hover:bg-white hover:text-[#5b5329] transition duration-300">
+        {{ !room.is_available ? "Booked" : "Book Now" }}
       </Button>
     </CardFooter>
   </Card>
@@ -147,17 +149,17 @@ const goToRoomDetails = (roomId: number) => {
     <DialogContent class="max-w-lg p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
       <DialogHeader class="flex justify-between items-center">
         <DialogTitle class="text-xl font-bold text-gray-900 dark:text-white font-serif text-center cardTitle">
-          {{ room.name }}
+          {{ room.number }}
         </DialogTitle>
       </DialogHeader>
 
       <!-- Room Image -->
-       
-      <img :src="room.first_image_url" alt="Room Image" class="w-full h-56 
+
+      <img :src="room.first_image_url" alt="Room Image" class="w-full h-56
        rounded-lg my-3 object-cover" />
       <!-- Room Info -->
       <p class="text-gray-600 dark:text-gray-300 mb-3 font-medium font-semibold">{{ room.description }}</p>
-      <p class="text-lg font-semibold text-gray-800 dark:text-white">{{formatCurrency(room.price) }} per night</p>
+      <p class="text-lg font-semibold text-gray-800 dark:text-white">{{formatCurrency(room.price /100) }} per night</p>
 
       <!-- Room Features -->
       <ul v-if="room.features && room.features.length" class="mt-3 list-disc list-inside text-gray-600 dark:text-gray-300">
