@@ -63,6 +63,10 @@ class User extends Authenticatable implements BannableContract
     {
         return $this->hasOne(Cart::class);
     }
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
 
 
 
