@@ -59,6 +59,7 @@ class HandleInertiaRequests extends Middleware
                     'roles' => $user->roles->pluck('name'), // Get roles
                     'permissions' => $user->getAllPermissions()->pluck('name'),
                     'cart' => $user->cart()->get(),
+                    'favorites' => $user->favorites()->with('room.media')->get(),
 
                     // Get permissions
                 ] : null,
