@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->integer('capacity');
             $table->unsignedBigInteger('price');
             $table->text('description')->nullable();
+            $table->boolean('is_available')->default(true);
             $table->foreignId('floor_id')->constrained()->restrictOnDelete();
             $table->foreignId('created_by')->constrained('users')->restrictOnDelete();
             $table->timestamps();
