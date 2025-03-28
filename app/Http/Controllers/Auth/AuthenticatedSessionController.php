@@ -51,7 +51,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         if ($user->hasRole('admin')) {
-            return redirect()->route('managers');
+            return redirect()->route('clients-management.index');
         }
         if ($user->hasRole('manager')) {
             return redirect()->route('manager.manage-receptionists');
