@@ -4,21 +4,24 @@ import RoomCard from './RoomCard.vue';
 import axios from "axios";
 import { type Room } from '@/types';
 
-const rooms = ref<Room[]>([]);
+// const rooms = ref<Room[]>([]);
+//
+// const fetchRooms = async () => {
+//     try {
+//         const response = await axios.get("http://127.0.0.1:8000/api/rooms");
+//         rooms.value = response.data.data;
+//     } catch (error) {
+//         console.error("Error fetching rooms:", error);
+//     }
+// };
+//
+// onMounted(fetchRooms);
 
-const fetchRooms = async () => {
-    try {
-        const response = await axios.get("http://127.0.0.1:8000/api/rooms");
-        rooms.value = response.data.data;
-    } catch (error) {
-        console.error("Error fetching rooms:", error);
-    }
-};
+const props = defineProps<{
+  rooms:any
+}>();
 
-onMounted(fetchRooms);
-
-
-
+console.log(props.rooms);
 
 </script>
 
@@ -27,7 +30,7 @@ onMounted(fetchRooms);
        <a href="#rooms"><h2 class="title-text text-center">Rooms</h2></a>
     </div>
   <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <RoomCard v-for="room in rooms" :key="room.id" :room="room" />
+    <RoomCard v-for="room in props.rooms" :key="room.id" :room="room" />
   </div>
 </template>
 
