@@ -18,13 +18,13 @@ class HomeController extends Controller
                     'price' => $room->price,
                     'number' => $room->number,
                     'is_available' => $room->is_available,
-                    'first_image_url' => $room->getFirstMediaUrl('rooms_image'),
+                    'first_image_url' => $room->getFirstMediaUrl('rooms_image') ?? [],
                 ];
             });
 
         return Inertia::render('Home', [
-            'rooms' => $rooms,
-        ]);
+                    'rooms' => $rooms,
+                ]);
     }
 
 }
